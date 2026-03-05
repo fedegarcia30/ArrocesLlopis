@@ -1,0 +1,7 @@
+Flask
+Flask-RESTful
+Flask-SQLAlchemy
+mysql-connector-python
+airtable-python-wrapper
+python-dotenv
+flask-cors

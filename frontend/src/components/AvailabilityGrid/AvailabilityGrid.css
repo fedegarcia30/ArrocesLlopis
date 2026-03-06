@@ -1,0 +1,124 @@
+.availability-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.availability-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.availability-date-input {
+  width: auto;
+  min-width: 160px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  min-height: 40px;
+}
+
+.availability-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.availability-loading,
+.availability-error {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-secondary);
+}
+
+.availability-error {
+  color: var(--status-red);
+}
+
+/* Slot card */
+.slot-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 12px;
+}
+
+.slot-card:hover {
+  transform: translateX(4px);
+}
+
+.slot-card.selected {
+  border-color: var(--gold);
+  background: var(--surface-hover);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.slot-card.drag-over {
+  border-color: var(--status-green);
+  background: rgba(34, 197, 94, 0.1);
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+}
+
+.slot-time {
+  font-size: 1.1rem;
+  font-weight: 600;
+  min-width: 50px;
+}
+
+.slot-dots {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.slot-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+}
+
+.slot-dot.filled {
+  border-color: transparent;
+}
+
+.slot-card[data-status='green'] .slot-dot.filled {
+  background: var(--status-green);
+  box-shadow: 0 0 6px var(--status-green);
+}
+
+.slot-card[data-status='yellow'] .slot-dot.filled {
+  background: var(--status-yellow);
+  box-shadow: 0 0 6px var(--status-yellow);
+}
+
+.slot-card[data-status='red'] .slot-dot.filled {
+  background: var(--status-red);
+  box-shadow: 0 0 6px var(--status-red);
+}
+
+.slot-info {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  min-width: 80px;
+  text-align: right;
+}
+
+.slot-info-orders {
+  font-weight: 500;
+}
+
+.slot-full-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--status-red);
+  text-transform: uppercase;
+}

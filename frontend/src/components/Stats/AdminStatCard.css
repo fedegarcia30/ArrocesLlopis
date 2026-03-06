@@ -1,0 +1,45 @@
+.stat-card {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 180px;
+    flex: 1;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 4px 0;
+}
+
+.stat-growth {
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+}
+
+.growth-value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.growth-sublabel {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.stat-green .growth-value {
+    color: var(--status-green);
+}
+
+.stat-red .growth-value {
+    color: var(--status-red);
+}

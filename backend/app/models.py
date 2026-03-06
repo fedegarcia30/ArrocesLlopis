@@ -10,6 +10,7 @@ class Cliente(db.Model):
     codigo_postal = db.Column(db.String(10))
     observaciones = db.Column(db.Text)
     num_pedidos = db.Column(db.Integer, default=0)
+    activo = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     deleted_at = db.Column(db.DateTime)
@@ -51,3 +52,15 @@ class Pedido(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     deleted_at = db.Column(db.DateTime)
+
+    # Relación con pedido_lineas
+    lineas = db.relationship('PedidoLinea', backref='pedido', lazy=True)
+
+class PedidoLinea(db.Model):
+    __tablename__ = 'pedido_lineas'
+    id = db.Column(db.Integer, primary_key=True)
+    pedido_id = db.Column(db.Integer, db.ForeignKey('pedidos.id'), nullable=False)
+    arroz_id = db.Column(db.Integer, db.ForeignKey('arroces.id'), nullable=False)
+    precio_unitario = db.Column(db.Numeric(10, 2), nullable=False)
+
+    arroz = db.relationship('Arroz', lazy=True)

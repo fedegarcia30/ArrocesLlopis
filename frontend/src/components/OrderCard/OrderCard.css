@@ -1,0 +1,141 @@
+.order-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.order-card-actions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 0;
+  background: var(--surface-light);
+}
+
+.action-deliver {
+  color: var(--status-green);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.action-edit {
+  color: #3b82f6;
+  /* Blue for edit */
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.order-card {
+  position: relative;
+  z-index: 1;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  /* Fallback if glass-card is transparent */
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: grab;
+  user-select: none;
+}
+
+.order-card:active {
+  cursor: grabbing;
+}
+
+.order-card.swiping {
+  transition: none;
+}
+
+/* Hover effect should not override swipe transforms easily, so we remove it or scope it */
+@media (hover: hover) {
+  .order-card:hover:not(.swiping) {
+    transform: translateX(2px);
+  }
+}
+
+.order-card.dragging {
+  opacity: 0.4;
+}
+
+
+.order-id {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.order-card-body {
+  flex: 1;
+}
+
+.order-client-name {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 2px;
+}
+
+.order-details {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.order-rice-badge {
+  color: var(--gold-dim);
+}
+
+.order-pax-badge {
+  color: var(--status-yellow);
+  font-weight: 600;
+}
+
+.order-time {
+  color: var(--text-muted);
+}
+
+.order-status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+
+.order-status-badge.nuevo {
+  background: var(--gold-bg);
+  color: var(--gold);
+}
+
+.order-status-badge.preparando {
+  background: var(--status-yellow-bg);
+  color: var(--status-yellow);
+}
+
+.order-status-badge.listo {
+  background: var(--status-green-bg);
+  color: var(--status-green);
+}
+
+.order-status-badge.entregado {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+}
+
+.order-status-badge.cancelado {
+  background: var(--status-red-bg);
+  color: var(--status-red);
+}

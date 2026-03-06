@@ -1,0 +1,122 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-title {
+    margin: 0 0 16px 0;
+    font-size: 1.25rem;
+    color: var(--text-main);
+    text-align: center;
+}
+
+.modal-body {
+    margin-bottom: 24px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.move-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.time-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.time-badge.old {
+    background: var(--surface-light);
+    color: var(--text-muted);
+    text-decoration: line-through;
+}
+
+.time-badge.new {
+    background: var(--status-green-bg);
+    color: var(--status-green);
+    border: 1px solid var(--status-green);
+}
+
+.move-arrow {
+    font-size: 1.5rem;
+    color: var(--gold-dim);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-modal-cancel {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+}
+
+.btn-modal-cancel:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+.btn-modal-confirm {
+    background: var(--gold);
+    border: none;
+    color: #000;
+}
+
+.btn-modal-confirm:hover {
+    background: var(--gold-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-modal-confirm:disabled,
+.btn-modal-cancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}

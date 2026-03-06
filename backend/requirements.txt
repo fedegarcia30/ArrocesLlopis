@@ -5,3 +5,5 @@ mysql-connector-python
 airtable-python-wrapper
 python-dotenv
 flask-cors
+firebase-admin
+pytest

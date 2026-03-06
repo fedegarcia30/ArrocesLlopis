@@ -1,0 +1,123 @@
+.rices-page {
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.rices-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.rices-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(to right, #fff, var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.rices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.rice-card {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+
+.rice-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.rice-card.inactive {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
+.rice-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--gold);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.rice-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.rice-caldo {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.rice-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin-top: auto;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.rice-price span {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.rice-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.btn-add-rice {
+    background: var(--gold);
+    color: black;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-add-rice:hover {
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    transform: translateY(-1px);
+}

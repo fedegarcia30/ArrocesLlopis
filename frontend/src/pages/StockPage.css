@@ -1,0 +1,272 @@
+.stock-page {
+    padding: 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow: hidden;
+}
+
+.stock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Modal Consistency */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 16px;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 480px;
+    padding: 24px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-gold);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border-radius: var(--radius);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.stock-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.stock-filters {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.stock-search {
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: white;
+    min-width: 250px;
+}
+
+.stock-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+.ingredient-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    border-left: 4px solid transparent;
+}
+
+.ingredient-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.status-critical {
+    border-left-color: var(--status-red);
+}
+
+.status-warning {
+    border-left-color: var(--status-yellow);
+}
+
+.status-ok {
+    border-left-color: var(--status-green);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.card-body {
+    flex: 1;
+}
+
+.stock-levels {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.current-stock {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.unit {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.stock-meta {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.min-stock {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.status-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-critical .status-label {
+    color: var(--status-red);
+}
+
+.status-warning .status-label {
+    color: var(--status-yellow);
+}
+
+.status-ok .status-label {
+    color: var(--status-green);
+}
+
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .stock-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stock-actions {
+        order: -1;
+    }
+
+    .stock-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Common Button Styles */
+.btn-primary,
+.btn-secondary {
+    padding: 12px 24px;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.2s;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: #000;
+    border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-glass);
+    color: var(--text-primary);
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

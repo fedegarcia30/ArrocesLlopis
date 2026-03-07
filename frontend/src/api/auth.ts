@@ -18,3 +18,18 @@ export async function getCurrentToken(): Promise<string | null> {
   if (!user) return null;
   return user.getIdToken();
 }
+
+export async function getUserProfile() {
+  const token = await getCurrentToken();
+  if (!token) return null;
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) return null;
+  return response.json();
+}

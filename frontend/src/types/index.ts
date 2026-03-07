@@ -8,6 +8,7 @@ export interface Cliente {
   codigo_postal?: string;
   observaciones?: string;
   num_pedidos?: number;
+  raciones?: number;
   activo?: boolean;
 }
 
@@ -17,6 +18,42 @@ export interface Arroz {
   precio: number;
   caldo?: string;
   disponible?: boolean;
+}
+
+export interface Ingrediente {
+  id: number;
+  nombre: string;
+  unidad_medida: string;
+  stock_actual: number;
+  stock_minimo: number;
+  precio_actual?: number; // Added for price tracking
+}
+
+export interface CompraItem {
+  ingrediente_id: number;
+  cantidad: number;
+  precio_unitario: number;
+}
+
+export interface CompraRequest {
+  proveedor_id: number;
+  items: CompraItem[];
+  observaciones?: string;
+  fecha?: string;
+}
+
+
+export interface ArrozIngrediente {
+  ingrediente_id: number;
+  nombre: string;
+  cantidad_por_racion: number;
+  unidad_medida: string;
+}
+
+export interface RecetaResponse {
+  rice_id: number;
+  rice_name: string;
+  ingredients: ArrozIngrediente[];
 }
 
 export interface Usuario {
@@ -123,6 +160,7 @@ export interface AuthUser {
   uid: string;
   email: string | null;
   displayName: string | null;
+  rol?: 'admin' | 'cocinero' | 'repartidor' | 'gerente' | 'encargado';
 }
 
 // === Calendar ===

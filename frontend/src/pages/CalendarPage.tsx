@@ -50,7 +50,7 @@ export function CalendarPage() {
 
     function handleDayClick(day: number) {
         const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        navigate(`/dashboard?date=${dateStr}`);
+        navigate(`/diario?date=${dateStr}`);
     }
 
     const calendarDays = [];

@@ -119,19 +119,23 @@
 .rice-btn {
   padding: 16px 12px;
   border-radius: var(--radius-sm);
-  background: var(--bg-secondary);
-  border: 2px solid transparent;
+  background: var(--surface-light);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   text-align: center;
   transition: all 0.2s;
 }
 
 .rice-btn:hover {
   border-color: var(--border-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .rice-btn.selected {
   border-color: var(--gold);
   background: var(--gold-bg);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .rice-name {
@@ -141,8 +145,14 @@
 }
 
 .rice-price {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--gold-dim);
+}
+
+.rice-unit {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-left: 2px;
 }
 
 /* PAX stepper */
@@ -359,5 +369,55 @@
 @media (max-width: 480px) {
   .pax-grid {
     display: none !important;
+  }
+}
+
+/* Mobile optimizations for compact forms */
+@media (max-width: 768px) {
+  .wizard-panel {
+    max-height: 98vh;
+    /* Use almost full height */
+    padding: 20px 16px;
+  }
+
+  .rice-grid {
+    gap: 6px;
+    /* Tighter grid */
+  }
+
+  .rice-btn {
+    padding: 10px 8px;
+    /* Less padding to save height */
+  }
+
+  .rice-name {
+    font-size: 0.9rem;
+    /* Slightly smaller text */
+    margin-bottom: 2px;
+  }
+
+  .rice-price {
+    font-size: 0.8rem;
+  }
+
+  .wizard-step {
+    gap: 12px;
+    /* Less gap between form groups */
+  }
+
+  .wizard-header {
+    margin-bottom: 16px;
+    /* Less space below title */
+  }
+
+  /* Make sure stepper inputs are nicely sized but not too tall */
+  .pax-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .pax-value {
+    font-size: 1.6rem;
   }
 }

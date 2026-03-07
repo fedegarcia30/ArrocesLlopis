@@ -86,7 +86,11 @@ export function RicesPage() {
             ) : (
                 <div className="rices-grid">
                     {filteredRices.map((rice) => (
-                        <div key={rice.id} className={`rice-card glass-card ${!rice.disponible ? 'inactive' : ''}`}>
+                        <div
+                            key={rice.id}
+                            className={`rice-card glass-card ${!rice.disponible ? 'inactive' : ''}`}
+                            onClick={() => setEditingRice(rice)}
+                        >
                             {!rice.disponible && <span className="rice-badge">No disponible</span>}
                             <h3 className="rice-name">{rice.nombre}</h3>
                             <p className="rice-caldo">{rice.caldo || 'Sin caldo especificado'}</p>
@@ -94,11 +98,24 @@ export function RicesPage() {
                                 {rice.precio.toFixed(2)}€
                                 <span>/ ración</span>
                             </div>
+
+                            {/* Mobile specific delete button */}
+                            <button
+                                className="btn-delete-mobile"
+                                onClick={(e) => { e.stopPropagation(); handleDelete(rice.id); }}
+                                title="Eliminar"
+                            >
+                                🗑
+                            </button>
+
                             <div className="rice-actions">
                                 <button className="btn-edit" onClick={() => setEditingRice(rice)}>
                                     ✎ Editar
                                 </button>
-                                <button className="btn-delete" onClick={() => handleDelete(rice.id)}>
+                                <button
+                                    className="btn-delete"
+                                    onClick={(e) => { e.stopPropagation(); handleDelete(rice.id); }}
+                                >
                                     🗑
                                 </button>
                             </div>

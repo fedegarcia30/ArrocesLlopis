@@ -48,7 +48,10 @@ export function StepSelection({
                 onClick={() => onRiceSelect(rice)}
               >
                 <span className="rice-name">{rice.nombre}</span>
-                <span className="rice-price">{rice.precio.toFixed(2)} €/rac</span>
+                <span className="rice-price">
+                  {rice.precio.toFixed(2)}
+                  <span className="rice-unit"> €/rac</span>
+                </span>
               </button>
             ))}
           </div>

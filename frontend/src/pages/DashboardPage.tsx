@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AvailabilityGrid } from '../components/AvailabilityGrid/AvailabilityGrid';
 import { OrderWizard } from '../components/OrderWizard/OrderWizard';
@@ -30,6 +30,7 @@ export function DashboardPage() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loadingPedidos, setLoadingPedidos] = useState(false);
   const [date, setDate] = useState<string>(initialDate);
+  const ordersSectionRef = useRef<HTMLElement>(null);
   const { user } = useAuth();
   const { slots, loading: loadingSlots, error: errorSlots, reload: refetchAvailability } = useAvailability(date);
 
@@ -155,6 +156,12 @@ export function DashboardPage() {
 
   function handleSlotSelect(slot: Slot) {
     setSelectedSlot(slot);
+    // Auto-scroll to orders on mobile
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        ordersSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
   }
 
   function handleNewOrder() {
@@ -228,7 +235,7 @@ export function DashboardPage() {
           />
         </section>
 
-        <section className="dashboard-right">
+        <section className="dashboard-right" ref={ordersSectionRef}>
           <div className="dashboard-right-header">
             <h3>
               {selectedSlot
@@ -287,14 +294,16 @@ export function DashboardPage() {
             )}
           </div>
 
-          <button
-            className="fab-new-order"
-            onClick={handleNewOrder}
-            disabled={!selectedSlot?.available}
-            title={selectedSlot ? "Nuevo Pedido" : "Selecciona una franja para nuevo pedido"}
-          >
-            + NUEVO PEDIDO
-          </button>
+          {user?.rol !== 'cocinero' && (
+            <button
+              className="fab-new-order"
+              onClick={handleNewOrder}
+              disabled={!selectedSlot?.available}
+              title={selectedSlot ? "Nuevo Pedido" : "Selecciona una franja para nuevo pedido"}
+            >
+              + NUEVO PEDIDO
+            </button>
+          )}
         </section>
       </div>
 

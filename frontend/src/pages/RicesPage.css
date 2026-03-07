@@ -40,6 +40,78 @@
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+    cursor: pointer;
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+    .rices-page {
+        padding: 16px;
+        gap: 20px;
+    }
+
+    .rices-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .rice-card {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .rice-name {
+        font-size: 0.95rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.4em;
+        line-height: 1.2;
+    }
+
+    .rice-caldo {
+        font-size: 0.75rem;
+        display: none;
+        /* Hide description on small screens to save space */
+    }
+
+    .rice-price {
+        font-size: 1rem;
+    }
+
+    .rice-price span {
+        font-size: 0.7rem;
+    }
+
+    .rice-actions {
+        display: none;
+        /* Hide separate buttons, click-to-edit will handle it, and we can keep a smaller delete icon later if needed */
+    }
+
+    /* Small floating delete for mobile if we still want it */
+    .rice-card .btn-delete-mobile {
+        display: flex;
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+        width: 28px;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 601px) {
+    .rice-card .btn-delete-mobile {
+        display: none;
+    }
 }
 
 .rice-card:hover {

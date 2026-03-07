@@ -7,16 +7,27 @@ export interface DashboardStats {
         orders: Metric;
         avg_ticket: Metric;
     };
+    period_info: {
+        current: { label: string };
+        previous: { label: string };
+    };
     top_arroces: TopRice[];
     top_clients: TopClient[];
     top_zipcodes: TopZipCode[];
     busiest_month: string | null;
     history: {
-        current: number[];
-        prev1: number[];
-        prev2: number[];
-        prev3: number[];
+        revenue: TrendData;
+        rations: TrendData;
+        orders: TrendData;
+        clients: TrendData;
     };
+}
+
+interface TrendData {
+    current: number[];
+    prev1: number[];
+    prev2: number[];
+    prev3: number[];
 }
 
 interface Metric {
@@ -24,6 +35,7 @@ interface Metric {
     growth: number;
     label: string;
     sublabel: string;
+    sparkline?: number[];
 }
 
 interface TopRice {
@@ -36,6 +48,7 @@ interface TopClient {
     nombre: string;
     orders: number;
     spent: number;
+    rations: number;
 }
 
 interface TopZipCode {
@@ -44,6 +57,29 @@ interface TopZipCode {
     revenue: number;
 }
 
-export async function getDashboardStats(period: string = 'quarter'): Promise<DashboardStats> {
-    return get<DashboardStats>(`/stats/dashboard?period=${period}`);
+export interface ExpenseStats {
+    summary: {
+        total_expense: Metric;
+        purchases_count: Metric;
+        stock_alerts: Metric & { status?: "warning" | "ok" };
+    };
+    top_ingredients: {
+        nombre: string;
+        qty: number;
+        spent: number;
+        unit: string;
+    }[];
+    top_providers: {
+        nombre: string;
+        count: number;
+        spent: number;
+    }[];
+}
+
+export async function getDashboardStats(period: string = 'quarter', mode: string = 'full'): Promise<DashboardStats> {
+    return get<DashboardStats>(`/stats/dashboard?period=${period}&mode=${mode}`);
+}
+
+export async function getExpenseStats(period: string = 'quarter', mode: string = 'full'): Promise<ExpenseStats> {
+    return get<ExpenseStats>(`/stats/expenses?period=${period}&mode=${mode}`);
 }

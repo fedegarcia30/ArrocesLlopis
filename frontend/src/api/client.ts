@@ -1,6 +1,9 @@
 import { auth } from '../config/firebase';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/v1';
+const isProd = import.meta.env.PROD;
+const BASE_URL = isProd
+  ? '/management-api'
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/v1');
 
 let backendAvailable: boolean | null = null;
 

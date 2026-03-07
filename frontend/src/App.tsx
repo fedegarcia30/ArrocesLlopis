@@ -7,6 +7,8 @@ import { ClientsPage } from './pages/ClientsPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { RicesPage } from './pages/RicesPage';
+import { StockPage } from './pages/StockPage';
+import { RepartosPage } from './pages/RepartosPage';
 import type { ReactNode } from 'react';
 import './App.css';
 
@@ -32,7 +34,27 @@ function PublicRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) return null;
-  if (user) return <Navigate to="/" replace />;
+
+  if (user) {
+    if (user.rol === 'admin') return <Navigate to="/admin/dashboard" replace />;
+    if (user.rol === 'cocinero') return <Navigate to="/diario" replace />;
+    if (user.rol === 'repartidor') return <Navigate to="/repartos" replace />;
+    return <Navigate to="/calendar" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function RoleRoute({ children, allowedRoles }: { children: ReactNode, allowedRoles: string[] }) {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+  if (!user || (user.rol && !allowedRoles.includes(user.rol))) {
+    if (user?.rol === 'admin') return <Navigate to="/admin/dashboard" replace />;
+    if (user?.rol === 'cocinero') return <Navigate to="/diario" replace />;
+    if (user?.rol === 'repartidor') return <Navigate to="/repartos" replace />;
+    return <Navigate to="/calendar" replace />;
+  }
 
   return <>{children}</>;
 }
@@ -57,13 +79,65 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route path="/" element={<CalendarPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/clientes" element={<ClientsPage />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/arroces" element={<RicesPage />} />
+            <Route
+              path="/stock"
+              element={
+                <RoleRoute allowedRoles={['admin', 'encargado', 'gerente']}>
+                  <StockPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/arroces"
+              element={
+                <RoleRoute allowedRoles={['admin', 'encargado', 'gerente']}>
+                  <RicesPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/clientes"
+              element={
+                <RoleRoute allowedRoles={['admin', 'encargado', 'gerente']}>
+                  <ClientsPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/diario"
+              element={
+                <RoleRoute allowedRoles={['admin', 'encargado', 'gerente', 'cocinero']}>
+                  <DashboardPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <RoleRoute allowedRoles={['admin']}>
+                  <AdminDashboard />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/repartos"
+              element={
+                <RoleRoute allowedRoles={['admin', 'gerente', 'encargado', 'cocinero', 'repartidor']}>
+                  <RepartosPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <RoleRoute allowedRoles={['admin', 'encargado', 'gerente', 'cocinero']}>
+                  <CalendarPage />
+                </RoleRoute>
+              }
+            />
           </Route>
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/calendar" replace />} />
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>

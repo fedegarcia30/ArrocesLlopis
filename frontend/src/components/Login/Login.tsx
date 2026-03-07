@@ -8,18 +8,20 @@ export function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Redirection is now handled automatically by PublicRoute in App.tsx
+  // when the user state updates.
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setIsSubmitting(true);
     try {
       await signIn(email, password);
     } catch {
       setError('Credenciales incorrectas. Inténtalo de nuevo.');
-    } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -49,8 +51,8 @@ export function Login() {
 
           {error && <div className="login-error">{error}</div>}
 
-          <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
+          <button type="submit" className="login-btn" disabled={isSubmitting}>
+            {isSubmitting ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
       </div>

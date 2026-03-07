@@ -2,6 +2,7 @@ from flask import request, jsonify
 from app.models import Cliente
 from . import api_v1_bp
 from app.auth import requires_auth
+from app.utils.logger import logger
 
 def serialize_client(c):
     return {
@@ -85,7 +86,12 @@ def update_client(client_id):
     if 'observaciones' in data: client.observaciones = data['observaciones']
     
     from app import db
-    db.session.commit()
+    try:
+        db.session.commit()
+        logger.info(f"Client #{client.id} ({client.nombre}) updated successfully")
+    except Exception as e:
+        logger.error(f"Error updating client #{client.id}: {str(e)}", exc_info=True)
+        return jsonify({"error": "Failed to update client"}), 500
     
     return jsonify(serialize_client(client)), 200
 
@@ -99,7 +105,12 @@ def delete_client(client_id):
     client.activo = False
     
     from app import db
-    db.session.commit()
+    try:
+        db.session.commit()
+        logger.info(f"Client #{client.id} disabled (soft-delete)")
+    except Exception as e:
+        logger.error(f"Error soft-deleting client #{client.id}: {str(e)}", exc_info=True)
+        return jsonify({"error": "Failed to delete client"}), 500
     
     return jsonify({"success": True, "message": "Cliente desactivado correctamente"}), 200
 

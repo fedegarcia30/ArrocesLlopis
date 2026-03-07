@@ -194,18 +194,38 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
 
 ---
 
-## 7. CRUD de Clientes (para módulo futuro)
-**Endpoint base**: `/api/v1/clientes`
-**Auth**: Requerido
+## 8. Estadísticas de Negocio (Admin Dashboard)
+**Endpoint**: `GET /api/v1/stats/dashboard?period=month|quarter|semester|ytd`
+**Auth**: Requerido (Admin)
+**Descripción**: Devuelve métricas agregadas y tendencias para el panel de administración.
 
-- `GET /api/v1/clientes?search=...` — Buscar por nombre o teléfono
-- `GET /api/v1/clientes/:id` — Detalle de un cliente
-- `POST /api/v1/clientes` — Crear cliente
-- `PUT /api/v1/clientes/:id` — Actualizar cliente
+**Response**:
+```json
+{
+  "summary": { "revenue": {...}, "rations": {...}, "orders": {...}, "avg_ticket": {...} },
+  "top_arroces": [ { "nombre": "Carrilleras", "rations": 13, "subtotal": 135.50 } ],
+  "history": { "current": [...], "prev1": [...] },
+  "busiest_month": "Marzo"
+}
+```
 
 ---
 
-## Notas para Backend
+## 9. Gestión de Catálogo (Rices CRUD)
+**Endpoint**: `/api/v1/rices`
+**Auth**: Requerido
+
+- `GET /api/v1/rices` — Listado completo (incluye no disponibles)
+- `POST /api/v1/rices` — Crear arroz (nombre, precio, caldo, disponible)
+- `PUT /api/v1/rices/:id` — Editar arroz
+- `DELETE /api/v1/rices/:id` — Soft-delete (disponible = 0)
+
+---
+
+## Notas Finales de Despliegue (Producción)
+En producción, todas las peticiones deben usar el prefijo de NGINX:
+- **API**: `https://solvency.ddns.net/management-api/` (que redirige internamente a `/api/v1/`)
+- **Frontend**: `https://solvency.ddns.net/management/`
 
 ### Endpoints que el Frontend ya consume (prioridad de implementación):
 1. `POST /api/v1/availability/check` — Dashboard principal

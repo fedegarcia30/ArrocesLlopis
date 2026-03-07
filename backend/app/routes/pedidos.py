@@ -4,6 +4,8 @@ from app import db
 from . import api_v1_bp
 from app.auth import requires_auth
 from sqlalchemy import func
+from app.utils.logger import logger
+from app.utils.stock import adjust_stock_from_order
 from datetime import datetime, timedelta
 
 
@@ -88,10 +90,30 @@ def update_pedido_status(pedido_id):
     if not pedido:
         return jsonify({"error": "Pedido not found"}), 404
 
+    old_status = pedido.status
     pedido.status = new_status
     if new_status == 'entregado':
         pedido.entregado = True
-    db.session.commit()
+    
+    try:
+        db.session.commit()
+        
+        # Stock Synchronization
+        if new_status == 'cancelado' and old_status != 'cancelado':
+            # Restore stock
+            lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
+            for l in lineas:
+                adjust_stock_from_order(l.arroz_id, pedido.pax, restore=True)
+        elif old_status == 'cancelado' and new_status != 'cancelado':
+            # Subtract stock again if uncanceled
+            lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
+            for l in lineas:
+                adjust_stock_from_order(l.arroz_id, pedido.pax, restore=False)
+
+        logger.info(f"Pedido #{pedido.id} status updated to '{new_status}'")
+    except Exception as e:
+        logger.error(f"Error updating status for pedido #{pedido.id}: {str(e)}", exc_info=True)
+        return jsonify({"error": "Failed to update status"}), 500
 
     cliente = Cliente.query.get(pedido.cliente_id)
     lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
@@ -173,7 +195,12 @@ def update_pedido(pedido_id):
     if 'observaciones' in data:
         pedido.observaciones = data['observaciones']
 
-    db.session.commit()
+    try:
+        db.session.commit()
+        logger.info(f"Pedido #{pedido.id} properties updated successfully")
+    except Exception as e:
+        logger.error(f"Error updating properties for pedido #{pedido.id}: {str(e)}", exc_info=True)
+        return jsonify({"error": "Failed to update pedido"}), 500
 
     cliente = Cliente.query.get(pedido.cliente_id)
     lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()

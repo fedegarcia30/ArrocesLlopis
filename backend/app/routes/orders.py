@@ -5,6 +5,8 @@ from app import db
 from . import api_v1_bp
 from .availability import MAX_ORDERS_PER_SLOT, MAX_PAX_PER_SLOT
 from app.auth import requires_auth
+from app.utils.logger import logger
+from app.utils.stock import adjust_stock_from_order
 
 
 @api_v1_bp.route('/orders/create', methods=['POST', 'OPTIONS'])
@@ -51,6 +53,7 @@ def create_order():
     current_pax = sum(p.pax for p in existing)
 
     if (current_orders + 1 > MAX_ORDERS_PER_SLOT) or (current_pax + requested_pax > MAX_PAX_PER_SLOT):
+        logger.warning(f"Order rejected: Slot full logic triggered. Date: {order_date}, Time: {order_time}")
         return jsonify({
             "success": False,
             "error_code": "SLOT_FULL",
@@ -95,7 +98,19 @@ def create_order():
             precio_unitario=float(arroz.precio)
         )
         db.session.add(linea)
+
+        # Update client totals
+        cliente = Cliente.query.get(cliente_id)
+        if cliente:
+            cliente.num_pedidos = (cliente.num_pedidos or 0) + 1
+            cliente.raciones = (cliente.raciones or 0) + requested_pax
+
         db.session.commit()
+        
+        # Adjust stock after successful commit (or before if preferred, but here is safer)
+        adjust_stock_from_order(arroz.id, requested_pax)
+        
+        logger.info(f"Order #{nuevo_pedido.id} created successfully for client #{cliente_id} ({requested_pax} PAX, Arroz: {arroz.nombre})")
 
         return jsonify({
             "success": True,
@@ -105,4 +120,5 @@ def create_order():
 
     except Exception as e:
         db.session.rollback()
+        logger.error(f"Error creating order: {str(e)}", exc_info=True)
         return jsonify({"success": False, "message": str(e)}), 500

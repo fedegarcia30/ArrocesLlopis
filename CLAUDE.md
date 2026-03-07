@@ -39,9 +39,21 @@ mysql -u root -p < database/schema.sql   # Init/reset schema
 
 ### Frontend (React + Vite + Capacitor)
 - Entry: `frontend/src/main.tsx` → `App.tsx`
-- Build tool: Vite with React plugin
+- All TS types in `frontend/src/types/index.ts`
+- API layer: `frontend/src/api/client.ts` — generic `get/post/put/patch/del` with auto Firebase token injection
+- Auth: `useAuth` hook/context in `frontend/src/hooks/useAuth.ts` wraps Firebase Auth and fetches user role from backend
 - Mobile: Capacitor config in `frontend/capacitor.config.ts` (appId: com.arrocesllopis.app)
-- TypeScript strict mode enabled
+- TypeScript strict mode + `erasableSyntaxOnly` — cannot use `public` parameter properties in constructors
+
+### Roles & Routes
+- Roles: `admin`, `gerente`, `encargado`, `cocinero`, `repartidor`
+- Route guards via `RoleRoute` component in `App.tsx`:
+  - `/calendar` — admin, encargado, gerente, cocinero
+  - `/diario` — admin, encargado, gerente, cocinero
+  - `/clientes`, `/arroces`, `/stock` — admin, encargado, gerente
+  - `/admin/dashboard` — admin only
+  - `/repartos` — all roles
+- After login, each role redirects to its default page (admin→`/admin/dashboard`, cocinero→`/diario`, repartidor→`/repartos`, others→`/calendar`)
 
 ### Database (MySQL)
 - Schema: `database/schema.sql` — includes Phase 1 (orders) + Phase 2 (inventory) tables
@@ -51,12 +63,13 @@ mysql -u root -p < database/schema.sql   # Init/reset schema
 - `pedido_lineas` links pedidos to arroces (many-to-many with price snapshot)
 
 ### API Design
-- Base URL: `http://localhost:5001/api`
-- Two API contract sources:
-  - `compartido.md` — CRUD endpoints matching DB models (clientes, arroces, pedidos, auth)
-  - Gemini docs (`api_contracts.md`) — Order module endpoints (availability/check, clients/lookup, orders/create, rices)
-- All secured endpoints use `Authorization: Bearer <token>`
-- Architecture doc specifies all mutations use POST (no PII in URLs)
+- Base URL: `http://localhost:5001/api/v1` (blueprint prefix `/api/v1`)
+- Dev env var: `VITE_API_BASE_URL` (defaults to `http://localhost:5001/api/v1`)
+- Production: frontend proxies through `/management-api` → `/api/v1`
+- Route modules: `rices`, `clients`, `availability`, `orders`, `pedidos`, `stats`, `ingredients`, `auth`
+- `compartido.md` is the authoritative API contract — update it when endpoints change
+- All secured endpoints use `Authorization: Bearer <Firebase idToken>`
+- Backend verifies token via `firebase_admin.auth.verify_id_token()`
 
 ### Key Business Rules
 - Time slots: max 6 orders AND max 72 rations per slot
@@ -65,7 +78,7 @@ mysql -u root -p < database/schema.sql   # Init/reset schema
 - Order statuses: nuevo → preparando → listo → entregado | cancelado
 
 ## Shared Interface
-`compartido.md` is the bridge document between backend and frontend teams. Update it when adding/changing endpoints so the frontend team stays in sync.
+`compartido.md` is the bridge document between backend and frontend teams. Update it when adding/changing endpoints so the frontend team stays in sync. The frontend team is Claude Code; the backend team is Gemini.
 
 ## Language
 Code comments, git messages, and documentation: Spanish preferred (matches business domain). Variable/function names in code can be English or Spanish matching existing conventions.

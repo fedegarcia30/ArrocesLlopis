@@ -2,8 +2,8 @@ import { auth } from '../config/firebase';
 
 const isProd = import.meta.env.PROD;
 const BASE_URL = isProd
-  ? '/management-api'
-  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api/v1');
+  ? '/arrocesllopis-api'
+  : (import.meta.env.VITE_API_BASE_URL);
 
 let backendAvailable: boolean | null = null;
 

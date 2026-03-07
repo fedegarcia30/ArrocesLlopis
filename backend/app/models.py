@@ -10,6 +10,7 @@ class Cliente(db.Model):
     codigo_postal = db.Column(db.String(10))
     observaciones = db.Column(db.Text)
     num_pedidos = db.Column(db.Integer, default=0)
+    raciones = db.Column(db.Integer, default=0)
     activo = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -64,3 +65,58 @@ class PedidoLinea(db.Model):
     precio_unitario = db.Column(db.Numeric(10, 2), nullable=False)
 
     arroz = db.relationship('Arroz', lazy=True)
+
+class Ingrediente(db.Model):
+    __tablename__ = 'ingredientes'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(255), nullable=False, unique=True)
+    unidad_medida = db.Column(db.String(50), default='g') # g, ml, ud, etc.
+    stock_actual = db.Column(db.Numeric(10, 3), default=0)
+    stock_minimo = db.Column(db.Numeric(10, 3), default=0)
+    precio_actual = db.Column(db.Numeric(10, 2), default=0) # Added for price tracking
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class ArrozIngrediente(db.Model):
+    __tablename__ = 'arroz_ingredientes'
+    id = db.Column(db.Integer, primary_key=True)
+    arroz_id = db.Column(db.Integer, db.ForeignKey('arroces.id'), nullable=False)
+    ingrediente_id = db.Column(db.Integer, db.ForeignKey('ingredientes.id'), nullable=False)
+    cantidad_por_racion = db.Column(db.Numeric(10, 3), nullable=False) # Cantidad por ración
+    
+    arroz = db.relationship('Arroz', backref=db.backref('ingredientes_assoc', lazy=True, cascade="all, delete-orphan"))
+    ingrediente = db.relationship('Ingrediente', lazy=True)
+
+class Proveedor(db.Model):
+    __tablename__ = 'proveedores'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(255), nullable=False)
+    contacto = db.Column(db.String(255))
+    telefono = db.Column(db.String(20))
+    email = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Compra(db.Model):
+    __tablename__ = 'compras'
+    id = db.Column(db.Integer, primary_key=True)
+    proveedor_id = db.Column(db.Integer, db.ForeignKey('proveedores.id'), nullable=False)
+    fecha_compra = db.Column(db.Date, nullable=False)
+    total = db.Column(db.Numeric(10, 2), nullable=False)
+    observaciones = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class CompraLinea(db.Model):
+    __tablename__ = 'compra_lineas'
+    id = db.Column(db.Integer, primary_key=True)
+    compra_id = db.Column(db.Integer, db.ForeignKey('compras.id'), nullable=False)
+    ingrediente_id = db.Column(db.Integer, db.ForeignKey('ingredientes.id'), nullable=False)
+    cantidad = db.Column(db.Numeric(10, 3), nullable=False)
+    precio_unitario = db.Column(db.Numeric(10, 2), nullable=False)
+
+class HistoricoPrecio(db.Model):
+    __tablename__ = 'historico_precios'
+    id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, nullable=False)
+    tipo_item = db.Column(db.Enum('venta', 'compra'), nullable=False) # 'venta' (arroz), 'compra' (ingrediente)
+    precio = db.Column(db.Numeric(10, 2), nullable=False)
+    fecha_inicio = db.Column(db.DateTime, default=datetime.utcnow)

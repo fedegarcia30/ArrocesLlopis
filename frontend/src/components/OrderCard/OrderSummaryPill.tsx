@@ -6,7 +6,8 @@ interface OrderSummaryPillProps {
 }
 
 export function OrderSummaryPill({ pedido }: OrderSummaryPillProps) {
-    const riceName = pedido.lineas?.[0]?.arroz_nombre || 'Arroz';
+    const riceRaw = pedido.lineas?.[0]?.arroz_nombre || 'Arroz';
+    const riceName = riceRaw.length > 9 ? riceRaw.slice(0, 8) + '…' : riceRaw;
 
     return (
         <div className="order-summary-pill">

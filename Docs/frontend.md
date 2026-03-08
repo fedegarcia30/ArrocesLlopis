@@ -38,7 +38,7 @@ del<T>(endpoint)         // DELETE
 class ApiError { status: number; message: string }
 ```
 - Inyecta automáticamente el Firebase idToken en `Authorization: Bearer`
-- En prod usa `/management-api` como base; en dev `VITE_API_BASE_URL` o `http://localhost:5001/api/v1`
+- En prod usa `/arrocesllopis-api` como base; en dev `VITE_API_BASE_URL` o `http://localhost:5001/api/v1`
 - Hace ping al inicio; si falla lanza `ApiError(0, 'Backend no disponible')`
 
 > **Nota**: `ingredients.ts` usa `fetch` directamente, no el client base. Es un patrón inconsistente a evitar en nuevas funciones.

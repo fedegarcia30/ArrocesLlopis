@@ -120,3 +120,13 @@ class HistoricoPrecio(db.Model):
     tipo_item = db.Column(db.Enum('venta', 'compra'), nullable=False) # 'venta' (arroz), 'compra' (ingrediente)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
     fecha_inicio = db.Column(db.DateTime, default=datetime.utcnow)
+
+class PedidoFeedback(db.Model):
+    __tablename__ = 'pedido_feedback'
+    id = db.Column(db.Integer, primary_key=True)
+    pedido_id = db.Column(db.Integer, db.ForeignKey('pedidos.id', ondelete='CASCADE'), nullable=False, unique=True)
+    rating = db.Column(db.Integer)
+    comentario = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    pedido = db.relationship('Pedido', backref=db.backref('feedback', uselist=False, cascade="all, delete-orphan"))

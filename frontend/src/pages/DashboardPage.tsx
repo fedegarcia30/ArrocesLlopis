@@ -152,8 +152,6 @@ export function DashboardPage() {
     return acc;
   }, {} as Record<string, Pedido[]>);
 
-  const sortedTimes = Object.keys(groupedPedidos).sort();
-
   function handleSlotSelect(slot: Slot) {
     setSelectedSlot(slot);
     // Auto-scroll to orders on mobile
@@ -199,13 +197,32 @@ export function DashboardPage() {
     <div className="dashboard">
       <div className="dashboard-header">
         <h1 className="dashboard-title">Arroces Llopis</h1>
+        {user?.rol !== 'cocinero' && (
+          <button
+            className="fab-new-order"
+            onClick={handleNewOrder}
+            disabled={!selectedSlot?.available}
+            title={selectedSlot ? 'Nuevo Pedido' : 'Selecciona una franja para nuevo pedido'}
+          >
+            + NUEVO PEDIDO
+          </button>
+        )}
+        <div className="dashboard-header-controls">
+          <input
+            type="date"
+            className="availability-date-input"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+          {!loadingPedidos && (
+            <span className="dashboard-total-badge">{pedidos.length} pedidos</span>
+          )}
+        </div>
       </div>
 
       <div className="dashboard-split">
         <section className="dashboard-left">
           <AvailabilityGrid
-            date={date}
-            onDateChange={setDate}
             selectedSlot={selectedSlot}
             onSlotSelect={handleSlotSelect}
             onDropOrder={(orderId, clientName, sourceTime, targetTime) => {
@@ -236,23 +253,19 @@ export function DashboardPage() {
         </section>
 
         <section className="dashboard-right" ref={ordersSectionRef}>
-          <div className="dashboard-right-header">
-            <h3>
-              {selectedSlot
-                ? `Pedidos ${selectedSlot.time} (${filteredPedidos.length})`
-                : `Resumen de pedidos (${pedidos.length})`}
-            </h3>
-            {selectedSlot && (
+          {selectedSlot && (
+            <div className="dashboard-right-header">
+              <span className="dashboard-slot-label">{selectedSlot.time} · {filteredPedidos.length} ped.</span>
               <button
                 className="btn-clear-selection"
                 onClick={() => setSelectedSlot(null)}
               >
                 Ver todos
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
-          <div className="orders-list">
+          <div className={`orders-list${selectedSlot ? '' : ' orders-summary-mode'}`}>
             {loadingPedidos && <p className="orders-empty">Cargando pedidos...</p>}
 
             {!loadingPedidos && pedidos.length === 0 && (
@@ -276,34 +289,23 @@ export function DashboardPage() {
                   />
                 ))
               ) : (
-                // Grouped summary view
-                sortedTimes.map((time) => (
-                  <div key={time} className="order-summary-group">
-                    <h4>
-                      {time}
-                      <span>{groupedPedidos[time].length} pedidos</span>
-                    </h4>
-                    <div className="summary-pills-container">
-                      {groupedPedidos[time].map((p) => (
-                        <OrderSummaryPill key={p.id} pedido={p} />
-                      ))}
+                // Summary view — one row per slot, aligned with left panel
+                slots.map((slot) => {
+                  const slotOrders = groupedPedidos[slot.time] || [];
+                  return (
+                    <div key={slot.time} className="order-summary-group">
+                      <div className="summary-pills-container">
+                        {slotOrders.map((p) => (
+                          <OrderSummaryPill key={p.id} pedido={p} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )
             )}
           </div>
 
-          {user?.rol !== 'cocinero' && (
-            <button
-              className="fab-new-order"
-              onClick={handleNewOrder}
-              disabled={!selectedSlot?.available}
-              title={selectedSlot ? "Nuevo Pedido" : "Selecciona una franja para nuevo pedido"}
-            >
-              + NUEVO PEDIDO
-            </button>
-          )}
         </section>
       </div>
 

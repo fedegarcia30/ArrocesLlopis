@@ -106,9 +106,9 @@ ArrocesLlopis/
 
 | Variable | Dev | Producción |
 |----------|-----|-----------|
-| API base | `http://localhost:5001/api/v1` | `/management-api` → nginx proxy |
+| API base | `http://localhost:5001/api/v1` | `/arrocesllopis-api` → nginx proxy |
 | Frontend | `http://localhost:5173` | `https://solvency.ddns.net/management/` |
-| `VITE_API_BASE_URL` | Opcional (hay fallback) | No necesaria (usa `/management-api`) |
+| `VITE_API_BASE_URL` | Opcional (hay fallback) | No necesaria (usa `/arrocesllopis-api`) |
 
 ## Patrones Importantes
 

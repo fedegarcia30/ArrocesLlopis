@@ -29,7 +29,7 @@ This document provides a comprehensive overview of the architecture, implementat
 The system is designed to coexist with other applications on the same server.
 
 - **Frontend Build**: Served as static files under `/management/`.
-- **API Connectivity**: Proxied via `/management-api/` to `http://127.0.0.1:5001/api/v1/`.
+- **API Connectivity**: Proxied via `/arrocesllopis-api/` to `http://127.0.0.1:5001/api/v1/`.
 
 ### NGINX Configuration (C:\NGINX\conf\nginx.conf)
 
@@ -51,7 +51,7 @@ server {
     }
 
     # Proxy API requests
-    location /management-api/ {
+    location /arrocesllopis-api/ {
         proxy_pass http://management_backend/api/v1/;
         # ... header configurations ...
     }

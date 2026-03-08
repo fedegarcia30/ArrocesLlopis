@@ -1,7 +1,7 @@
 # Referencia de API - Arroces Llopis
 
 Base URL dev: `http://localhost:5001/api/v1`
-Base URL prod: `https://solvency.ddns.net/management-api` (nginx → `/api/v1`)
+Base URL prod: `https://solvency.ddns.net/arrocesllopis-api` (nginx → `/api/v1`)
 
 Auth: `Authorization: Bearer <Firebase idToken>` en todos los endpoints salvo indicación.
 

@@ -24,38 +24,20 @@
 }
 
 .pill-rice {
-    color: var(--text-main);
+    color: var(--text-primary);
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 120px;
 }
 
 .order-summary-group {
-    margin-bottom: 24px;
+    padding-left: 8px;
     border-left: 3px solid var(--gold-dim);
-    padding-left: 16px;
-}
-
-.order-summary-group h4 {
-    margin: 0 0 12px 0;
-    font-size: 1.1rem;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.order-summary-group h4 span {
-    font-size: 0.8rem;
-    background: var(--surface-light);
-    padding: 2px 8px;
-    border-radius: 10px;
-    color: var(--text-muted);
 }
 
 .summary-pills-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
+    align-content: center;
+    overflow: hidden;
+    flex: 1;
 }

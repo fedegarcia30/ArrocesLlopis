@@ -53,10 +53,10 @@ VITE_FIREBASE_APP_ID=...
 
 ### URLs
 - **Frontend**: `https://solvency.ddns.net/management/`
-- **API**: `https://solvency.ddns.net/management-api/` → nginx proxy → `http://localhost:5001/api/v1`
+- **API**: `https://solvency.ddns.net/arrocesllopis-api/` → nginx proxy → `http://localhost:5001/api/v1`
 
 ### Cómo funciona el proxy de producción
-En producción `import.meta.env.PROD === true`, el client API usa `/management-api` como base URL.
+En producción `import.meta.env.PROD === true`, el client API usa `/arrocesllopis-api` como base URL.
 Nginx hace el proxy hacia el backend Flask.
 
 ### Build Frontend

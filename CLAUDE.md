@@ -65,7 +65,7 @@ mysql -u root -p < database/schema.sql   # Init/reset schema
 ### API Design
 - Base URL: `http://localhost:5001/api/v1` (blueprint prefix `/api/v1`)
 - Dev env var: `VITE_API_BASE_URL` (defaults to `http://localhost:5001/api/v1`)
-- Production: frontend proxies through `/management-api` → `/api/v1`
+- Production: frontend proxies through `/arrocesllopis-api` → `/api/v1`
 - Route modules: `rices`, `clients`, `availability`, `orders`, `pedidos`, `stats`, `ingredients`, `auth`
 - `compartido.md` is the authoritative API contract — update it when endpoints change
 - All secured endpoints use `Authorization: Bearer <Firebase idToken>`

@@ -63,13 +63,12 @@ export function OrderWizard({ slot, allSlots, date, onClose, onOrderCreated }: O
   }
 
   function handleNext() {
-    if (step === 1) {
-      // When moving from selection to fulfillment, add current item if not already in list
-      // Or if we are in loop, we already added it?
-      // Let's simplify: Step 1 (Select) -> Step 2 (Fulfillment) -> Step 3 (Summary)
-      // If Summary -> "Add another" -> Go to Step 1.
+    // Skip fulfillment step when adding a second+ item (recogida already decided)
+    if (step === 1 && items.length > 0) {
+      setStep(3);
+    } else {
+      setStep(step + 1);
     }
-    setStep(step + 1);
   }
 
   async function handleConfirm() {
@@ -166,7 +165,7 @@ export function OrderWizard({ slot, allSlots, date, onClose, onOrderCreated }: O
           ))}
         </div>
 
-        <div className="wizard-content" style={{ minHeight: '300px' }}>
+        <div className="wizard-content">
           {step === 0 && (
             <StepContact
               phone={phone}
@@ -236,7 +235,10 @@ export function OrderWizard({ slot, allSlots, date, onClose, onOrderCreated }: O
 
         <div className="wizard-nav">
           {step > 0 && (
-            <button className="wizard-btn-back" onClick={() => setStep(step - 1)}>
+            <button
+              className="wizard-btn-back"
+              onClick={() => step === 3 && items.length > 0 ? setStep(1) : setStep(step - 1)}
+            >
               Atrás
             </button>
           )}

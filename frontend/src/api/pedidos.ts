@@ -36,3 +36,11 @@ export async function getMonthlySummary(year: number, month: number): Promise<Ca
 export async function updatePedido(id: number, data: Partial<Pedido>): Promise<Pedido> {
   return patch<Pedido>(`/pedidos/${id}`, data);
 }
+
+export async function savePedidoFeedback(id: number, data: { rating?: number; comentario?: string }): Promise<{ success: boolean }> {
+  return post<{ success: boolean }>(`/pedidos/${id}/feedback`, data);
+}
+
+export async function getPedidoFeedback(id: number): Promise<{ pedido_id: number; rating: number; comentario: string; created_at: string }> {
+  return get<{ pedido_id: number; rating: number; comentario: string; created_at: string }>(`/pedidos/${id}/feedback`);
+}

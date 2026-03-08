@@ -14,15 +14,23 @@
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.wizard-content {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 28px 24px;
 }
 
 .wizard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .wizard-title {
@@ -53,7 +61,8 @@
 .wizard-steps {
   display: flex;
   gap: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .wizard-step-dot {
@@ -76,7 +85,7 @@
 .wizard-step {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .wizard-step label {
@@ -112,12 +121,12 @@
 /* Rice selection buttons */
 .rice-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
 .rice-btn {
-  padding: 16px 12px;
+  padding: 10px 8px;
   border-radius: var(--radius-sm);
   background: var(--surface-light);
   border: 1px solid var(--border-subtle);
@@ -255,7 +264,8 @@
 .wizard-nav {
   display: flex;
   gap: 12px;
-  margin-top: 24px;
+  margin-top: 12px;
+  flex-shrink: 0;
 }
 
 .wizard-btn-back {
@@ -326,13 +336,13 @@
 /* PAX Grid for wider screens */
 .pax-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 10px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .pax-grid-btn {
-  padding: 12px;
+  padding: 8px 4px;
   background: var(--bg-secondary);
   border: 2px solid transparent;
   border-radius: var(--radius-sm);
@@ -348,7 +358,7 @@
 .pax-grid-btn.selected {
   background: var(--gold-bg);
   border-color: var(--gold);
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 /* PAX selection responsive display */
@@ -372,45 +382,11 @@
   }
 }
 
-/* Mobile optimizations for compact forms */
 @media (max-width: 768px) {
   .wizard-panel {
     max-height: 98vh;
-    /* Use almost full height */
-    padding: 20px 16px;
   }
 
-  .rice-grid {
-    gap: 6px;
-    /* Tighter grid */
-  }
-
-  .rice-btn {
-    padding: 10px 8px;
-    /* Less padding to save height */
-  }
-
-  .rice-name {
-    font-size: 0.9rem;
-    /* Slightly smaller text */
-    margin-bottom: 2px;
-  }
-
-  .rice-price {
-    font-size: 0.8rem;
-  }
-
-  .wizard-step {
-    gap: 12px;
-    /* Less gap between form groups */
-  }
-
-  .wizard-header {
-    margin-bottom: 16px;
-    /* Less space below title */
-  }
-
-  /* Make sure stepper inputs are nicely sized but not too tall */
   .pax-btn {
     width: 40px;
     height: 40px;

@@ -35,7 +35,7 @@ This project is a comprehensive management system for "Arroces Llopis," featurin
 ## Production Access
 The system is deployed and accessible at:
 - **Management Portal**: [https://solvency.ddns.net/management/](https://solvency.ddns.net/management/)
-- **API Proxy**: `/management-api/`
+- **API Proxy**: `/arrocesllopis-api/`
 
 ## Detailed Documentation
 For comprehensive technical details, architecture diagrams, and deployment guides, see:

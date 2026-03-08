@@ -1,0 +1,469 @@
+.repartos-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── Tab bar ─────────────────────────────────── */
+
+.logistics-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 0 12px 0;
+  flex-shrink: 0;
+}
+
+.logistics-tab {
+  flex: 1;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.logistics-tab.active {
+  background: var(--gold-bg);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── View containers ─────────────────────────── */
+
+.logistics-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.logistics-view.hidden {
+  display: none;
+}
+
+/* Section header inside each view */
+.repartos-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.repartos-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.repartos-empty {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+}
+
+/* ── Weekly view ─────────────────────────────── */
+
+.repartos-week {
+  flex: 1;
+  overflow: hidden;
+}
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.day-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.day-card:hover:not(.empty) {
+  border-color: var(--gold-dim);
+  background: var(--gold-bg);
+}
+
+.day-card.today {
+  border-color: var(--gold);
+  background: var(--gold-bg);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+}
+
+.day-card.empty {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+.day-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.day-number {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.day-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(212, 175, 55, 0.15);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.day-empty-mark {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Day detail view ─────────────────────────── */
+
+.repartos-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.repartos-day-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  flex-shrink: 0;
+}
+
+.repartos-slots-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── Time slot section ───────────────────────── */
+
+.repartos-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.repartos-slot-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: opacity 0.2s;
+}
+
+.repartos-slot-header:hover {
+  opacity: 0.75;
+}
+
+.repartos-time {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold);
+  min-width: 40px;
+}
+
+.repartos-slot-progress {
+  flex: 1;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.repartos-slot-chevron {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── Pills grid — always 6 equal columns ─────── */
+
+.repartos-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+/* ── Delivery pill ───────────────────────────── */
+
+.reparto-pill {
+  display: flex;
+  border-radius: 10px;
+  border: 1.5px solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+  min-height: 110px; /* uniform height */
+}
+
+.reparto-pill.pending {
+  background: rgba(212, 175, 55, 0.12);
+  border-color: var(--gold-dim);
+}
+
+.reparto-pill.pending:hover {
+  background: rgba(212, 175, 55, 0.22);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+.reparto-pill.delivered {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.07);
+}
+
+.reparto-pill.delivered:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.reparto-pill.updating {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pill-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  transition: filter 0.3s;
+  width: 100%;
+  overflow: hidden;
+}
+
+.pill-inner.blurred {
+  filter: blur(3px);
+  user-select: none;
+  pointer-events: none;
+}
+
+.pill-client {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.pill-rices {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+}
+
+.pill-rice-line {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pill-address {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 3px;
+}
+
+.pill-phone {
+  font-size: 0.68rem;
+  color: var(--gold-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Feedback modal ──────────────────────────── */
+
+.feedback-modal {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--bg-secondary);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.feedback-title {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.star-row {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.star-btn {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--border-subtle);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.1s, transform 0.1s;
+  padding: 0;
+  min-height: unset;
+  min-width: unset;
+  flex-shrink: 0;
+}
+
+.star-btn.lit {
+  color: var(--gold);
+}
+
+.star-btn:hover {
+  transform: scale(1.15);
+}
+
+.star-value {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.feedback-textarea {
+  width: 100%;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.feedback-textarea:focus {
+  outline: none;
+  border-color: var(--gold-dim);
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Confirm modal ───────────────────────────── */
+
+.anular-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 20px;
+}
+
+.anular-modal {
+  width: 100%;
+  max-width: 320px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--bg-secondary);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.anular-text {
+  font-size: 1rem;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.6;
+}
+
+.anular-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.anular-btn-cancel {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  border: var(--glass-border);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.anular-btn-confirm {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--status-red);
+  color: #fff;
+  font-weight: 700;
+}
+
+.anular-btn-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Mobile: 3 columns ───────────────────────── */
+
+@media (max-width: 600px) {
+  .week-grid { gap: 5px; }
+  .day-card { padding: 10px 4px; }
+  .day-number { font-size: 1.1rem; }
+
+  .repartos-pills-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

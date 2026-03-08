@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.models import Pedido, Cliente, PedidoLinea, Arroz
+from app.models import Pedido, Cliente, PedidoLinea, Arroz, PedidoFeedback
 from app import db
 from . import api_v1_bp
 from app.auth import requires_auth
@@ -195,6 +195,9 @@ def update_pedido(pedido_id):
     if 'observaciones' in data:
         pedido.observaciones = data['observaciones']
 
+    if 'recogido' in data:
+        pedido.recogido = bool(data['recogido'])
+
     try:
         db.session.commit()
         logger.info(f"Pedido #{pedido.id} properties updated successfully")
@@ -206,3 +209,60 @@ def update_pedido(pedido_id):
     lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
 
     return jsonify(_serialize_pedido(pedido, cliente, lineas)), 200
+
+
+@api_v1_bp.route('/pedidos/<int:pedido_id>/feedback', methods=['POST', 'OPTIONS'])
+@requires_auth
+def save_pedido_feedback(pedido_id):
+    pedido = Pedido.query.get(pedido_id)
+    if not pedido:
+        return jsonify({"error": "Pedido not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    rating = data.get('rating')
+    comentario = data.get('comentario')
+
+    if rating is not None:
+        try:
+            rating = int(rating)
+            if not (1 <= rating <= 10):
+                return jsonify({"error": "Rating must be between 1 and 10"}), 400
+        except ValueError:
+            return jsonify({"error": "Rating must be an integer"}), 400
+
+    feedback = PedidoFeedback.query.filter_by(pedido_id=pedido_id).first()
+    if not feedback:
+        feedback = PedidoFeedback(pedido_id=pedido_id)
+        db.session.add(feedback)
+
+    if rating is not None:
+        feedback.rating = rating
+    if comentario is not None:
+        feedback.comentario = comentario
+
+    try:
+        db.session.commit()
+        logger.info(f"Feedback saved for pedido #{pedido_id}")
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error saving feedback for pedido #{pedido_id}: {str(e)}")
+        return jsonify({"error": "Failed to save feedback"}), 500
+
+
+@api_v1_bp.route('/pedidos/<int:pedido_id>/feedback', methods=['GET', 'OPTIONS'])
+@requires_auth
+def get_pedido_feedback(pedido_id):
+    feedback = PedidoFeedback.query.filter_by(pedido_id=pedido_id).first()
+    if not feedback:
+        return jsonify({"error": "Feedback not found"}), 404
+
+    return jsonify({
+        "pedido_id": feedback.pedido_id,
+        "rating": feedback.rating,
+        "comentario": feedback.comentario,
+        "created_at": feedback.created_at.isoformat() if feedback.created_at else None
+    }), 200

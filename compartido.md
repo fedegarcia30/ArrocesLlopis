@@ -194,7 +194,72 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
 
 ---
 
-## 8. Estadísticas de Negocio (Admin Dashboard)
+## 7. Actualización Parcial de Pedido
+**Endpoint**: `PATCH /api/v1/pedidos/:id`
+**Auth**: Requerido
+**Descripción**: Actualiza campos individuales de un pedido. Usado para:
+- Cambiar `fecha_pedido` al mover un pedido de franja horaria (drag & drop)
+- Marcar `recogido = 1` cuando el repartidor recoge la paella del cliente
+
+**Request Body** (cualquier subconjunto de campos):
+```json
+{
+  "recogido": true
+}
+```
+o
+```json
+{
+  "fecha_pedido": "2026-03-08 14:00"
+}
+```
+
+**⚠️ Crítico**: El backend DEBE aceptar y persistir el campo `recogido` (booleano → `TINYINT(1)` en MySQL). Cuando `recogido = true`, guardar `1` en la base de datos.
+
+**Response**: El objeto Pedido actualizado (misma estructura que en listado).
+
+---
+
+## 8. Feedback de Recogida (Satisfacción del Cliente)
+
+### Nueva tabla en base de datos
+```sql
+CREATE TABLE pedido_feedback (
+  id          INT PRIMARY KEY AUTO_INCREMENT,
+  pedido_id   INT NOT NULL,
+  rating      TINYINT UNSIGNED CHECK (rating BETWEEN 1 AND 10),
+  comentario  TEXT,
+  created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_pedido_feedback (pedido_id)
+);
+```
+
+### Guardar feedback
+**Endpoint**: `POST /api/v1/pedidos/:id/feedback`
+**Auth**: Requerido
+**Descripción**: Guarda la valoración del cliente al recoger la paella. Solo se llama si el repartidor introduce rating y/o comentario. Si no se introduce nada, el frontend NO llama a este endpoint.
+
+**Request Body**:
+```json
+{ "rating": 8, "comentario": "El arroz estaba muy bueno" }
+```
+Ambos campos son opcionales (puede venir solo `rating`, solo `comentario`, o ambos).
+
+**Response**: `{ "success": true }`
+
+### Consultar feedback de un pedido
+**Endpoint**: `GET /api/v1/pedidos/:id/feedback`
+**Auth**: Requerido
+**Response**:
+```json
+{ "pedido_id": 42, "rating": 8, "comentario": "Muy bueno", "created_at": "2026-03-08T10:00:00" }
+```
+Si no existe: `404`.
+
+---
+
+## 9. Estadísticas de Negocio (Admin Dashboard)
 **Endpoint**: `GET /api/v1/stats/dashboard?period=month|quarter|semester|ytd`
 **Auth**: Requerido (Admin)
 **Descripción**: Devuelve métricas agregadas y tendencias para el panel de administración.
@@ -224,7 +289,7 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
 
 ## Notas Finales de Despliegue (Producción)
 En producción, todas las peticiones deben usar el prefijo de NGINX:
-- **API**: `https://solvency.ddns.net/management-api/` (que redirige internamente a `/api/v1/`)
+- **API**: `https://solvency.ddns.net/arrocesllopis-api/` (que redirige internamente a `/api/v1/`)
 - **Frontend**: `https://solvency.ddns.net/management/`
 
 ### Endpoints que el Frontend ya consume (prioridad de implementación):
@@ -234,6 +299,7 @@ En producción, todas las peticiones deben usar el prefijo de NGINX:
 4. `POST /api/v1/orders/create` — Wizard de nuevo pedido (paso 4)
 5. `GET /api/v1/pedidos?fecha=...` — Lista de pedidos del dashboard
 6. `PATCH /api/v1/pedidos/:id/status` — Cambio de estado
+7. `PATCH /api/v1/pedidos/:id` — Actualización parcial (recogido, fecha_pedido) — **⚠️ pendiente implementar campo `recogido`**
 
 ### Autenticación
 El frontend usa **Firebase Auth**. Envía el `idToken` en cada request como `Authorization: Bearer <idToken>`. El backend debe verificar este token con `firebase_admin.auth.verify_id_token()`.

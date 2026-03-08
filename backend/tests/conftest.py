@@ -37,6 +37,11 @@ def app():
         # Seed basic data
         arroz = Arroz(id=1, nombre="Senyoret Test", precio=15.00, disponible=True)
         db.session.add(arroz)
+        
+        # Seed test user
+        user = Usuario(username='admin@arrocesllopis.com', password_hash='dummy', rol='admin')
+        db.session.add(user)
+        
         db.session.commit()
         
         yield app

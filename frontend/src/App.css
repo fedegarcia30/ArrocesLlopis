@@ -3,31 +3,87 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 16px;
+  gap: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .dashboard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .dashboard-title {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--gold);
+  white-space: nowrap;
+}
+
+.dashboard-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.availability-date-input {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  min-height: unset;
+  height: 34px;
+  cursor: pointer;
+}
+
+.dashboard-total-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 4px 12px;
+  white-space: nowrap;
 }
 
 .dashboard-split {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   flex: 1;
   min-height: 0;
 }
 
+/* Ancho base del panel de slots (referencia: 1024×768)
+   Ratio objetivo: ancho_panel / alto_slot ≈ 5:1
+   Al crecer la pantalla en altura, crecemos el ancho proporcionalmente */
 .dashboard-left {
-  flex: 0 0 40%;
-  overflow-y: auto;
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (min-height: 850px) {
+  .dashboard-left { flex-basis: 355px; }
+}
+
+@media (min-height: 950px) {
+  .dashboard-left { flex-basis: 400px; }
+}
+
+@media (min-height: 1050px) {
+  .dashboard-left { flex-basis: 445px; }
+}
+
+@media (min-height: 1200px) {
+  .dashboard-left { flex-basis: 505px; }
 }
 
 .dashboard-right {
@@ -35,13 +91,23 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  min-width: 0;
+  min-height: 0;
 }
 
 .dashboard-right-header {
-  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 28px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.dashboard-slot-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 
 .touch-drag-ghost {
@@ -105,12 +171,6 @@
   border-color: var(--gold-dim);
 }
 
-.dashboard-right-header h3 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
 .orders-list {
   display: flex;
   flex-direction: column;
@@ -119,52 +179,75 @@
   overflow-y: auto;
 }
 
+/* Summary mode (no slot selected): fill screen, rows align with slots */
+.orders-summary-mode {
+  overflow: hidden;
+  gap: 5px; /* match availability-grid gap */
+}
+
+.orders-summary-mode .order-summary-group {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  padding-left: 0;
+  border-left: none;
+}
+
 .orders-empty {
   text-align: center;
   color: var(--text-muted);
   padding: 40px 20px;
 }
 
-/* FAB button */
+/* FAB button — compact, lives in the header row */
 .fab-new-order {
   background: linear-gradient(135deg, var(--gold), var(--gold-dim));
   color: #0d0d0d;
   font-weight: 700;
-  font-size: 0.9rem;
-  padding: 14px 28px;
-  border-radius: var(--radius-lg);
-  margin-top: 12px;
-  align-self: flex-end;
-  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
+  font-size: 0.8rem;
+  padding: 6px 16px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.25);
   transition: all 0.2s;
 }
 
-.fab-new-order:hover {
-  box-shadow: 0 6px 28px rgba(212, 175, 55, 0.5);
-  transform: translateY(-2px);
+.fab-new-order:hover:not(:disabled) {
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.45);
+  transform: translateY(-1px);
 }
 
 .fab-new-order:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 /* Mobile: stack layout */
 @media (max-width: 768px) {
+  .dashboard {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
   .dashboard-split {
     flex-direction: column;
+    overflow-y: auto;
   }
 
   .dashboard-left {
     flex: none;
+    overflow: visible;
+  }
+
+  .dashboard-header-controls {
+    gap: 8px;
   }
 
   .fab-new-order {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    z-index: 50;
+    font-size: 0.75rem;
+    padding: 5px 12px;
   }
 }

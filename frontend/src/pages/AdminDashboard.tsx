@@ -92,141 +92,127 @@ export function AdminDashboard() {
                 </div>
             </header>
 
-            <div className="dashboard-content-slider" style={{
-                display: 'flex',
-                transition: 'transform 0.5s ease',
-                transform: `translateX(${activeTab === 'revenue' ? '0' : '-100%'})`,
-                width: '100%'
-            }}>
-                {/* Panel de Ingresos */}
-                <div className="dashboard-page-view" style={{ minWidth: '100%', padding: '0 20px' }}>
-                    {stats && (
-                        <>
-                            <section className="stats-grid">
-                                <AdminStatCard data={stats.summary.revenue} />
-                                <AdminStatCard data={stats.summary.rations} />
-                                <AdminStatCard data={stats.summary.orders} />
-                                <AdminStatCard data={stats.summary.avg_ticket} />
-                            </section>
+            {/* Panel de Ingresos */}
+            {activeTab === 'revenue' && stats && (
+                <div className="dashboard-panel">
+                    <section className="stats-grid">
+                        <AdminStatCard data={stats.summary.revenue} />
+                        <AdminStatCard data={stats.summary.rations} />
+                        <AdminStatCard data={stats.summary.orders} />
+                        <AdminStatCard data={stats.summary.avg_ticket} />
+                    </section>
 
-                            <section className="charts-section">
-                                <div className="ranking-card glass-card trend-card">
-                                    <div className="trend-header">
-                                        <h3 className="ranking-title trend-title">📈 Tendencias Históricas</h3>
-                                        <div className="metric-selector">
-                                            {(['revenue', 'rations', 'orders', 'clients'] as const).map(m => (
-                                                <button
-                                                    key={m}
-                                                    className={`metric-btn ${trendMetric === m ? 'active' : ''}`}
-                                                    onClick={() => setTrendMetric(m)}
-                                                >
-                                                    {m === 'revenue' ? 'Ingresos' : m === 'rations' ? 'Raciones' : m === 'orders' ? 'Pedidos' : 'Clientes'}
-                                                </button>
-                                            ))}
+                    <section className="charts-section">
+                        <div className="ranking-card glass-card trend-card">
+                            <div className="trend-header">
+                                <h3 className="ranking-title trend-title">📈 Tendencias Históricas</h3>
+                                <div className="metric-selector">
+                                    {(['revenue', 'rations', 'orders', 'clients'] as const).map(m => (
+                                        <button
+                                            key={m}
+                                            className={`metric-btn ${trendMetric === m ? 'active' : ''}`}
+                                            onClick={() => setTrendMetric(m)}
+                                        >
+                                            {m === 'revenue' ? 'Ingresos' : m === 'rations' ? 'Raciones' : m === 'orders' ? 'Pedidos' : 'Clientes'}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <TrendChart data={stats.history[trendMetric]} periodLabel={stats.period_info.current.label} metricType={trendMetric} />
+                        </div>
+
+                        <div className="ranking-card glass-card">
+                            <h3 className="ranking-title">🏆 Top Arroces</h3>
+                            <div className="ranking-list">
+                                {stats.top_arroces.map((a: { nombre: string; rations: number; subtotal: number }, i: number) => (
+                                    <div key={i} className="ranking-item">
+                                        <div className="item-info">
+                                            <span className="item-name">{a.nombre}</span>
+                                            <span className="item-sub">{a.rations} raciones</span>
                                         </div>
+                                        <span className="item-value">{a.subtotal.toFixed(2)}€</span>
                                     </div>
-                                    <TrendChart data={stats.history[trendMetric]} periodLabel={stats.period_info.current.label} metricType={trendMetric} />
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
 
-                                <div className="ranking-card glass-card">
-                                    <h3 className="ranking-title">🏆 Top Arroces</h3>
-                                    <div className="ranking-list">
-                                        {stats.top_arroces.map((a: { nombre: string; rations: number; subtotal: number }, i: number) => (
-                                            <div key={i} className="ranking-item">
-                                                <div className="item-info">
-                                                    <span className="item-name">{a.nombre}</span>
-                                                    <span className="item-sub">{a.rations} raciones</span>
-                                                </div>
-                                                <span className="item-value">{a.subtotal.toFixed(2)}€</span>
-                                            </div>
-                                        ))}
+                    <section className="rankings-grid">
+                        <div className="ranking-card glass-card">
+                            <h3 className="ranking-title">👤 Mejores Clientes</h3>
+                            <div className="ranking-list">
+                                {stats.top_clients.map((c: { nombre: string; rations: number; orders: number; spent: number }, i: number) => (
+                                    <div key={i} className="ranking-item">
+                                        <div className="item-info">
+                                            <span className="item-name">{c.nombre}</span>
+                                            <span className="item-sub">{c.rations} raciones · {c.orders} pedidos</span>
+                                        </div>
+                                        <span className="item-value">{c.spent.toFixed(2)}€</span>
                                     </div>
-                                </div>
-                            </section>
+                                ))}
+                            </div>
+                        </div>
 
-                            <section className="rankings-grid">
-                                <div className="ranking-card glass-card">
-                                    <h3 className="ranking-title">👤 Mejores Clientes</h3>
-                                    <div className="ranking-list">
-                                        {stats.top_clients.map((c: { nombre: string; rations: number; orders: number; spent: number }, i: number) => (
-                                            <div key={i} className="ranking-item">
-                                                <div className="item-info">
-                                                    <span className="item-name">{c.nombre}</span>
-                                                    <span className="item-sub">{c.rations} raciones · {c.orders} pedidos</span>
-                                                </div>
-                                                <span className="item-value">{c.spent.toFixed(2)}€</span>
-                                            </div>
-                                        ))}
+                        <div className="ranking-card glass-card">
+                            <h3 className="ranking-title">📍 Por Código Postal</h3>
+                            <div className="ranking-list">
+                                {stats.top_zipcodes.map((z: { cp: string; orders: number; revenue: number }, i: number) => (
+                                    <div key={i} className="ranking-item">
+                                        <div className="item-info">
+                                            <span className="item-name">CP {z.cp}</span>
+                                            <span className="item-sub">{z.orders} pedidos</span>
+                                        </div>
+                                        <span className="item-value">{z.revenue.toFixed(2)}€</span>
                                     </div>
-                                </div>
-
-                                <div className="ranking-card glass-card">
-                                    <h3 className="ranking-title">📍 Por Código Postal</h3>
-                                    <div className="ranking-list">
-                                        {stats.top_zipcodes.map((z: { cp: string; orders: number; revenue: number }, i: number) => (
-                                            <div key={i} className="ranking-item">
-                                                <div className="item-info">
-                                                    <span className="item-name">CP {z.cp}</span>
-                                                    <span className="item-sub">{z.orders} pedidos</span>
-                                                </div>
-                                                <span className="item-value">{z.revenue.toFixed(2)}€</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </section>
-                        </>
-                    )}
+                                ))}
+                            </div>
+                        </div>
+                    </section>
                 </div>
+            )}
 
-                {/* Panel de Gastos */}
-                <div className="dashboard-page-view" style={{ minWidth: '100%', padding: '0 20px' }}>
-                    {expenseStats && (
-                        <>
-                            <section className="stats-grid">
-                                <AdminStatCard data={{ ...expenseStats.summary.total_expense, inverse: true }} />
-                                <AdminStatCard data={{ ...expenseStats.summary.purchases_count, inverse: true }} />
-                                <AdminStatCard data={expenseStats.summary.stock_alerts} />
-                            </section>
+            {/* Panel de Gastos */}
+            {activeTab === 'expenses' && expenseStats && (
+                <div className="dashboard-panel">
+                    <section className="stats-grid">
+                        <AdminStatCard data={{ ...expenseStats.summary.total_expense, inverse: true }} />
+                        <AdminStatCard data={{ ...expenseStats.summary.purchases_count, inverse: true }} />
+                        <AdminStatCard data={expenseStats.summary.stock_alerts} />
+                    </section>
 
-                            <section className="rankings-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
-                                <div className="ranking-card glass-card">
-                                    <h3 className="ranking-title">🛒 Mayores Gastos (Ingredientes)</h3>
-                                    <div className="ranking-list">
-                                        {expenseStats.top_ingredients.map((ing: { nombre: string; qty: number; unit: string; spent: number }, i: number) => (
-                                            <div key={i} className="ranking-item">
-                                                <div className="item-info">
-                                                    <span className="item-name">{ing.nombre}</span>
-                                                    <span className="item-sub">{ing.qty.toFixed(1)} {ing.unit} comprados</span>
-                                                </div>
-                                                <span className="item-value">{ing.spent.toFixed(2)}€</span>
-                                            </div>
-                                        ))}
+                    <section className="rankings-grid">
+                        <div className="ranking-card glass-card">
+                            <h3 className="ranking-title">🛒 Mayores Gastos (Ingredientes)</h3>
+                            <div className="ranking-list">
+                                {expenseStats.top_ingredients.map((ing: { nombre: string; qty: number; unit: string; spent: number }, i: number) => (
+                                    <div key={i} className="ranking-item">
+                                        <div className="item-info">
+                                            <span className="item-name">{ing.nombre}</span>
+                                            <span className="item-sub">{ing.qty.toFixed(1)} {ing.unit} comprados</span>
+                                        </div>
+                                        <span className="item-value">{ing.spent.toFixed(2)}€</span>
                                     </div>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
 
-                                <div className="ranking-card glass-card">
-                                    <h3 className="ranking-title">🏢 Top Proveedores</h3>
-                                    <div className="ranking-list">
-                                        {expenseStats.top_providers.map((p: { nombre: string; count: number; spent: number }, i: number) => (
-                                            <div key={i} className="ranking-item">
-                                                <div className="item-info">
-                                                    <span className="item-name">{p.nombre}</span>
-                                                    <span className="item-sub">{p.count} facturas</span>
-                                                </div>
-                                                <span className="item-value">{p.spent.toFixed(2)}€</span>
-                                            </div>
-                                        ))}
+                        <div className="ranking-card glass-card">
+                            <h3 className="ranking-title">🏢 Top Proveedores</h3>
+                            <div className="ranking-list">
+                                {expenseStats.top_providers.map((p: { nombre: string; count: number; spent: number }, i: number) => (
+                                    <div key={i} className="ranking-item">
+                                        <div className="item-info">
+                                            <span className="item-name">{p.nombre}</span>
+                                            <span className="item-sub">{p.count} facturas</span>
+                                        </div>
+                                        <span className="item-value">{p.spent.toFixed(2)}€</span>
                                     </div>
-                                </div>
-                            </section>
-                        </>
-                    )}
+                                ))}
+                            </div>
+                        </div>
+                    </section>
                 </div>
-            </div>
-            <div className="horizontal-scroll-hint">
-                {activeTab === 'revenue' ? 'Desliza → para ver Gastos' : '← Desliza para ver Ingresos'}
-            </div>
+            )}
         </div>
     );
 }

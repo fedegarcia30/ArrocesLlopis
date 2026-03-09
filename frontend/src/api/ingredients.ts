@@ -71,3 +71,21 @@ export async function recordPurchase(data: CompraRequest): Promise<void> {
     });
     if (!response.ok) throw new Error('Failed to record purchase');
 }
+
+export async function createIngredient(data: Partial<Ingrediente>): Promise<Ingrediente> {
+    const token = await getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/ingredients`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create ingredient');
+    }
+    const result = await response.json();
+    return result.ingredient;
+}

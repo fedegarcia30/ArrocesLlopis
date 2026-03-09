@@ -5,6 +5,7 @@ import { OrderWizard } from '../components/OrderWizard/OrderWizard';
 import { OrderCard } from '../components/OrderCard/OrderCard';
 import { OrderSummaryPill } from '../components/OrderCard/OrderSummaryPill';
 import { ConfirmMoveModal } from '../components/Modals/ConfirmMoveModal';
+import { EditPedidoModal } from '../components/Modals/EditPedidoModal';
 import { getPedidos, updatePedido } from '../api/pedidos';
 import { useAvailability } from '../hooks/useAvailability';
 import type { Slot, Pedido } from '../types';
@@ -33,6 +34,8 @@ export function DashboardPage() {
   const ordersSectionRef = useRef<HTMLElement>(null);
   const { user } = useAuth();
   const { slots, loading: loadingSlots, error: errorSlots, reload: refetchAvailability } = useAvailability(date);
+
+  const [editingPedido, setEditingPedido] = useState<Pedido | null>(null);
 
   // Move confirmation state
   const [pendingMove, setPendingMove] = useState<{
@@ -284,6 +287,7 @@ export function DashboardPage() {
                     key={pedido.id}
                     pedido={pedido}
                     onStatusChange={loadPedidos}
+                    onEdit={setEditingPedido}
                     onDragStartTouch={(order, x, y) => setTouchDragInfo({ order, x, y, overTime: null })}
                     isDragging={touchDragInfo?.order.id === pedido.id}
                   />
@@ -316,6 +320,18 @@ export function DashboardPage() {
           date={date}
           onClose={() => setWizardSlot(null)}
           onOrderCreated={handleOrderCreated}
+        />
+      )}
+
+      {editingPedido && (
+        <EditPedidoModal
+          pedido={editingPedido}
+          onClose={() => setEditingPedido(null)}
+          onSaved={() => {
+            setEditingPedido(null);
+            loadPedidos();
+            refetchAvailability();
+          }}
         />
       )}
 

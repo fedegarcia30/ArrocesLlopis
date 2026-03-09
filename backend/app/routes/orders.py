@@ -105,10 +105,10 @@ def create_order():
             cliente.num_pedidos = (cliente.num_pedidos or 0) + 1
             cliente.raciones = (cliente.raciones or 0) + requested_pax
 
-        db.session.commit()
-        
-        # Adjust stock after successful commit (or before if preferred, but here is safer)
+        # Adjust stock before commit to ensure it's persisted
         adjust_stock_from_order(arroz.id, requested_pax)
+        
+        db.session.commit()
         
         logger.info(f"Order #{nuevo_pedido.id} created successfully for client #{cliente_id} ({requested_pax} PAX, Arroz: {arroz.nombre})")
 

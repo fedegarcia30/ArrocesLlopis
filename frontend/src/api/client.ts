@@ -3,7 +3,7 @@ import { auth } from '../config/firebase';
 const isProd = import.meta.env.PROD;
 const BASE_URL = isProd
   ? '/arrocesllopis-api'
-  : (import.meta.env.VITE_API_BASE_URL);
+  : (import.meta.env.VITE_API_BASE_URL ?? '/api/v1');
 
 let backendAvailable: boolean | null = null;
 

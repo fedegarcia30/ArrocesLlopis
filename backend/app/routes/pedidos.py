@@ -95,21 +95,20 @@ def update_pedido_status(pedido_id):
     if new_status == 'entregado':
         pedido.entregado = True
     
+    # Stock Synchronization (before commit)
+    if new_status == 'cancelado' and old_status != 'cancelado':
+        # Restore stock
+        lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
+        for l in lineas:
+            adjust_stock_from_order(l.arroz_id, pedido.pax, restore=True)
+    elif old_status == 'cancelado' and new_status != 'cancelado':
+        # Subtract stock again if uncanceled
+        lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
+        for l in lineas:
+            adjust_stock_from_order(l.arroz_id, pedido.pax, restore=False)
+
     try:
         db.session.commit()
-        
-        # Stock Synchronization
-        if new_status == 'cancelado' and old_status != 'cancelado':
-            # Restore stock
-            lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
-            for l in lineas:
-                adjust_stock_from_order(l.arroz_id, pedido.pax, restore=True)
-        elif old_status == 'cancelado' and new_status != 'cancelado':
-            # Subtract stock again if uncanceled
-            lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
-            for l in lineas:
-                adjust_stock_from_order(l.arroz_id, pedido.pax, restore=False)
-
         logger.info(f"Pedido #{pedido.id} status updated to '{new_status}'")
     except Exception as e:
         logger.error(f"Error updating status for pedido #{pedido.id}: {str(e)}", exc_info=True)
@@ -176,7 +175,31 @@ def update_pedido(pedido_id):
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    # Handle selective updates
+    # Handle stock updates on PAX/Rice change
+    old_pax = pedido.pax
+    new_pax = data.get('pax', old_pax)
+    
+    current_linea = PedidoLinea.query.filter_by(pedido_id=pedido_id).first()
+    old_arroz_id = current_linea.arroz_id if current_linea else None
+    new_arroz_id = data.get('arroz_id', old_arroz_id)
+
+    # If the order is active, synchronize stock
+    if pedido.status != 'cancelado':
+        if old_arroz_id != new_arroz_id:
+            # Different rice: restore old, subtract new
+            if old_arroz_id:
+                adjust_stock_from_order(old_arroz_id, old_pax, restore=True)
+            if new_arroz_id:
+                adjust_stock_from_order(new_arroz_id, new_pax, restore=False)
+        elif old_pax != new_pax:
+            # Same rice, different PAX: adjust difference
+            diff = new_pax - old_pax
+            if diff > 0: # Subtract more stock
+                adjust_stock_from_order(old_arroz_id, diff, restore=False)
+            elif diff < 0: # Restore stock
+                adjust_stock_from_order(old_arroz_id, abs(diff), restore=True)
+
+    # Apply updates
     if 'fecha_pedido' in data:
         try:
             # Expecting ISO format from frontend or YYYY-MM-DD HH:MM
@@ -197,6 +220,20 @@ def update_pedido(pedido_id):
 
     if 'recogido' in data:
         pedido.recogido = bool(data['recogido'])
+
+    if 'arroz_id' in data:
+        arroz = Arroz.query.get(data['arroz_id'])
+        if not arroz:
+            return jsonify({"error": "Arroz not found"}), 404
+        linea = PedidoLinea.query.filter_by(pedido_id=pedido_id).first()
+        if linea:
+            linea.arroz_id = arroz.id
+            linea.precio_unitario = arroz.precio
+
+    if 'direccion' in data:
+        cliente = Cliente.query.get(pedido.cliente_id)
+        if cliente:
+            cliente.direccion = data['direccion']
 
     try:
         db.session.commit()

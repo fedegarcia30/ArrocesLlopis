@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getDashboardStats, getExpenseStats, type DashboardStats, type ExpenseStats } from '../api/stats';
 import { AdminStatCard } from '../components/Stats/AdminStatCard';
+import { MapaPage } from './MapaPage';
 import './AdminDashboard.css';
 
 export function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'revenue' | 'expenses'>('revenue');
+    const [activeTab, setActiveTab] = useState<'revenue' | 'expenses' | 'map'>('revenue');
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [expenseStats, setExpenseStats] = useState<ExpenseStats | null>(null);
     const [period, setPeriod] = useState('quarter');
@@ -35,7 +36,7 @@ export function AdminDashboard() {
     if (loading && !stats) return <div className="loading-screen">Cargando análisis...</div>;
 
     return (
-        <div className="admin-dashboard">
+        <div className={`admin-dashboard${activeTab === 'map' ? ' map-mode' : ''}`}>
             <header className="dashboard-header">
                 <div className="header-main">
                     <div className="title-nav">
@@ -51,6 +52,12 @@ export function AdminDashboard() {
                         >
                             Gastos y Stock
                         </button>
+                        <button
+                            className={`nav-tab ${activeTab === 'map' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('map')}
+                        >
+                            Clientes
+                        </button>
                     </div>
                     {stats && (
                         <div className="comparison-label">
@@ -60,7 +67,7 @@ export function AdminDashboard() {
                         </div>
                     )}
                 </div>
-                <div className="dashboard-controls">
+                {activeTab !== 'map' && <div className="dashboard-controls">
                     <div className="period-filters">
                         {['week', 'month', 'quarter', 'semester', 'ytd'].map((p) => (
                             <button
@@ -89,8 +96,15 @@ export function AdminDashboard() {
                             Periodo Completo
                         </button>
                     </div>
-                </div>
+                </div>}
             </header>
+
+            {/* Panel de Clientes (Mapa) */}
+            {activeTab === 'map' && (
+                <div className="dashboard-panel map-panel">
+                    <MapaPage />
+                </div>
+            )}
 
             {/* Panel de Ingresos */}
             {activeTab === 'revenue' && stats && (

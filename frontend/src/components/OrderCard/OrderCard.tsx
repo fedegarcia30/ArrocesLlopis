@@ -1,17 +1,20 @@
 import { useState, useRef } from 'react';
-import type { TouchEvent } from 'react';
+import type { TouchEvent as ReactTouchEvent } from 'react';
 import type { Pedido } from '../../types';
 import { updateOrderStatus } from '../../api/pedidos';
+import { useAuth } from '../../hooks/useAuth';
 import './OrderCard.css';
 
 interface OrderCardProps {
   pedido: Pedido;
   onStatusChange?: () => void;
+  onEdit?: (pedido: Pedido) => void;
   onDragStartTouch?: (pedido: Pedido, x: number, y: number) => void;
   isDragging?: boolean;
 }
 
-export function OrderCard({ pedido, onStatusChange, onDragStartTouch, isDragging }: OrderCardProps) {
+export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, isDragging }: OrderCardProps) {
+  const { user } = useAuth();
   const [translateX, setTranslateX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -32,7 +35,7 @@ export function OrderCard({ pedido, onStatusChange, onDragStartTouch, isDragging
 
   const riceName = pedido.lineas?.[0]?.arroz_nombre || 'Arroz';
 
-  function handleTouchStart(e: TouchEvent) {
+  function handleTouchStart(e: ReactTouchEvent) {
     if (isUpdating) return;
     const touch = e.touches[0];
     startXRef.current = touch.clientX;
@@ -54,7 +57,7 @@ export function OrderCard({ pedido, onStatusChange, onDragStartTouch, isDragging
     }, 500);
   }
 
-  function handleTouchMove(e: TouchEvent) {
+  function handleTouchMove(e: ReactTouchEvent) {
     if (isDraggingTouchRef.current) return;
     if (!isSwiping || startXRef.current === null || startYRef.current === null) return;
 
@@ -116,11 +119,38 @@ export function OrderCard({ pedido, onStatusChange, onDragStartTouch, isDragging
 
     } else if (translateX < -actionThreshold) {
       // Swipe Left -> Edit
-      // TODO: Open Edit Modal
-      alert('Modal de edición próximamente');
       setTranslateX(0);
+      if (onEdit) onEdit(pedido);
     } else {
       setTranslateX(0);
+    }
+  }
+
+  async function handleCycleStatus(e: React.MouseEvent | React.TouchEvent) {
+    e.stopPropagation();
+    if (isUpdating) return;
+
+    const statusFlow: Record<string, string> = {
+      'nuevo': 'preparando',
+      'preparando': 'listo',
+      'listo': 'entregado',
+      'entregado': 'nuevo'
+    };
+
+    // Roles permitted to cycle production states
+    const canCycle = ['admin', 'gerente', 'encargado', 'cocinero'].includes(user?.rol || '');
+    if (!canCycle) return;
+
+    const nextStatus = statusFlow[pedido.status] || 'nuevo';
+
+    setIsUpdating(true);
+    try {
+      await updateOrderStatus(pedido.id, nextStatus as any);
+      if (onStatusChange) onStatusChange();
+    } catch (err) {
+      console.error('Error cycling status:', err);
+    } finally {
+      setIsUpdating(false);
     }
   }
 
@@ -185,7 +215,12 @@ export function OrderCard({ pedido, onStatusChange, onDragStartTouch, isDragging
             <span className="order-time">{time}</span>
           </div>
         </div>
-        <span className={`order-status-badge ${pedido.status}`}>
+        <span 
+          className={`order-status-badge ${pedido.status}`}
+          onClick={handleCycleStatus}
+          title={['admin', 'gerente', 'encargado', 'cocinero'].includes(user?.rol || '') ? 'Clic para cambiar estado' : ''}
+          style={['admin', 'gerente', 'encargado', 'cocinero'].includes(user?.rol || '') ? { cursor: 'pointer' } : {}}
+        >
           {pedido.status === 'nuevo' ? 'Confirmado' : pedido.status}
         </span>
       </div>

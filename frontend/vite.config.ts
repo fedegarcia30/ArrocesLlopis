@@ -5,4 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/arrocesllopis',
+  server: {
+    host: true, // escucha en todas las interfaces (permite acceso por IP de red)
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5001',
+        changeOrigin: true,
+      },
+    },
+  },
 })

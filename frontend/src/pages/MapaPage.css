@@ -1,0 +1,309 @@
+.mapa-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/* ── Period type tabs ────────────────────────── */
+
+.mapa-period-tabs {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mapa-period-tab {
+  flex: 1;
+  padding: 7px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mapa-period-tab.active {
+  background: var(--gold-bg);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── Controls row ────────────────────────────── */
+
+.mapa-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.mapa-month-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mapa-nav-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  min-height: unset;
+}
+
+.mapa-nav-btn:hover:not(:disabled) { border-color: var(--gold-dim); }
+.mapa-nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+.mapa-month-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Compare toggle */
+.mapa-compare-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mapa-compare-btn.active {
+  border-color: #A78BFA;
+  color: #A78BFA;
+  background: rgba(167,139,250,0.1);
+}
+
+/* Filters */
+.mapa-filters {
+  display: flex;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.mapa-filter-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mapa-filter-btn.active.mapa-filter-todos   { border-color: var(--text-secondary); color: var(--text-primary); background: rgba(255,255,255,0.08); }
+.mapa-filter-btn.active.mapa-filter-local   { border-color: #D4AF37; color: #D4AF37; background: rgba(212,175,55,0.12); }
+.mapa-filter-btn.active.mapa-filter-reparto { border-color: #4ECDC4; color: #4ECDC4; background: rgba(78,205,196,0.12); }
+
+/* ── Stats comparison bar ────────────────────── */
+
+.mapa-stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.mapa-stats-period {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mapa-stats-prev { opacity: 0.65; }
+
+.mapa-stats-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 80px;
+}
+
+.mapa-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-local   { background: #D4AF37; }
+.dot-reparto { background: #4ECDC4; }
+
+.mapa-stats-divider {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.mapa-deltas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.mapa-delta {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.mapa-delta.up   { color: #4ade80; }
+.mapa-delta.down { color: #f87171; }
+
+/* ── Loading / Error ─────────────────────────── */
+
+.mapa-loading, .mapa-error {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.mapa-error { color: var(--status-red); }
+
+/* ── Map container ───────────────────────────── */
+
+.mapa-container {
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  position: relative;
+}
+
+/* Zoom level badge */
+.mapa-zoom-badge {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(20, 20, 20, 0.80);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Legend overlay */
+.mapa-legend {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.legend-dot-gradient { opacity: 1; }
+.legend-dot.dashed {
+  background: transparent !important;
+  border: 2px dashed #aaa;
+  opacity: 0.7;
+}
+.legend-prev { opacity: 0.75; }
+
+/* Leaflet popup */
+.mapa-popup { font-family: inherit; min-width: 170px; }
+.mapa-popup strong { display: block; font-size: 0.9rem; margin-bottom: 3px; color: #111; }
+.popup-period   { font-size: 0.73rem; color: #888; margin-bottom: 2px; }
+.popup-address  { font-size: 0.78rem; color: #555; margin-bottom: 6px; }
+.popup-stats    { display: flex; flex-direction: column; gap: 3px; font-size: 0.78rem; }
+.popup-local    { color: #8a6800; font-weight: 600; }
+.popup-reparto  { color: #1e8a84; font-weight: 600; }
+.popup-raciones { color: #444; margin-top: 3px; border-top: 1px solid #eee; padding-top: 3px; }
+
+/* CP popup hint */
+.popup-cp-hint {
+  font-size: 0.68rem;
+  color: #999;
+  margin-top: 6px;
+  text-align: center;
+}
+
+/* Year blocks inside popup */
+.popup-year-block {
+  margin-top: 6px;
+  padding: 5px 6px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.popup-year-curr { border-left: 3px solid #D4AF37; background: rgba(212,175,55,0.06); }
+.popup-year-prev { border-left: 3px solid #818CF8; background: rgba(129,140,248,0.06); }
+.popup-year-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #777;
+  margin-bottom: 2px;
+}
+
+/* Legend section label */
+.legend-section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}

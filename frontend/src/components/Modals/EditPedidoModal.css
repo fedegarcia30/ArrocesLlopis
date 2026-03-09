@@ -1,0 +1,325 @@
+.edit-pedido-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.edit-pedido-modal {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px 20px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--bg-secondary);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  border-radius: var(--radius-md, 12px);
+}
+
+/* ── Header ─────────────────────────────────── */
+
+.edit-pedido-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.edit-pedido-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.edit-pedido-id {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.edit-pedido-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+  transition: color 0.2s;
+  min-height: unset;
+}
+
+.edit-pedido-close:hover {
+  color: var(--text-primary);
+}
+
+.edit-pedido-client {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: -6px;
+}
+
+/* ── Body ────────────────────────────────────── */
+
+.edit-pedido-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* Arroz grid */
+.edit-arroz-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.edit-arroz-btn {
+  padding: 8px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--bg-glass);
+  border: 1.5px solid var(--border-subtle);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.edit-arroz-btn:hover {
+  border-color: var(--gold-dim);
+  color: var(--text-primary);
+}
+
+.edit-arroz-btn.selected {
+  background: var(--gold-bg);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* PAX counter */
+.edit-pax-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.edit-pax-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-height: unset;
+}
+
+.edit-pax-btn:hover:not(:disabled) {
+  border-color: var(--gold-dim);
+}
+
+.edit-pax-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.edit-pax-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Text inputs */
+.edit-input,
+.edit-textarea {
+  width: 100%;
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  padding: 9px 12px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.edit-input:focus,
+.edit-textarea:focus {
+  outline: none;
+  border-color: var(--gold-dim);
+}
+
+.edit-textarea {
+  resize: vertical;
+}
+
+/* ── Address warning ─────────────────────────── */
+
+.edit-address-warning {
+  background: rgba(249, 115, 22, 0.1);
+  border: 1.5px solid rgba(249, 115, 22, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-address-warning-title {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.edit-address-warning-title strong {
+  color: #F97316;
+}
+
+.edit-affected-list {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.edit-affected-item {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+}
+
+.edit-affected-current {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.edit-address-warning-only {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.edit-address-warning-confirm {
+  font-size: 0.82rem;
+  color: #F97316;
+  font-weight: 600;
+  margin: 4px 0 0;
+}
+
+/* ── Footer ──────────────────────────────────── */
+
+.edit-pedido-footer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.edit-btn-primary {
+  flex: 1;
+  padding: 11px;
+  border-radius: var(--radius-sm);
+  background: var(--gold);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.edit-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-btn-danger-outline {
+  padding: 11px 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: 1.5px solid var(--status-red, #e53e3e);
+  color: var(--status-red, #e53e3e);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.edit-btn-danger-outline:hover:not(:disabled) {
+  background: rgba(229, 62, 62, 0.1);
+}
+
+.edit-btn-danger-outline:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Confirmation row */
+.edit-cancel-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.edit-cancel-question {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.edit-btn-danger {
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--status-red, #e53e3e);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.edit-btn-secondary {
+  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-glass);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  cursor: pointer;
+}

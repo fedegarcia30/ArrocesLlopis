@@ -68,7 +68,7 @@ Redirección post-login:
 
 ## Pedido Multi-Arroz
 
-Un mismo cliente puede pedir varios tipos de arroz en el mismo slot. Cada tipo crea una `PedidoLinea` separada pero perteneciente al mismo `Pedido`. El OrderWizard soporta añadir múltiples items antes de confirmar.
+Un mismo cliente puede pedir varios tipos de arroz. El OrderWizard permite añadir varios tipos antes de confirmar. Cada tipo de arroz genera un `Pedido` independiente (con su propia `PedidoLinea`). Cada pedido cuenta por separado hacia el límite de 6 por slot. No hay restricción de un pedido por cliente ni por slot.
 
 ## Validación Doble
 
@@ -82,6 +82,18 @@ Las reglas de negocio se validan **tanto en frontend como en backend**:
 - Stock en aviso: `stock_actual <= stock_minimo * 1.2`
 - Al registrar una compra (`/ingredients/purchase`), el stock se incrementa automáticamente
 - Cada arroz tiene una receta (`arroz_ingredientes`) que define cuánto ingrediente consume por ración
+- **Al crear un pedido**: se descuenta del stock la cantidad = `cantidad_por_racion × pax` para cada ingrediente de la receta
+- **Al cancelar un pedido**: el stock se restaura automáticamente (`adjust_stock_from_order(restore=True)`)
+- **Al reactivar un pedido cancelado**: el stock se descuenta de nuevo
+- Si el arroz no tiene receta definida, no hay movimiento de stock
+
+## Recogida de Recipientes (Recogidas)
+
+- Cuando se entrega un pedido de reparto a domicilio, los recipientes quedan en casa del cliente
+- El campo `recogido` del pedido indica si los recipientes han sido devueltos
+- La pestaña "Recogidas" en `/repartos` muestra pedidos entregados (últimas 4 semanas) con `recogido = false`
+- Al marcar una recogida, se puede registrar feedback del cliente (valoración 1-10 + comentario)
+- Los pedidos de recogida en local (`local_recogida = true`) no aparecen en la lista de recogidas pendientes
 
 ## Precios
 

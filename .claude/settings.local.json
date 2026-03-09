@@ -6,7 +6,8 @@
       "Bash(npm run:*)",
       "Bash(source:*)",
       "Bash(mysql:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(ls:*)"
     ]
   }
 }

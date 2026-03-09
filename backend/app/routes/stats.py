@@ -3,7 +3,7 @@ from app.models import Pedido, PedidoLinea, Arroz, Cliente, Compra, CompraLinea,
 from . import api_v1_bp
 from app.auth import requires_auth, requires_role
 from app import db
-from sqlalchemy import func, extract, and_
+from sqlalchemy import func, extract, and_, case
 from datetime import datetime, timedelta
 import calendar
 
@@ -398,4 +398,80 @@ def get_expense_stats():
         },
         "top_ingredients": curr_metrics["top_ingredients"],
         "top_providers": curr_metrics["top_providers"]
+    }), 200
+
+
+@api_v1_bp.route('/stats/mapa', methods=['GET'])
+@requires_auth
+@requires_role(['admin', 'gerente', 'encargado'])
+def stats_mapa():
+    from datetime import date as date_cls
+
+    MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+             'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']
+
+    period   = request.args.get('period', 'month')        # month|quarter|semester|year
+    year     = request.args.get('year',     type=int, default=datetime.now().year)
+    month    = request.args.get('month',    type=int, default=datetime.now().month)
+    quarter  = request.args.get('quarter',  type=int, default=1)   # 1-4
+    semester = request.args.get('semester', type=int, default=1)   # 1-2
+
+    def get_date_range(y, p, mo, q, s):
+        if p == 'month':
+            last = calendar.monthrange(y, mo)[1]
+            return date_cls(y, mo, 1), date_cls(y, mo, last)
+        elif p == 'quarter':
+            sm = (q - 1) * 3 + 1
+            em = sm + 2
+            return date_cls(y, sm, 1), date_cls(y, em, calendar.monthrange(y, em)[1])
+        elif p == 'semester':
+            if s == 1:
+                return date_cls(y, 1, 1), date_cls(y, 6, 30)
+            return date_cls(y, 7, 1), date_cls(y, 12, 31)
+        else:  # year
+            return date_cls(y, 1, 1), date_cls(y, 12, 31)
+
+    def format_label(y, p, mo, q, s):
+        if p == 'month':   return f"{MESES[mo - 1]} {y}"
+        if p == 'quarter': return f"T{q} {y}"
+        if p == 'semester':return f"{'1er' if s == 1 else '2º'} Semestre {y}"
+        return str(y)
+
+    def query_mapa(fecha_inicio, fecha_fin):
+        rows = db.session.query(
+            Cliente.id,
+            Cliente.nombre,
+            Cliente.latitud,
+            Cliente.longitud,
+            Cliente.direccion_limpia,
+            Cliente.codigo_postal,
+            func.sum(case((Pedido.local_recogida == False, 1), else_=0)).label('pedidos_local'),
+            func.sum(case((Pedido.local_recogida == True, 1), else_=0)).label('pedidos_reparto'),
+            func.sum(Pedido.pax).label('total_raciones'),
+        ).join(Pedido, Pedido.cliente_id == Cliente.id)\
+         .filter(
+            func.date(Pedido.fecha_pedido) >= fecha_inicio,
+            func.date(Pedido.fecha_pedido) <= fecha_fin,
+            Pedido.deleted_at == None,
+            Pedido.status != 'cancelado',
+            db.or_(Cliente.latitud != None, Cliente.codigo_postal != None),
+         ).group_by(Cliente.id).all()
+        return [{
+            "cliente_id": r.id,
+            "nombre": r.nombre,
+            "lat": float(r.latitud) if r.latitud is not None else None,
+            "lng": float(r.longitud) if r.longitud is not None else None,
+            "direccion_limpia": r.direccion_limpia or "",
+            "codigo_postal": r.codigo_postal or "",
+            "pedidos_local": int(r.pedidos_local or 0),
+            "pedidos_reparto": int(r.pedidos_reparto or 0),
+            "total_raciones": int(r.total_raciones or 0),
+        } for r in rows]
+
+    curr_start, curr_end = get_date_range(year,     period, month, quarter, semester)
+    prev_start, prev_end = get_date_range(year - 1, period, month, quarter, semester)
+
+    return jsonify({
+        "current":  {"label": format_label(year,     period, month, quarter, semester), "data": query_mapa(curr_start, curr_end)},
+        "previous": {"label": format_label(year - 1, period, month, quarter, semester), "data": query_mapa(prev_start, prev_end)},
     }), 200

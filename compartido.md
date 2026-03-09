@@ -259,7 +259,48 @@ Si no existe: `404`.
 
 ---
 
-## 9. Estadísticas de Negocio (Admin Dashboard)
+## 9. Mapa de Pedidos (Geolocalización)
+**Endpoint**: `GET /api/v1/stats/mapa?period=month&year=2026&month=3`
+**Auth**: Requerido (admin, gerente, encargado)
+**Descripción**: Devuelve clientes con pedidos en el período indicado. Incluye clientes con `latitud`/`longitud` o con `codigo_postal`. Devuelve siempre **dos conjuntos**: período actual y período equivalente del año anterior.
+
+**Query params**:
+- `period`: `month` | `quarter` | `semester` | `year`
+- `year`: año (ej. 2026)
+- `month`: número de mes (solo si `period=month`)
+- `quarter`: 1-4 (solo si `period=quarter`)
+- `semester`: 1-2 (solo si `period=semester`)
+
+**Response**:
+```json
+{
+  "current":  { "label": "Marzo 2026", "data": [...] },
+  "previous": { "label": "Marzo 2025", "data": [...] }
+}
+```
+
+Cada elemento en `data`:
+```json
+{
+  "cliente_id": 1,
+  "nombre": "Elena Calvo",
+  "lat": 36.853,
+  "lng": -2.440,
+  "direccion_limpia": "Costa Brava 20",
+  "codigo_postal": "04001",
+  "pedidos_local": 2,
+  "pedidos_reparto": 0,
+  "total_raciones": 8
+}
+```
+
+> `lat` y `lng` pueden ser `null` si el cliente solo tiene `codigo_postal`. El frontend agrupa por CP para la vista de zoom bajo.
+> `pedidos_local` = pedidos con `local_recogida = false` (entrega a domicilio).
+> `pedidos_reparto` = pedidos con `local_recogida = true` (recogida en local).
+
+---
+
+## 10. Estadísticas de Negocio (Admin Dashboard)
 **Endpoint**: `GET /api/v1/stats/dashboard?period=month|quarter|semester|ytd`
 **Auth**: Requerido (Admin)
 **Descripción**: Devuelve métricas agregadas y tendencias para el panel de administración.
@@ -287,6 +328,40 @@ Si no existe: `404`.
 
 ---
 
+## 11. Gestión de Ingredientes y Stock
+**Endpoints**: `/api/v1/ingredients`
+**Auth**: Requerido (admin, gerente, encargado)
+
+- `GET /api/v1/ingredients` — Listado completo de ingredientes
+- `POST /api/v1/ingredients` — Crear nuevo ingrediente
+- `PUT /api/v1/ingredients/:id` — Editar ingrediente (nombre, unidad, stock, mínimo, precio)
+- `POST /api/v1/ingredients/purchase` — Registrar compra (incrementa stock, guarda historial)
+
+**Crear ingrediente** — `POST /api/v1/ingredients`:
+```json
+{
+  "nombre": "Pimentón dulce",
+  "unidad_medida": "g",
+  "stock_actual": 500,
+  "stock_minimo": 100,
+  "precio_actual": 0.80
+}
+```
+Response: `{ "id": 12, "message": "Ingrediente creado correctamente" }`
+
+**Registrar compra** — `POST /api/v1/ingredients/purchase`:
+```json
+{
+  "proveedor_id": 1,
+  "items": [
+    { "ingrediente_id": 3, "cantidad": 2000, "precio_unitario": 0.75 }
+  ],
+  "observaciones": "Compra semanal"
+}
+```
+
+---
+
 ## Notas Finales de Despliegue (Producción)
 En producción, todas las peticiones deben usar el prefijo de NGINX:
 - **API**: `https://solvency.ddns.net/arrocesllopis-api/` (que redirige internamente a `/api/v1/`)
@@ -299,12 +374,14 @@ En producción, todas las peticiones deben usar el prefijo de NGINX:
 4. `POST /api/v1/orders/create` — Wizard de nuevo pedido (paso 4)
 5. `GET /api/v1/pedidos?fecha=...` — Lista de pedidos del dashboard
 6. `PATCH /api/v1/pedidos/:id/status` — Cambio de estado
-7. `PATCH /api/v1/pedidos/:id` — Actualización parcial (recogido, fecha_pedido) — **⚠️ pendiente implementar campo `recogido`**
+7. `PATCH /api/v1/pedidos/:id` — Actualización parcial (recogido, fecha_pedido)
+8. `POST /api/v1/pedidos/:id/feedback` — Registro de satisfacción (Nuevo)
 
 ### Autenticación
-El frontend usa **Firebase Auth**. Envía el `idToken` en cada request como `Authorization: Bearer <idToken>`. El backend debe verificar este token con `firebase_admin.auth.verify_id_token()`.
+El frontend usa **Firebase Auth**. Envía el `idToken` en cada request como `Authorization: Bearer <idToken>`. El backend verifica este token con `firebase_admin.auth.verify_id_token()`.
+En entornos de desarrollo/test se soporta el token `DEV_BYPASS_TOKEN` para tests automáticos.
 
-### Reglas de negocio validadas en frontend (el backend DEBE re-validar):
+### Reglas de negocio validadas:
 - PAX mínimo: 2
 - Máximo por slot: 6 pedidos ó 72 raciones
 - Status permitidos: nuevo → preparando → listo → entregado | cancelado

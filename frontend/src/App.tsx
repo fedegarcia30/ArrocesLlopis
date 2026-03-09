@@ -9,6 +9,7 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { RicesPage } from './pages/RicesPage';
 import { StockPage } from './pages/StockPage';
 import { RepartosPage } from './pages/RepartosPage';
+import { MapaPage } from './pages/MapaPage';
 import type { ReactNode } from 'react';
 import './App.css';
 
@@ -132,6 +133,14 @@ function App() {
               element={
                 <RoleRoute allowedRoles={['admin', 'encargado', 'gerente', 'cocinero']}>
                   <CalendarPage />
+                </RoleRoute>
+              }
+            />
+            <Route
+              path="/mapa"
+              element={
+                <RoleRoute allowedRoles={['admin', 'encargado', 'gerente']}>
+                  <MapaPage />
                 </RoleRoute>
               }
             />

@@ -13,6 +13,22 @@
     overflow-x: hidden;
 }
 
+/* Modo mapa: ocupa todo el alto disponible sin scroll */
+.admin-dashboard.map-mode {
+    height: 100%;
+    overflow: hidden;
+    max-width: none;
+    padding-bottom: 0;
+    gap: 12px;
+}
+
+.map-panel {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 !important;
+}
+
 /* ============================================
    Header: título + controles en una sola fila
    ============================================ */

@@ -27,6 +27,63 @@ def get_ingredients():
         logger.error(f"Error fetching ingredients: {str(e)}", exc_info=True)
         return jsonify({"error": "Failed to fetch ingredients"}), 500
 
+@api_v1_bp.route('/ingredients', methods=['POST'])
+@requires_auth
+@requires_role(['admin', 'encargado', 'gerente'])
+def create_ingredient():
+    """
+    Creates a new ingredient.
+    """
+    data = request.get_json()
+    if not data or 'nombre' not in data:
+        return jsonify({"error": "Nombre es obligatorio"}), 400
+        
+    try:
+        # Check if already exists
+        existente = Ingrediente.query.filter_by(nombre=data['nombre']).first()
+        if existente:
+            return jsonify({"error": f"El ingrediente '{data['nombre']}' ya existe"}), 409
+            
+        nuevo_ingrediente = Ingrediente(
+            nombre=data['nombre'],
+            unidad_medida=data.get('unidad_medida', 'g'),
+            stock_actual=data.get('stock_actual', 0),
+            stock_minimo=data.get('stock_minimo', 0),
+            precio_actual=data.get('precio_actual', 0)
+        )
+        
+        db.session.add(nuevo_ingrediente)
+        db.session.commit()
+        
+        # Add to history if price is provided
+        if float(nuevo_ingrediente.precio_actual or 0) > 0:
+            history = HistoricoPrecio(
+                item_id=nuevo_ingrediente.id,
+                tipo_item='compra',
+                precio=nuevo_ingrediente.precio_actual
+            )
+            db.session.add(history)
+            db.session.commit()
+            
+        logger.info(f"Nuevo ingrediente creado: {nuevo_ingrediente.nombre} (ID: {nuevo_ingrediente.id})")
+        
+        return jsonify({
+            "success": True, 
+            "message": "Ingrediente creado correctamente",
+            "ingredient": {
+                "id": nuevo_ingrediente.id,
+                "nombre": nuevo_ingrediente.nombre,
+                "unidad_medida": nuevo_ingrediente.unidad_medida,
+                "stock_actual": float(nuevo_ingrediente.stock_actual),
+                "stock_minimo": float(nuevo_ingrediente.stock_minimo),
+                "precio_actual": float(nuevo_ingrediente.precio_actual)
+            }
+        }), 201
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error creating ingredient: {str(e)}", exc_info=True)
+        return jsonify({"error": "Failed to create ingredient"}), 500
+
 @api_v1_bp.route('/ingredients/<int:ingredient_id>', methods=['PUT'])
 @requires_auth
 @requires_role(['admin', 'encargado', 'gerente'])

@@ -100,6 +100,11 @@ export function RepartosPage() {
           Repartos
         </button>
       </div>
+      {/* Indicador visual de swipe (solo mobile) */}
+      <div className="swipe-indicator" aria-hidden="true">
+        <span className={`swipe-dot${activeView === 'recogidas' ? ' active' : ''}`} />
+        <span className={`swipe-dot${activeView === 'repartos' ? ' active' : ''}`} />
+      </div>
 
       {/* Both views stay mounted to preserve state */}
       <div className={`logistics-view${activeView === 'repartos' ? '' : ' hidden'}`}>
@@ -211,26 +216,28 @@ function RepartosView() {
           {loadingWeek ? (
             <p className="repartos-empty">Cargando semana...</p>
           ) : (
-            <div className="week-grid">
-              {weekDates.map(date => {
-                const count = dayDeliveryCount(date);
-                return (
-                  <button
-                    key={date}
-                    className={`day-card${date === today ? ' today' : ''}${count === 0 ? ' empty' : ''}`}
-                    onClick={() => count > 0 && setSelectedDate(date)}
-                  >
-                    <span className="day-name">
-                      {new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short' })}
-                    </span>
-                    <span className="day-number">{new Date(date + 'T12:00:00').getDate()}</span>
-                    {count > 0
-                      ? <span className="day-count">{count}</span>
-                      : <span className="day-empty-mark">—</span>
-                    }
-                  </button>
-                );
-              })}
+            <div className="week-grid-wrapper">
+              <div className="week-grid">
+                {weekDates.map(date => {
+                  const count = dayDeliveryCount(date);
+                  return (
+                    <button
+                      key={date}
+                      className={`day-card${date === today ? ' today' : ''}${count === 0 ? ' empty' : ''}`}
+                      onClick={() => count > 0 && setSelectedDate(date)}
+                    >
+                      <span className="day-name">
+                        {new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short' })}
+                      </span>
+                      <span className="day-number">{new Date(date + 'T12:00:00').getDate()}</span>
+                      {count > 0
+                        ? <span className="day-count">{count}</span>
+                        : <span className="day-empty-mark">—</span>
+                      }
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

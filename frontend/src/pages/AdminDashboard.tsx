@@ -6,6 +6,39 @@ import { SectionInfoBtn } from '../components/Stats/SectionInfoBtn';
 import { MapaPage } from './MapaPage';
 import './AdminDashboard.css';
 
+/* ── Hook para detectar mobile ────────────────── */
+function useIsMobile(breakpoint = 768): boolean {
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth < breakpoint);
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < breakpoint);
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, [breakpoint]);
+    return isMobile;
+}
+
+/* ── Acordeón colapsable solo en mobile ────────── */
+function MobileAccordion({ title, defaultOpen = false, children }: {
+    title: string;
+    defaultOpen?: boolean;
+    children: React.ReactNode;
+}) {
+    const isMobile = useIsMobile();
+    const [open, setOpen] = useState(defaultOpen);
+
+    if (!isMobile) return <>{children}</>;
+
+    return (
+        <div className={`mobile-accordion${open ? ' open' : ''}`}>
+            <button className="mobile-accordion-header" onClick={() => setOpen(v => !v)}>
+                <span className="mobile-accordion-title">{title}</span>
+                <span className="accordion-chevron">{open ? '▲' : '▼'}</span>
+            </button>
+            {open && <div className="mobile-accordion-body">{children}</div>}
+        </div>
+    );
+}
+
 export function AdminDashboard() {
     const [activeTab, setActiveTab] = useState<'revenue' | 'expenses' | 'clients'>('revenue');
     const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -368,6 +401,7 @@ export function AdminDashboard() {
                                     </section>
 
                                     {clientAnalysis.cohorts && (
+                                        <MobileAccordion title="🔄 Movimiento de Cartera">
                                         <section className="cohort-section">
                                             <h3 className="ranking-title">🔄 Movimiento de Cartera <SectionInfoBtn info={statInfoMap.cohorts} title="Movimiento de Cartera" /></h3>
                                             <div className="cohort-grid">
@@ -393,9 +427,11 @@ export function AdminDashboard() {
                                                 </div>
                                             </div>
                                         </section>
+                                        </MobileAccordion>
                                     )}
 
                                     {clientAnalysis.suggestions && clientAnalysis.suggestions.length > 0 && (
+                                        <MobileAccordion title="💡 Recomendaciones" defaultOpen={true}>
                                         <section className="suggestions-section">
                                             <h3 className="ranking-title">💡 Recomendaciones <SectionInfoBtn info={statInfoMap.suggestions} title="Recomendaciones" /></h3>
                                             <div className="suggestions-grid">
@@ -410,8 +446,10 @@ export function AdminDashboard() {
                                                 ))}
                                             </div>
                                         </section>
+                                        </MobileAccordion>
                                     )}
 
+                                    <MobileAccordion title="📍 Patrones y Rankings">
                                     <section className="client-rankings-section">
                                         <div className="rankings-grid">
                                             <div className="ranking-card glass-card">
@@ -448,9 +486,11 @@ export function AdminDashboard() {
                                             )}
                                         </div>
                                     </section>
+                                    </MobileAccordion>
                                 </>
                             )}
 
+                            <MobileAccordion title="🗺️ Distribución Geográfica">
                             <section className="map-section">
                                 <h3 className="section-title-gold">🗺️ Distribución Geográfica <SectionInfoBtn info={statInfoMap.map_section} title="Distribución Geográfica" /></h3>
                                 <div className="map-segment-filters">
@@ -477,6 +517,7 @@ export function AdminDashboard() {
                                     />
                                 </div>
                             </section>
+                            </MobileAccordion>
                         </>
                     )}
                 </div>
@@ -527,6 +568,7 @@ export function AdminDashboard() {
                         </div>
                     </section>
 
+                    <MobileAccordion title="👤 Rankings Clientes y Zonas">
                     <section className="rankings-grid">
                         <div className="ranking-card glass-card">
                             <h3 className="ranking-title">👤 Mejores Clientes <SectionInfoBtn info={statInfoMap.top_clients_revenue} title="Mejores Clientes" /></h3>
@@ -558,6 +600,7 @@ export function AdminDashboard() {
                             </div>
                         </div>
                     </section>
+                    </MobileAccordion>
                 </div>
             )}
 
@@ -570,6 +613,7 @@ export function AdminDashboard() {
                         <AdminStatCard data={expenseStats.summary.stock_alerts} info={statInfoMap.stock_alerts} />
                     </section>
 
+                    <MobileAccordion title="🛒 Rankings Ingredientes y Proveedores">
                     <section className="rankings-grid">
                         <div className="ranking-card glass-card">
                             <h3 className="ranking-title">🛒 Mayores Gastos (Ingredientes) <SectionInfoBtn info={statInfoMap.top_ingredients} title="Mayores Gastos (Ingredientes)" /></h3>
@@ -601,6 +645,7 @@ export function AdminDashboard() {
                             </div>
                         </div>
                     </section>
+                    </MobileAccordion>
                 </div>
             )}
         </div>

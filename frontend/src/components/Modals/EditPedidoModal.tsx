@@ -142,6 +142,7 @@ export function EditPedidoModal({ pedido, onClose, onSaved }: Props) {
                 value={direccion}
                 onChange={e => { setDireccion(e.target.value); setAddressWarning(null); }}
                 placeholder="Calle, número, piso..."
+                onFocus={e => e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'center' })}
               />
             </>
           )}
@@ -178,6 +179,7 @@ export function EditPedidoModal({ pedido, onClose, onSaved }: Props) {
             onChange={e => setObservaciones(e.target.value)}
             placeholder="Sin gluten, alérgenos, notas..."
             rows={2}
+            onFocus={e => e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest' })}
           />
         </div>
 

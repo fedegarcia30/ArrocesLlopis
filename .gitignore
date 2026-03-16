@@ -16,6 +16,7 @@ venv/
 android/
 ios/
 capacitor.config.ts
+frontend/.env.mobile
 
 # OS
 .DS_Store
@@ -41,3 +42,10 @@ frontend/dist/
 .agent/
 _agents/
 _agent/
+
+# Archive and Dump files
+*.tar
+*.zip
+*.sql
+*.gz
+*.rar

@@ -31,7 +31,7 @@ export async function getUserProfile() {
   const token = await getCurrentToken();
   if (!token) return null;
 
-  // Usa directamente la variable que inyecta Vite (que en prod será /arrocesllopis-api)
+  // Usa la variable de entorno configurada (VITE_API_BASE_URL)
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const response = await fetch(`${API_BASE_URL}/auth/me`, {

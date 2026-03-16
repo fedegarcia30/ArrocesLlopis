@@ -1,483 +1,610 @@
-/* ============================================
-   Admin Dashboard — Layout principal
-   ============================================ */
-
 .admin-dashboard {
-    padding: 16px 24px;
-    max-width: 1400px;
+    padding: 8px;
+    max-width: 1600px;
     margin: 0 auto;
-    color: var(--text-primary);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    overflow-x: hidden;
+    gap: 28px;
+    animation: fadeIn 0.6s ease-out;
 }
 
-/* Modo mapa: ocupa todo el alto disponible sin scroll */
-.admin-dashboard.map-mode {
-    height: 100%;
-    overflow: hidden;
-    max-width: none;
-    padding-bottom: 0;
-    gap: 12px;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-
-.map-panel {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    padding: 0 !important;
-}
-
-/* ============================================
-   Header: título + controles en una sola fila
-   ============================================ */
 
 .dashboard-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .header-main {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex-shrink: 0;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 .title-nav {
     display: flex;
-    gap: 20px;
+    gap: 32px;
     align-items: center;
 }
 
 .nav-tab {
     background: none;
     border: none;
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+    font-size: var(--text-2xl);
+    font-weight: 800;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-bottom: 8px;
+    transition: var(--transition-smooth);
     position: relative;
     opacity: 0.4;
-    min-height: unset;
-    min-width: unset;
-}
-
-.nav-tab:hover {
-    opacity: 0.7;
 }
 
 .nav-tab.active {
     opacity: 1;
-    color: #fff;
-    background: linear-gradient(to right, #fff, var(--gold));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transform: scale(1.05);
+    color: var(--text-main);
 }
 
 .nav-tab.active::after {
     content: '';
     position: absolute;
-    bottom: -6px;
+    bottom: 0;
     left: 0;
-    width: 100%;
-    height: 3px;
-    background: var(--gold);
+    width: 60%;
+    height: 4px;
+    background: var(--gold-primary);
     border-radius: 2px;
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 4px 12px var(--gold-glow);
 }
 
 .comparison-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-weight: 500;
     display: flex;
     align-items: center;
-    gap: 6px;
-    margin-top: 2px;
+    gap: 12px;
+    background: var(--bg-surface);
+    padding: 8px 16px;
+    border-radius: var(--radius-lg);
+    border: var(--glass-border);
+    font-size: var(--text-sm);
+    color: var(--text-dim);
 }
 
-.comparison-label .current-period {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.comparison-label .vs {
-    font-size: 0.75rem;
-    opacity: 0.5;
-    font-weight: 400;
+.vs {
+    color: var(--gold-primary);
+    font-weight: 800;
     font-style: italic;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 1px 6px;
-    border-radius: 12px;
+    opacity: 0.8;
 }
-
-.comparison-label .prev-period {
-    opacity: 0.7;
-}
-
-/* ============================================
-   Controles: filtros + modo en una fila
-   ============================================ */
 
 .dashboard-controls {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
-    flex-wrap: nowrap;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .period-filters {
     display: flex;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 3px;
-    border-radius: 10px;
-    gap: 2px;
-    flex-shrink: 0;
+    background: var(--glass-bg);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    border: var(--glass-border);
+    gap: 4px;
 }
 
 .period-filters button {
-    padding: 6px 12px;
-    border-radius: 7px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.82rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    min-height: unset;
-    min-width: unset;
-}
-
-.period-filters button:hover {
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-dim);
+    transition: var(--transition-fast);
 }
 
 .period-filters button.active {
-    background: var(--gold);
+    background: var(--gold-primary);
     color: #000;
+    box-shadow: 0 4px 12px var(--gold-glow);
 }
 
 .mode-toggle {
     display: flex;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 2px;
-    border-radius: 20px;
-    border: 1px solid var(--border-subtle);
-    flex-shrink: 0;
+    background: var(--bg-surface);
+    padding: 4px;
+    border-radius: 100px;
+    border: var(--glass-border);
 }
 
 .mode-btn {
-    padding: 5px 12px;
-    border-radius: 18px;
-    border: none;
-    background: transparent;
+    padding: 6px 20px;
+    border-radius: 100px;
+    font-size: var(--text-xs);
+    font-weight: 700;
     color: var(--text-muted);
-    font-size: 0.78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    white-space: nowrap;
-    min-height: unset;
-    min-width: unset;
 }
 
 .mode-btn.active {
-    background: var(--gold);
+    background: var(--text-main);
     color: #000;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
 
-/* ============================================
-   Panel de contenido (Ingresos / Gastos)
-   ============================================ */
-
-.dashboard-panel {
+.custom-date-range {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
-    animation: panel-fadein 0.25s ease;
+    align-items: center;
+    gap: 8px;
 }
 
-@keyframes panel-fadein {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
+.custom-date-range .date-input {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    color-scheme: dark;
 }
 
-/* ============================================
-   4 KPI cards siempre en una fila
-   ============================================ */
+.custom-date-range .date-input:focus {
+    outline: none;
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 0 2px var(--gold-glow);
+}
+
+.custom-date-range .date-separator {
+    color: var(--text-muted);
+    font-size: var(--text-sm);
+}
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
 }
-
-/* ============================================
-   Sección de gráficos: trend + top arroces
-   ============================================ */
 
 .charts-section {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 16px;
-    align-items: start;
+    gap: 24px;
 }
-
-.trend-card {
-    padding: 20px;
-}
-
-.trend-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.trend-title {
-    margin: 0;
-    padding: 0;
-    border-bottom: none;
-    font-size: 0.95rem;
-}
-
-.metric-selector {
-    display: flex;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 3px;
-    border-radius: 10px;
-    gap: 2px;
-}
-
-.metric-btn {
-    padding: 5px 10px;
-    border-radius: 7px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    min-height: unset;
-    min-width: unset;
-}
-
-.metric-btn:hover {
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.metric-btn.active {
-    background: var(--gold);
-    color: #000;
-}
-
-.svg-chart {
-    width: 100%;
-    height: 200px;
-}
-
-/* ============================================
-   Leyenda del gráfico
-   ============================================ */
-
-.chart-legend {
-    display: flex;
-    gap: 8px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    flex-wrap: wrap;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 8px;
-    border-radius: 10px;
-    background: transparent;
-    transition: all 0.2s ease;
-}
-
-.legend-item.interactive {
-    cursor: pointer;
-    user-select: none;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.legend-item.interactive:hover {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.legend-item.interactive.active {
-    background: rgba(212, 175, 55, 0.1);
-    border-color: rgba(212, 175, 55, 0.3);
-    color: var(--text-primary);
-}
-
-.legend-color {
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
-    flex-shrink: 0;
-}
-
-/* ============================================
-   Rankings: 2 columnas
-   ============================================ */
 
 .rankings-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
 }
 
+/* ── Ranking cards (shared across tabs) ──────── */
+
 .ranking-card {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    padding: 24px;
 }
 
 .ranking-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    border-bottom: 1px solid var(--border-subtle);
-    padding-bottom: 10px;
-    color: var(--gold);
-    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: var(--text-base);
+    font-weight: 800;
+    color: var(--gold-primary);
+    margin-bottom: 20px;
 }
 
 .ranking-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
 }
 
 .ranking-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 7px 10px;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    transition: transform 0.2s;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
 }
 
 .ranking-item:hover {
-    transform: translateX(3px);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .item-info {
     display: flex;
     flex-direction: column;
-    gap: 1px;
-    min-width: 0;
+    gap: 2px;
 }
 
 .item-name {
-    font-weight: 500;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--text-main);
 }
 
 .item-sub {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+    font-size: 11px;
+    color: var(--text-dim);
 }
 
 .item-value {
-    font-weight: 600;
-    color: var(--gold);
-    font-size: 0.9rem;
-    flex-shrink: 0;
-    margin-left: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: var(--text-base);
+    color: var(--gold-primary);
 }
 
+/* ── Trend chart ────────────────────────────────── */
 
-/* ============================================
-   Tablet: 768px - 1100px
-   ============================================ */
+.trend-card {
+    display: flex;
+    flex-direction: column;
+}
 
-@media (max-width: 1100px) {
+.trend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.trend-title {
+    margin-bottom: 0 !important;
+}
+
+.metric-selector {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-surface);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    border: var(--glass-border);
+}
+
+.metric-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    transition: var(--transition-fast);
+}
+
+.metric-btn.active {
+    background: var(--gold-primary);
+    color: #000;
+}
+
+.svg-chart {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.interactive-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+    transition: var(--transition-fast);
+}
+
+.interactive-legend .legend-item.active {
+    color: var(--text-main);
+}
+
+.interactive-legend .legend-item:not(.active) {
+    opacity: 0.4;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+/* Dashboard panel layout */
+.dashboard-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ── Client tab styles ──────────────────────────── */
+
+.client-segments-section .segment-bar {
+    display: flex;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.05);
+    margin: 20px 0;
+}
+
+.client-segments-section .segment-legend {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.client-segments-section .segment-legend span {
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.client-segments-section .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.cohort-section .cohort-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.cohort-section .cohort-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: var(--transition-smooth);
+}
+
+.cohort-section .cohort-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cohort-section .cohort-label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+}
+
+.cohort-section .cohort-value {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.cohort-section .cohort-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+}
+
+.cohort-section .cohort-card.new .cohort-value { color: var(--gold-primary); text-shadow: 0 0 15px var(--gold-glow); }
+.cohort-section .cohort-card.lost .cohort-value { color: #95a5a6; }
+.cohort-section .cohort-card.grown .cohort-value { color: #2ecc71; text-shadow: 0 0 15px rgba(46, 204, 113, 0.3); }
+.cohort-section .cohort-card.decreased .cohort-value { color: #e67e22; text-shadow: 0 0 15px rgba(230, 126, 34, 0.3); }
+
+.suggestions-section .suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.suggestion-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    border-left: 3px solid var(--gold-primary);
+}
+
+.suggestion-card h4 {
+    color: var(--text-main);
+    font-size: var(--text-base);
+    font-weight: 700;
+}
+
+.suggestion-card p {
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.suggestion-impact {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 3px 10px;
+    border-radius: 100px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.impact-critical {
+    background: rgba(231, 76, 60, 0.15);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.impact-high {
+    background: rgba(241, 196, 15, 0.15);
+    color: #f1c40f;
+    border: 1px solid rgba(241, 196, 15, 0.3);
+}
+
+.client-rankings-section .cp-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.client-rankings-section .cp-badge {
+    background: var(--gold-primary);
+    color: #000;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    min-width: 60px;
+    text-align: center;
+}
+
+.client-rankings-section .cp-arroces {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.client-rankings-section .rice-mini-tag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.client-rankings-section .cp-patterns-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.section-title-gold {
+    font-family: 'Montserrat', sans-serif;
+    font-size: var(--text-lg);
+    font-weight: 800;
+    color: var(--gold-primary);
+}
+
+.map-segment-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.map-segment-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--glass-bg);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+
+.map-segment-btn:hover {
+    background: var(--bg-surface-hover);
+    color: var(--text-main);
+}
+
+.map-segment-btn.active {
+    background: color-mix(in srgb, var(--seg-color) 12%, transparent);
+    color: var(--text-main);
+    border-color: var(--seg-color);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--seg-color) 20%, transparent);
+}
+
+.map-seg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.map-section .map-panel {
+    height: 70vh;
+    min-height: 500px;
+    max-height: 800px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: var(--glass-border);
+}
+
+.map-section .map-panel .mapa-page {
+    height: 100%;
+}
+
+@media (max-width: 1024px) {
     .charts-section {
         grid-template-columns: 1fr;
     }
 
-    .dashboard-controls {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-}
-
-@media (max-width: 900px) {
-    .stats-grid {
+    .cohort-section .cohort-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .dashboard-header {
+    .client-segments-section .segment-legend {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-dashboard {
+        padding: 4px;
+        gap: 20px;
+    }
+
+    .header-main {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
-    }
-
-    .rankings-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ============================================
-   Móvil: < 768px
-   ============================================ */
-
-@media (max-width: 768px) {
-    .admin-dashboard {
-        padding: 12px 16px;
-        gap: 16px;
-    }
-
-    .nav-tab {
-        font-size: 1.2rem;
     }
 
     .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-    }
-
-    .period-filters button {
-        padding: 5px 8px;
-        font-size: 0.75rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .stats-grid {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-controls {
+        flex-direction: column;
+        align-items: stretch;
     }
 
     .period-filters {
-        flex-wrap: wrap;
+        overflow-x: auto;
+    }
+
+    .cohort-section .cohort-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .client-segments-section .segment-legend {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .map-section .map-panel {
+        height: 60vh;
+        min-height: 350px;
     }
 }

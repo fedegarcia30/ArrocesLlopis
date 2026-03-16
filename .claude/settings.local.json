@@ -7,7 +7,9 @@
       "Bash(source:*)",
       "Bash(mysql:*)",
       "Bash(curl:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cd:*)",
+      "Bash(find:*)"
     ]
   }
 }

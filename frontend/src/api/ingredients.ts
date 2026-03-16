@@ -10,9 +10,10 @@ async function getAuthToken() {
     return null;
 }
 
-export async function getIngredients(): Promise<Ingrediente[]> {
+export async function getIngredients(tipo?: string): Promise<Ingrediente[]> {
     const token = await getAuthToken();
-    const response = await fetch(`${API_BASE_URL}/ingredients`, {
+    const query = tipo ? `?tipo=${tipo}` : '';
+    const response = await fetch(`${API_BASE_URL}/ingredients${query}`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }

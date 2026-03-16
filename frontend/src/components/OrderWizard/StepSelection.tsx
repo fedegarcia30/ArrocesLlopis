@@ -38,7 +38,7 @@ export function StepSelection({
       <div>
         <label>Tipo de arroz</label>
         {loading ? (
-          <p style={{ color: 'var(--text-secondary)' }}>Cargando...</p>
+          <p style={{ color: 'var(--text-dim)' }}>Cargando...</p>
         ) : (
           <div className="rice-grid">
             {rices.map((rice) => (
@@ -94,7 +94,7 @@ export function StepSelection({
           </button>
         </div>
         {remainingPax < 12 && (
-          <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+          <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-dim)', marginTop: '8px' }}>
             Quedan {remainingPax} raciones disponibles en este slot
           </p>
         )}

@@ -515,7 +515,7 @@ function FeedbackModal({ clientName, submitting, onSubmit, onCancel }: FeedbackM
   const lit = hover ?? rating ?? 0;
 
   return (
-    <div className="anular-overlay" onClick={onCancel}>
+    <div className="anular-overlay">
       <div className="feedback-modal glass-card" onClick={e => e.stopPropagation()}>
         <p className="feedback-title">Recogida · <strong>{clientName}</strong></p>
 
@@ -549,6 +549,13 @@ function FeedbackModal({ clientName, submitting, onSubmit, onCancel }: FeedbackM
         <div className="feedback-actions">
           <button
             className="anular-btn-cancel"
+            onClick={onCancel}
+            disabled={submitting}
+          >
+            Cancelar
+          </button>
+          <button
+            className="anular-btn-cancel"
             onClick={() => onSubmit(null, '')}
             disabled={submitting}
           >
@@ -576,7 +583,7 @@ interface ConfirmModalProps {
 
 function ConfirmModal({ clientName, updating, onConfirm, onCancel }: ConfirmModalProps) {
   return (
-    <div className="anular-overlay" onClick={onCancel}>
+    <div className="anular-overlay">
       <div className="anular-modal glass-card" onClick={e => e.stopPropagation()}>
         <p className="anular-text">
           ¿Anular el estado de <strong>{clientName}</strong>?

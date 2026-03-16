@@ -74,7 +74,7 @@ export function StepContact({
             autoFocus
           />
           {searching && (
-            <div style={{ position: 'absolute', right: '12px', top: '14px', fontSize: '0.8rem', color: 'var(--gold)' }}>
+            <div style={{ position: 'absolute', right: '12px', top: '14px', fontSize: '0.8rem', color: 'var(--gold-primary)' }}>
               ...
             </div>
           )}
@@ -99,7 +99,7 @@ export function StepContact({
           <p>{client.direccion}</p>
           {client.observaciones && <p style={{ fontStyle: 'italic', marginTop: '4px' }}>{client.observaciones}</p>}
           <button
-            style={{ fontSize: '0.7rem', color: 'var(--gold)', marginTop: '8px', background: 'none', border: 'none', padding: 0, textDecoration: 'underline' }}
+            style={{ fontSize: '0.7rem', color: 'var(--gold-primary)', marginTop: '8px', background: 'none', border: 'none', padding: 0, textDecoration: 'underline', cursor: 'pointer' }}
             onClick={() => {
               onClientFound(null);
               setResults([]);

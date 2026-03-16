@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import './AdminStatCard.css';
 
 interface StatData {
@@ -9,13 +10,21 @@ interface StatData {
     sparkline?: number[];
 }
 
+export interface StatInfo {
+    description: string;
+    calculation: string;
+    example: string;
+}
+
 interface AdminStatCardProps {
     data: StatData;
     periodLabel?: string;
+    info?: StatInfo;
 }
 
-export function AdminStatCard({ data, periodLabel }: AdminStatCardProps) {
+export function AdminStatCard({ data, periodLabel, info }: AdminStatCardProps) {
     const { value, growth, label, inverse, sparkline } = data;
+    const [showInfo, setShowInfo] = useState(false);
 
     const isPositive = growth > 0;
     const isNeutral = growth === 0;
@@ -73,28 +82,73 @@ export function AdminStatCard({ data, periodLabel }: AdminStatCardProps) {
     };
 
     return (
-        <div className={`stat-card glass-card ${colorClass}`}>
-            {renderSparkline()}
-            <div className="stat-content">
-                <div className="stat-info">
-                    <div className="stat-label">{periodLabel || label}</div>
-                    <div className="stat-value">
-                        {typeof value === 'number' && !label.includes('Ticket')
-                            ? value.toLocaleString()
-                            : value}
-                        {label.includes('Facturación') || label.includes('Ticket') ? '€' : ''}
+        <>
+            <div className={`stat-card glass-card ${colorClass}`}>
+                {renderSparkline()}
+                {info && (
+                    <button
+                        className="stat-info-btn"
+                        onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
+                        title="Ver explicación"
+                    >
+                        i
+                    </button>
+                )}
+                <div className="stat-content">
+                    <div className="stat-info">
+                        <div className="stat-label">{periodLabel || label}</div>
+                        <div className="stat-value">
+                            {typeof value === 'number' && !label.includes('Ticket')
+                                ? value.toLocaleString()
+                                : value}
+                            {label.includes('Facturación') || label.includes('Ticket') ? '€' : ''}
+                        </div>
+                    </div>
+                    <div className="stat-growth">
+                        {!isNeutral && (
+                            <div className="growth-pill">
+                                <span className="growth-icon">{statusIcon}</span>
+                                <span className="growth-text">{growthFormatted}</span>
+                            </div>
+                        )}
+                        {label !== (periodLabel || label) && <span className="growth-subtext">{label}</span>}
                     </div>
                 </div>
-                <div className="stat-growth">
-                    {!isNeutral && (
-                        <div className="growth-pill">
-                            <span className="growth-icon">{statusIcon}</span>
-                            <span className="growth-text">{growthFormatted}</span>
-                        </div>
-                    )}
-                    <span className="growth-subtext">{label}</span>
-                </div>
             </div>
-        </div>
+
+            {showInfo && info && (
+                <div className="stat-info-overlay" onClick={() => setShowInfo(false)}>
+                    <div className="stat-info-modal glass-card" onClick={e => e.stopPropagation()}>
+                        <header className="stat-info-modal-header">
+                            <h3>{label}</h3>
+                            <button className="stat-info-modal-close" onClick={() => setShowInfo(false)}>&times;</button>
+                        </header>
+                        <div className="stat-info-modal-body">
+                            <div className="stat-info-section">
+                                <span className="stat-info-section-icon">?</span>
+                                <div>
+                                    <h4>Qué mide</h4>
+                                    <p>{info.description}</p>
+                                </div>
+                            </div>
+                            <div className="stat-info-section">
+                                <span className="stat-info-section-icon">=</span>
+                                <div>
+                                    <h4>Cómo se calcula</h4>
+                                    <p>{info.calculation}</p>
+                                </div>
+                            </div>
+                            <div className="stat-info-section">
+                                <span className="stat-info-section-icon">!</span>
+                                <div>
+                                    <h4>Cómo interpretarlo</h4>
+                                    <p>{info.example}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }

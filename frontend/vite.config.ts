@@ -4,13 +4,14 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/arrocesllopis',
+  base: '/',
   server: {
     host: true, // escucha en todas las interfaces (permite acceso por IP de red)
     proxy: {
-      '/api': {
-        target: 'http://localhost:5001',
+      '/arrocesllopis-api': {
+        target: 'http://127.0.0.1:5001',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/arrocesllopis-api/, '/api/v1')
       },
     },
   },

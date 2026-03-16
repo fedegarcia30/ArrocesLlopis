@@ -7,3 +7,6 @@ python-dotenv
 flask-cors
 firebase-admin
 pytest
+pymysql
+sshtunnel
+paramiko<4.0.0

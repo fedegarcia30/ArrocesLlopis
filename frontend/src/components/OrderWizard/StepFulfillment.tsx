@@ -45,7 +45,7 @@ export function StepFulfillment({
       </div>
 
       {!recogida && (
-        <div className="client-found glass-card" style={{ padding: '10px', borderLeftColor: 'var(--gold)' }}>
+        <div className="client-found glass-card" style={{ padding: '12px 16px', borderLeftColor: 'var(--gold-primary)' }}>
           <p style={{ margin: 0, fontSize: '0.9rem' }}><strong>Entrega en:</strong> {address} ({cp})</p>
         </div>
       )}

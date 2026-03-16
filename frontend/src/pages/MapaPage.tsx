@@ -4,6 +4,7 @@ import type { LatLngBoundsExpression } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMapaStats } from '../api/stats';
 import type { MapaCliente, MapaPeriod, MapaResponse } from '../api/stats';
+import { getClientesGeo, type GeoCliente } from '../api/clientes';
 import './MapaPage.css';
 
 // ── Constantes ────────────────────────────────────────────────────────────────
@@ -277,7 +278,13 @@ function applyFilter(data: MapaCliente[], filtro: Filtro): MapaCliente[] {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function MapaPage() {
+interface MapaPageProps {
+  filterClientIds?: number[] | null;
+  filterColor?: string;
+  filterLabel?: string;
+}
+
+export function MapaPage({ filterClientIds, filterColor, filterLabel }: MapaPageProps = {}) {
   const [period,   setPeriod]   = useState<MapaPeriod>('month');
   const [year,     setYear]     = useState(CUR_YEAR);
   const [month,    setMonth]    = useState(CUR_MONTH);
@@ -291,6 +298,31 @@ export function MapaPage() {
   const [fitPoints, setFitPoints] = useState<[number, number][]>([]);
   const [loading,   setLoading]   = useState(false);
   const [error,     setError]     = useState<string | null>(null);
+
+  // Geo-only mode: show clients by location when filterClientIds is set
+  const [geoClients, setGeoClients] = useState<GeoCliente[]>([]);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const isGeoMode = filterClientIds != null && filterClientIds.length > 0;
+
+  useEffect(() => {
+    if (!isGeoMode) { setGeoClients([]); return; }
+    let cancelled = false;
+    setGeoLoading(true);
+    getClientesGeo(filterClientIds!).then(data => {
+      if (!cancelled) {
+        setGeoClients(data.filter(c => c.lat !== null && c.lng !== null));
+        const pts = data
+          .filter(c => c.lat !== null && c.lng !== null)
+          .map(c => [c.lat!, c.lng!] as [number, number]);
+        if (pts.length > 0) setFitPoints(pts);
+      }
+    }).catch(() => {
+      if (!cancelled) setGeoClients([]);
+    }).finally(() => {
+      if (!cancelled) setGeoLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [filterClientIds, isGeoMode]);
 
   const isStreetLevel = zoom >= ZOOM_THRESHOLD;
 
@@ -431,8 +463,8 @@ export function MapaPage() {
         )}
       </div>
 
-      {loading && <div className="mapa-loading">Cargando…</div>}
-      {error   && <div className="mapa-error">{error}</div>}
+      {(loading || geoLoading) && <div className="mapa-loading">Cargando…</div>}
+      {error && <div className="mapa-error">{error}</div>}
 
       <div className="mapa-container">
         <MapContainer center={[40.4, -3.7]} zoom={7} style={{ height: '100%', width: '100%' }}>
@@ -443,7 +475,32 @@ export function MapaPage() {
           <ZoomWatcher onZoom={setZoom} />
           {fitPoints.length > 0 && <FitBounds points={fitPoints} />}
 
-          {isStreetLevel ? (
+          {isGeoMode ? (
+            /* Modo filtro: marcadores directos desde tabla de clientes */
+            <>
+              {geoClients.map(c => (
+                <CircleMarker
+                  key={`geo-${c.cliente_id}`}
+                  center={[c.lat!, c.lng!]}
+                  radius={10}
+                  pathOptions={{
+                    fillColor: filterColor || '#D4AF37',
+                    color: filterColor || '#D4AF37',
+                    fillOpacity: 0.8,
+                    weight: 2
+                  }}
+                >
+                  <Popup>
+                    <div className="mapa-popup">
+                      <strong>{c.nombre}</strong>
+                      {c.direccion_limpia && <div className="popup-address">{c.direccion_limpia}</div>}
+                      {c.codigo_postal && <div className="popup-address">CP {c.codigo_postal}</div>}
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              ))}
+            </>
+          ) : isStreetLevel ? (
             <>
               {/* Solo en año anterior (sin solapamiento) */}
               {prevOnly.map(c => (
@@ -483,27 +540,32 @@ export function MapaPage() {
 
         {/* Indicador de nivel de zoom */}
         <div className="mapa-zoom-badge">
-          {isStreetLevel ? '📍 Vista calle' : '🗺️ Vista CP — doble clic para ampliar'}
+          {isGeoMode
+            ? `📍 ${filterLabel || 'Filtro'}: ${geoClients.length} cliente${geoClients.length !== 1 ? 's' : ''} localizados`
+            : isStreetLevel ? '📍 Vista calle' : '🗺️ Vista CP — doble clic para ampliar'
+          }
         </div>
 
         {/* Leyenda */}
-        <div className="mapa-legend">
-          <div className="legend-section-label">{currLabel}</div>
-          <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_LOCAL }} />Local</span>
-          <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_REPARTO }} />Reparto</span>
-          <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_MIXED }} />Ambos</span>
-          {compare && <>
-            <div className="legend-section-label" style={{ marginTop: 6 }}>{prevLabel}</div>
-            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_LOCAL }} />Local</span>
-            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_REPARTO }} />Reparto</span>
-            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_MIXED }} />Ambos</span>
-            <div className="legend-section-label" style={{ marginTop: 6 }}>Ambos períodos</div>
-            <span className="legend-item">
-              <span className="legend-dot legend-dot-gradient" style={{ background: `linear-gradient(135deg, ${COLOR_OVERLAP_CURR}, ${COLOR_OVERLAP_PREV})` }} />
-              +{currLabel} / +{prevLabel}
-            </span>
-          </>}
-        </div>
+        {!isGeoMode && (
+          <div className="mapa-legend">
+            <div className="legend-section-label">{currLabel}</div>
+            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_LOCAL }} />Local</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_REPARTO }} />Reparto</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_MIXED }} />Ambos</span>
+            {compare && <>
+              <div className="legend-section-label" style={{ marginTop: 6 }}>{prevLabel}</div>
+              <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_LOCAL }} />Local</span>
+              <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_REPARTO }} />Reparto</span>
+              <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_MIXED }} />Ambos</span>
+              <div className="legend-section-label" style={{ marginTop: 6 }}>Ambos períodos</div>
+              <span className="legend-item">
+                <span className="legend-dot legend-dot-gradient" style={{ background: `linear-gradient(135deg, ${COLOR_OVERLAP_CURR}, ${COLOR_OVERLAP_PREV})` }} />
+                +{currLabel} / +{prevLabel}
+              </span>
+            </>}
+          </div>
+        )}
       </div>
     </div>
   );

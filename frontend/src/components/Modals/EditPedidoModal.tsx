@@ -90,7 +90,7 @@ export function EditPedidoModal({ pedido, onClose, onSaved }: Props) {
   }
 
   return (
-    <div className="edit-pedido-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="edit-pedido-overlay">
       <div className="edit-pedido-modal glass-card">
         <div className="edit-pedido-header">
           <h2 className="edit-pedido-title">

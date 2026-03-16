@@ -145,13 +145,13 @@ export function OrderWizard({ slot, allSlots, date, onClose, onOrderCreated }: O
   }
 
   return (
-    <div className="wizard-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="wizard-overlay">
       <div className="wizard-panel glass-card">
         <div className="wizard-header">
           <h2 className="wizard-title">Nuevo Pedido</h2>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span className="wizard-slot-badge">{activeSlot.time}</span>
-            {currentPaxTotal > 0 && <span className="wizard-slot-badge" style={{ background: 'var(--status-blue-bg)', color: 'var(--status-blue)' }}>Total: {currentPaxTotal + (step === 1 ? currentPax : 0)} PAX</span>}
+            {currentPaxTotal > 0 && <span className="wizard-slot-badge" style={{ background: 'rgba(52, 152, 219, 0.12)', color: '#3498db', borderColor: 'rgba(52, 152, 219, 0.25)' }}>Total: {currentPaxTotal + (step === 1 ? currentPax : 0)} PAX</span>}
           </div>
           <button className="wizard-close" onClick={onClose}>×</button>
         </div>

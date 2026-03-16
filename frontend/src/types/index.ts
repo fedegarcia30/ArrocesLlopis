@@ -26,7 +26,8 @@ export interface Ingrediente {
   unidad_medida: string;
   stock_actual: number;
   stock_minimo: number;
-  precio_actual?: number; // Added for price tracking
+  precio_actual?: number;
+  tipo?: 'alimentacion' | 'otros';
 }
 
 export interface CompraItem {

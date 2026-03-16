@@ -95,17 +95,27 @@ def update_pedido_status(pedido_id):
     if new_status == 'entregado':
         pedido.entregado = True
     
-    # Stock Synchronization (before commit)
+    # Stock Synchronization & Client Stats (before commit)
+    cliente = Cliente.query.get(pedido.cliente_id)
     if new_status == 'cancelado' and old_status != 'cancelado':
         # Restore stock
         lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
         for l in lineas:
             adjust_stock_from_order(l.arroz_id, pedido.pax, restore=True)
+        # Update client stats: decrement
+        if cliente:
+            cliente.num_pedidos = max(0, (cliente.num_pedidos or 0) - 1)
+            cliente.raciones = max(0, (cliente.raciones or 0) - pedido.pax)
+
     elif old_status == 'cancelado' and new_status != 'cancelado':
         # Subtract stock again if uncanceled
         lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
         for l in lineas:
             adjust_stock_from_order(l.arroz_id, pedido.pax, restore=False)
+        # Update client stats: increment
+        if cliente:
+            cliente.num_pedidos = (cliente.num_pedidos or 0) + 1
+            cliente.raciones = (cliente.raciones or 0) + pedido.pax
 
     try:
         db.session.commit()
@@ -213,7 +223,14 @@ def update_pedido(pedido_id):
             return jsonify({"error": f"Invalid date format: {str(e)}"}), 400
 
     if 'pax' in data:
-        pedido.pax = data['pax']
+        new_pax_val = int(data['pax'])
+        # If order is active, sync client raciones
+        if pedido.status != 'cancelado':
+            cliente = Cliente.query.get(pedido.cliente_id)
+            if cliente:
+                diff = new_pax_val - pedido.pax
+                cliente.raciones = (cliente.raciones or 0) + diff
+        pedido.pax = new_pax_val
 
     if 'observaciones' in data:
         pedido.observaciones = data['observaciones']

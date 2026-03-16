@@ -475,3 +475,305 @@ def stats_mapa():
         "current":  {"label": format_label(year,     period, month, quarter, semester), "data": query_mapa(curr_start, curr_end)},
         "previous": {"label": format_label(year - 1, period, month, quarter, semester), "data": query_mapa(prev_start, prev_end)},
     }), 200
+
+@api_v1_bp.route('/clients/<int:client_id>/per-week', methods=['GET'])
+@requires_auth
+@requires_role(['admin', 'gerente', 'encargado'])
+def get_client_weekly_stats(client_id):
+    """
+    Returns weekly order history for a specific client.
+    """
+    # Get last 12 weeks of data
+    twelve_weeks_ago = datetime.utcnow() - timedelta(weeks=12)
+    
+    orders = db.session.query(
+        func.date(Pedido.fecha_pedido).label('fecha'),
+        func.sum(Pedido.pax).label('rations'),
+        func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('revenue'),
+        func.count(func.distinct(Pedido.id)).label('orders_count')
+    ).select_from(Pedido)\
+     .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
+     .filter(
+        Pedido.cliente_id == client_id,
+        Pedido.fecha_pedido >= twelve_weeks_ago,
+        Pedido.status != 'cancelado',
+        Pedido.deleted_at.is_(None)
+    ).group_by(func.date(Pedido.fecha_pedido)).order_by(func.date(Pedido.fecha_pedido).asc()).all()
+
+    # Aggregate by week in Python for robustness across SQL dialects
+    weekly_data = {}
+    for o in orders:
+        # o.fecha is a date object
+        year, week, _ = o.fecha.isocalendar()
+        key = f"{year}-W{week:02d}"
+        if key not in weekly_data:
+            weekly_data[key] = {"label": f"Sem {week}", "rations": 0, "revenue": 0, "orders_count": 0}
+        weekly_data[key]["rations"] += int(o.rations)
+        weekly_data[key]["revenue"] += float(o.revenue)
+        weekly_data[key]["orders_count"] += int(o.orders_count)
+
+    return jsonify(list(weekly_data.values())), 200
+@api_v1_bp.route('/clients/analysis', methods=['GET'])
+@requires_auth
+@requires_role(['admin', 'gerente', 'encargado'])
+def get_clients_analysis():
+    """
+    Returns data for the general client analysis dashboard with cohort comparison.
+    Supports: period=month|quarter|semester|ytd|all|custom
+    Custom range: start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
+    """
+    period = request.args.get('period', 'quarter')
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+    now = datetime.utcnow()
+
+    has_comparison = True
+
+    if start_date_str and end_date_str:
+        # Custom date range
+        curr_start = datetime.strptime(start_date_str, '%Y-%m-%d')
+        curr_end = datetime.strptime(end_date_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+        delta = curr_end - curr_start
+        prev_end = curr_start - timedelta(days=1)
+        prev_start = prev_end - delta
+    elif period == 'month':
+        curr_start = now - timedelta(days=30)
+        curr_end = now
+        prev_start = curr_start - timedelta(days=365)
+        prev_end = curr_end - timedelta(days=365)
+    elif period == 'semester':
+        curr_start = now - timedelta(days=180)
+        curr_end = now
+        prev_start = curr_start - timedelta(days=365)
+        prev_end = curr_end - timedelta(days=365)
+    elif period == '12months':
+        curr_start = now - timedelta(days=365)
+        curr_end = now
+        prev_start = curr_start - timedelta(days=365)
+        prev_end = curr_start
+    elif period == 'ytd':
+        curr_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        curr_end = now
+        prev_start = curr_start.replace(year=curr_start.year - 1)
+        prev_end = now.replace(year=now.year - 1)
+    elif period in ('all', 'historical'):
+        curr_start = datetime(2000, 1, 1)
+        curr_end = now
+        prev_start = None
+        prev_end = None
+        has_comparison = False
+    else: # quarter (default)
+        q_start_month = ((now.month - 1) // 3) * 3 + 1
+        curr_start = now.replace(month=q_start_month, day=1, hour=0, minute=0, second=0, microsecond=0)
+        curr_end = now
+        prev_start = curr_start.replace(year=curr_start.year - 1)
+        prev_end = curr_end.replace(year=curr_end.year - 1)
+
+    def get_period_buyers(start, end):
+        if not start or not end: return {}
+        rows = db.session.query(
+            Pedido.cliente_id,
+            func.sum(Pedido.pax).label('total_rations'),
+            func.count(func.distinct(Pedido.id)).label('total_orders')
+        ).filter(
+            Pedido.fecha_pedido >= start,
+            Pedido.fecha_pedido <= end,
+            Pedido.status != 'cancelado',
+            Pedido.deleted_at.is_(None)
+        ).group_by(Pedido.cliente_id).all()
+        return {r.cliente_id: {"rations": int(r.total_rations), "orders": int(r.total_orders)} for r in rows}
+
+    curr_buyers = get_period_buyers(curr_start, curr_end)
+    prev_buyers = get_period_buyers(prev_start, prev_end) if has_comparison else {}
+
+    cohorts = {
+        "new": 0, "lost": 0, "retained": 0, "grown": 0, "decreased": 0
+    }
+    cohort_ids = {
+        "new": [], "lost": [], "grown": [], "decreased": []
+    }
+
+    if has_comparison:
+        curr_ids = set(curr_buyers.keys())
+        prev_ids = set(prev_buyers.keys())
+
+        new_ids = list(curr_ids - prev_ids)
+        lost_ids = list(prev_ids - curr_ids)
+        cohorts["new"] = len(new_ids)
+        cohorts["lost"] = len(lost_ids)
+        cohort_ids["new"] = new_ids
+        cohort_ids["lost"] = lost_ids
+
+        retained_ids = curr_ids & prev_ids
+        cohorts["retained"] = len(retained_ids)
+
+        for cid in retained_ids:
+            if curr_buyers[cid]["rations"] > prev_buyers[cid]["rations"]:
+                cohorts["grown"] += 1
+                cohort_ids["grown"].append(cid)
+            elif curr_buyers[cid]["rations"] < prev_buyers[cid]["rations"]:
+                cohorts["decreased"] += 1
+                cohort_ids["decreased"].append(cid)
+    else:
+        cohorts["new"] = len(curr_buyers)
+        cohort_ids["new"] = list(curr_buyers.keys())
+
+    # Health Segments (Filtered by period buyers) — with IDs
+    segments = {"active": 0, "at_risk": 0, "inactive": 0, "churned": 0}
+    segment_ids = {"active": [], "at_risk": [], "inactive": [], "churned": []}
+
+    lo_query = db.session.query(
+        Pedido.cliente_id,
+        func.max(Pedido.fecha_pedido).label('last_date')
+    ).filter(Pedido.status != 'cancelado', Pedido.deleted_at.is_(None))
+
+    if has_comparison:
+        lo_query = lo_query.filter(Pedido.fecha_pedido >= curr_start)
+
+    last_orders = lo_query.group_by(Pedido.cliente_id).all()
+
+    # For 'all' mode, use absolute thresholds; for period mode, relative to period end
+    ref_date = curr_end
+    for lo in last_orders:
+        delta = ref_date - lo.last_date
+        weeks = delta.days // 7
+        if weeks < 4:
+            segments["active"] += 1
+            segment_ids["active"].append(lo.cliente_id)
+        elif weeks < 8:
+            segments["at_risk"] += 1
+            segment_ids["at_risk"].append(lo.cliente_id)
+        elif weeks < 12:
+            segments["inactive"] += 1
+            segment_ids["inactive"].append(lo.cliente_id)
+        else:
+            segments["churned"] += 1
+            segment_ids["churned"].append(lo.cliente_id)
+
+    # Zone Patterns (filtered by period)
+    zone_filter = [Pedido.status != 'cancelado', Pedido.deleted_at.is_(None)]
+    zone_filter.append(Pedido.fecha_pedido >= curr_start)
+    zone_filter.append(Pedido.fecha_pedido <= curr_end)
+
+    zone_stats = db.session.query(
+        Cliente.codigo_postal,
+        Arroz.nombre,
+        func.sum(Pedido.pax).label('total_rations')
+    ).select_from(Cliente)\
+     .join(Pedido, Cliente.id == Pedido.cliente_id)\
+     .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
+     .join(Arroz, Arroz.id == PedidoLinea.arroz_id)\
+     .filter(*zone_filter)\
+     .group_by(Cliente.codigo_postal, Arroz.id)\
+     .order_by(Cliente.codigo_postal, func.sum(Pedido.pax).desc()).all()
+     
+    patterns_by_cp = {}
+    for row in zone_stats:
+        cp = row.codigo_postal or "S/D"
+        if cp not in patterns_by_cp: patterns_by_cp[cp] = []
+        if len(patterns_by_cp[cp]) < 3:
+            patterns_by_cp[cp].append({"arroz": row.nombre, "rations": int(row.total_rations)})
+
+    # Campaign Suggestions
+    suggestions = []
+    if cohorts["lost"] > 0:
+        suggestions.append({
+            "type": "retention",
+            "title": "Recuperación de Clientes",
+            "description": f"Has perdido {cohorts['lost']} clientes respecto al periodo anterior. Considera una campaña dirigida.",
+            "impact": "Crítico"
+        })
+    if cohorts["decreased"] > 0:
+        suggestions.append({
+            "type": "alert",
+            "title": "Alerta de Descenso",
+            "description": f"{cohorts['decreased']} clientes fieles han bajado su volumen. Averigua si hay problemas de calidad o servicio.",
+            "impact": "Alto"
+        })
+    if segments["at_risk"] > 0:
+        suggestions.append({
+            "type": "retention",
+            "title": "Campaña de Reactivación",
+            "description": f"Hay {segments['at_risk']} clientes en riesgo (4-8 semanas sin pedir).",
+            "impact": "Alto"
+        })
+
+    return jsonify({
+        "period": period,
+        "cohorts": cohorts,
+        "cohort_ids": cohort_ids,
+        "segments": segments,
+        "segment_ids": segment_ids,
+        "patterns": patterns_by_cp,
+        "suggestions": suggestions
+    }), 200
+
+@api_v1_bp.route('/clients/<int:client_id>/full-history', methods=['GET'])
+@requires_auth
+@requires_role(['admin', 'gerente', 'encargado'])
+def get_client_full_history(client_id):
+    """
+    Returns monthly history and detailed specific orders for a client.
+    """
+    now = datetime.utcnow()
+    one_year_ago = now - timedelta(days=365)
+    
+    # 1. Monthly aggregated data (last 12 months)
+    y_col = extract('year', Pedido.fecha_pedido)
+    m_col = extract('month', Pedido.fecha_pedido)
+    
+    monthly_rows = db.session.query(
+        y_col.label('y'),
+        m_col.label('m'),
+        func.sum(Pedido.pax).label('rations'),
+        func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('revenue'),
+        func.count(func.distinct(Pedido.id)).label('orders_count')
+    ).join(PedidoLinea).filter(
+        Pedido.cliente_id == client_id,
+        Pedido.fecha_pedido >= one_year_ago,
+        Pedido.status != 'cancelado',
+        Pedido.deleted_at.is_(None)
+    ).group_by(y_col, m_col).order_by(y_col, m_col).all()
+
+    months_map = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+    monthly_data = []
+    for r in monthly_rows:
+        monthly_data.append({
+            "label": f"{months_map[int(r.m)-1]} {int(r.y)}",
+            "rations": int(r.rations),
+            "revenue": float(r.revenue),
+            "orders_count": int(r.orders_count)
+        })
+
+    # 2. Detailed order history (Last 50 orders)
+    detailed_orders = db.session.query(
+        Pedido.id,
+        Pedido.fecha_pedido,
+        Pedido.pax,
+        Pedido.status,
+        Pedido.local_recogida
+    ).filter(
+        Pedido.cliente_id == client_id,
+        Pedido.deleted_at.is_(None)
+    ).order_by(Pedido.fecha_pedido.desc()).limit(50).all()
+
+    last_orders = []
+    for p in detailed_orders:
+        # Get line items for this order
+        items = db.session.query(
+            Arroz.nombre
+        ).join(PedidoLinea).filter(PedidoLinea.pedido_id == p.id).all()
+        
+        last_orders.append({
+            "id": p.id,
+            "fecha": p.fecha_pedido.isoformat(),
+            "pax": p.pax,
+            "status": p.status,
+            "tipo": "Recogida" if p.local_recogida else "Reparto",
+            "items": [{"nombre": i.nombre} for i in items]
+        })
+
+    return jsonify({
+        "monthly": monthly_data,
+        "recent_orders": last_orders
+    }), 200

@@ -3,13 +3,13 @@ import { getIngredients, updateIngredient, recordPurchase, createIngredient } fr
 import type { Ingrediente } from '../types';
 import './StockPage.css';
 
-// Modal components initialized later or defined inline
-// For brevity and to follow user request for responsive visual, I'll implement logic here
+type TipoTab = 'alimentacion' | 'otros';
 
 export function StockPage() {
     const [ingredients, setIngredients] = useState<Ingrediente[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [activeTab, setActiveTab] = useState<TipoTab>('alimentacion');
     const [editingItem, setEditingItem] = useState<Ingrediente | null>(null);
     const [isPurchaseMode, setIsPurchaseMode] = useState(false);
     const [isAddMode, setIsAddMode] = useState(false);
@@ -20,7 +20,8 @@ export function StockPage() {
         unidad_medida: 'g',
         stock_actual: 0,
         stock_minimo: 0,
-        precio_actual: 0
+        precio_actual: 0,
+        tipo: 'alimentacion'
     });
 
     // Purchase state
@@ -44,9 +45,14 @@ export function StockPage() {
 
     const filteredIngredients = useMemo(() => {
         return ingredients.filter(i =>
+            (i.tipo || 'alimentacion') === activeTab &&
             i.nombre.toLowerCase().includes(search.toLowerCase())
         );
-    }, [ingredients, search]);
+    }, [ingredients, search, activeTab]);
+
+    const purchaseIngredients = useMemo(() => {
+        return ingredients.filter(i => (i.tipo || 'alimentacion') === activeTab);
+    }, [ingredients, activeTab]);
 
     const getStockStatus = (item: Ingrediente) => {
         const { stock_actual, stock_minimo } = item;
@@ -85,7 +91,8 @@ export function StockPage() {
                 unidad_medida: 'g',
                 stock_actual: 0,
                 stock_minimo: 0,
-                precio_actual: 0
+                precio_actual: 0,
+                tipo: activeTab
             });
             loadIngredients();
         } catch (error: any) {
@@ -109,7 +116,7 @@ export function StockPage() {
 
         try {
             await recordPurchase({
-                proveedor_id: 1, // Defaulting for now
+                proveedor_id: 1,
                 items,
                 observaciones: `Registro manual desde StockPage`
             });
@@ -119,6 +126,18 @@ export function StockPage() {
         } catch (error) {
             alert('Error al registrar compra');
         }
+    };
+
+    const handleOpenAdd = () => {
+        setNewItem({
+            nombre: '',
+            unidad_medida: activeTab === 'alimentacion' ? 'g' : 'ud',
+            stock_actual: 0,
+            stock_minimo: 0,
+            precio_actual: 0,
+            tipo: activeTab
+        });
+        setIsAddMode(true);
     };
 
     if (loading) return <div className="loading-container">Cargando stock...</div>;
@@ -142,7 +161,7 @@ export function StockPage() {
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className="btn-secondary" onClick={() => setIsAddMode(true)}>
+                        <button className="btn-secondary" onClick={handleOpenAdd}>
                             ➕ Nuevo Ingrediente
                         </button>
                         <button className="btn-primary" onClick={() => setIsPurchaseMode(true)}>
@@ -152,7 +171,28 @@ export function StockPage() {
                 </div>
             </header>
 
+            <div className="stock-tabs">
+                <button
+                    className={`stock-tab ${activeTab === 'alimentacion' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('alimentacion')}
+                >
+                    Alimentación
+                </button>
+                <button
+                    className={`stock-tab ${activeTab === 'otros' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('otros')}
+                >
+                    Otros
+                </button>
+            </div>
+
             <main className="stock-grid">
+                {filteredIngredients.length === 0 && (
+                    <div className="empty-state">
+                        No hay ingredientes de tipo "{activeTab === 'alimentacion' ? 'Alimentación' : 'Otros'}"
+                        {search && ` que coincidan con "${search}"`}
+                    </div>
+                )}
                 {filteredIngredients.map(item => {
                     const status = getStockStatus(item);
                     return (
@@ -183,60 +223,76 @@ export function StockPage() {
 
             {/* Modal de Edición Individual */}
             {editingItem && (
-                <div className="modal-overlay" onClick={() => setEditingItem(null)}>
+                <div className="modal-overlay">
                     <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
                         <header className="modal-header">
                             <h2>Editar {editingItem.nombre}</h2>
                             <button className="modal-close" onClick={() => setEditingItem(null)}>×</button>
                         </header>
                         <form onSubmit={handleSaveIngredient} className="modal-form">
-                            <div className="form-group">
-                                <label>Nombre</label>
-                                <input
-                                    type="text"
-                                    value={editingItem.nombre}
-                                    onChange={e => setEditingItem({ ...editingItem, nombre: e.target.value })}
-                                    required
-                                />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Nombre</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.nombre}
+                                        onChange={e => setEditingItem({ ...editingItem, nombre: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Unidad</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.unidad_medida}
+                                        onChange={e => setEditingItem({ ...editingItem, unidad_medida: e.target.value })}
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Unidad</label>
-                                <input
-                                    type="text"
-                                    value={editingItem.unidad_medida}
-                                    onChange={e => setEditingItem({ ...editingItem, unidad_medida: e.target.value })}
-                                    required
-                                />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Stock Actual</label>
+                                    <input
+                                        type="number"
+                                        step="0.001"
+                                        value={editingItem.stock_actual}
+                                        onChange={e => setEditingItem({ ...editingItem, stock_actual: parseFloat(e.target.value) })}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Stock Mínimo</label>
+                                    <input
+                                        type="number"
+                                        step="0.001"
+                                        value={editingItem.stock_minimo}
+                                        onChange={e => setEditingItem({ ...editingItem, stock_minimo: parseFloat(e.target.value) })}
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Stock Actual</label>
-                                <input
-                                    type="number"
-                                    step="0.001"
-                                    value={editingItem.stock_actual}
-                                    onChange={e => setEditingItem({ ...editingItem, stock_actual: parseFloat(e.target.value) })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Stock Mínimo</label>
-                                <input
-                                    type="number"
-                                    step="0.001"
-                                    value={editingItem.stock_minimo}
-                                    onChange={e => setEditingItem({ ...editingItem, stock_minimo: parseFloat(e.target.value) })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Precio de Coste Referencia (€)</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    value={editingItem.precio_actual}
-                                    onChange={e => setEditingItem({ ...editingItem, precio_actual: parseFloat(e.target.value) })}
-                                    required
-                                />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Precio de Coste Referencia (€)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={editingItem.precio_actual}
+                                        onChange={e => setEditingItem({ ...editingItem, precio_actual: parseFloat(e.target.value) })}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Tipo</label>
+                                    <select
+                                        value={editingItem.tipo || 'alimentacion'}
+                                        onChange={e => setEditingItem({ ...editingItem, tipo: e.target.value as 'alimentacion' | 'otros' })}
+                                    >
+                                        <option value="alimentacion">Alimentación</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn-secondary" onClick={() => setEditingItem(null)}>Cancelar</button>
@@ -249,10 +305,10 @@ export function StockPage() {
 
             {/* Modal de Compra (Bulk) */}
             {isPurchaseMode && (
-                <div className="modal-overlay" onClick={() => setIsPurchaseMode(false)}>
+                <div className="modal-overlay">
                     <div className="modal-content glass-card" style={{ width: '700px', maxWidth: '95vw', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
                         <header className="modal-header" style={{ padding: '24px 24px 0 24px' }}>
-                            <h2>Registrar Compra</h2>
+                            <h2>Registrar Compra — {activeTab === 'alimentacion' ? 'Alimentación' : 'Otros'}</h2>
                             <button className="modal-close" onClick={() => setIsPurchaseMode(false)}>×</button>
                         </header>
 
@@ -261,7 +317,7 @@ export function StockPage() {
                                 Introduce las cantidades compradas y el precio por unidad.
                             </p>
                             <div className="purchase-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                {ingredients.map(ing => (
+                                {purchaseIngredients.map(ing => (
                                     <div key={ing.id} className="glass-card" style={{ padding: '10px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div style={{ flex: 1 }}>
                                             <span>{ing.nombre}</span>
@@ -303,61 +359,77 @@ export function StockPage() {
             )}
             {/* Modal de Nuevo Ingrediente */}
             {isAddMode && (
-                <div className="modal-overlay" onClick={() => setIsAddMode(false)}>
+                <div className="modal-overlay">
                     <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
                         <header className="modal-header">
                             <h2>Añadir Nuevo Ingrediente</h2>
                             <button className="modal-close" onClick={() => setIsAddMode(false)}>×</button>
                         </header>
                         <form onSubmit={handleCreateIngredient} className="modal-form">
-                            <div className="form-group">
-                                <label>Nombre</label>
-                                <input
-                                    type="text"
-                                    value={newItem.nombre}
-                                    onChange={e => setNewItem({ ...newItem, nombre: e.target.value })}
-                                    required
-                                    autoFocus
-                                />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Nombre</label>
+                                    <input
+                                        type="text"
+                                        value={newItem.nombre}
+                                        onChange={e => setNewItem({ ...newItem, nombre: e.target.value })}
+                                        required
+                                        autoFocus
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Unidad (g, ml, ud, kg...)</label>
+                                    <input
+                                        type="text"
+                                        value={newItem.unidad_medida}
+                                        onChange={e => setNewItem({ ...newItem, unidad_medida: e.target.value })}
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Unidad (g, ml, ud, kg, etc.)</label>
-                                <input
-                                    type="text"
-                                    value={newItem.unidad_medida}
-                                    onChange={e => setNewItem({ ...newItem, unidad_medida: e.target.value })}
-                                    required
-                                />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Stock Inicial</label>
+                                    <input
+                                        type="number"
+                                        step="0.001"
+                                        value={newItem.stock_actual}
+                                        onChange={e => setNewItem({ ...newItem, stock_actual: parseFloat(e.target.value) })}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Stock Mínimo</label>
+                                    <input
+                                        type="number"
+                                        step="0.001"
+                                        value={newItem.stock_minimo}
+                                        onChange={e => setNewItem({ ...newItem, stock_minimo: parseFloat(e.target.value) })}
+                                        required
+                                    />
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Stock Inicial</label>
-                                <input
-                                    type="number"
-                                    step="0.001"
-                                    value={newItem.stock_actual}
-                                    onChange={e => setNewItem({ ...newItem, stock_actual: parseFloat(e.target.value) })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Stock Mínimo</label>
-                                <input
-                                    type="number"
-                                    step="0.001"
-                                    value={newItem.stock_minimo}
-                                    onChange={e => setNewItem({ ...newItem, stock_minimo: parseFloat(e.target.value) })}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Precio de Coste Referencia (€)</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    value={newItem.precio_actual}
-                                    onChange={e => setNewItem({ ...newItem, precio_actual: parseFloat(e.target.value) })}
-                                    required
-                                />
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label>Precio de Coste Referencia (€)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={newItem.precio_actual}
+                                        onChange={e => setNewItem({ ...newItem, precio_actual: parseFloat(e.target.value) })}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Tipo</label>
+                                    <select
+                                        value={newItem.tipo || 'alimentacion'}
+                                        onChange={e => setNewItem({ ...newItem, tipo: e.target.value as 'alimentacion' | 'otros' })}
+                                    >
+                                        <option value="alimentacion">Alimentación</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn-secondary" onClick={() => setIsAddMode(false)}>Cancelar</button>

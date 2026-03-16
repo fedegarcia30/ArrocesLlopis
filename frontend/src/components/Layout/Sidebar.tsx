@@ -44,6 +44,7 @@ export function Sidebar() {
             👥
           </NavLink>
 
+
           <NavLink
             to="/arroces"
             className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}

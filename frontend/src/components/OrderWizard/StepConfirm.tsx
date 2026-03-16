@@ -64,11 +64,11 @@ export function StepConfirm({
         </div>
         <div className="confirm-row">
           <span className="confirm-label">Fecha / Hora</span>
-          <span className="confirm-value">{date} <strong style={{ color: 'var(--gold)' }}>{slotTime}</strong></span>
+          <span className="confirm-value">{date} <strong style={{ color: 'var(--gold-primary)' }}>{slotTime}</strong></span>
         </div>
 
-        <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '12px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+        <div style={{ marginTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '12px' }}>
+          <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
             Líneas del pedido
           </label>
           {items.map((item, idx) => (
@@ -81,7 +81,7 @@ export function StepConfirm({
 
         <div style={{ marginTop: '12px' }}>
           {!canAddMore && (
-            <p style={{ color: 'var(--status-yellow)', fontSize: '0.8rem', textAlign: 'center', marginBottom: '10px' }}>
+            <p style={{ color: '#f1c40f', fontSize: '0.8rem', textAlign: 'center', marginBottom: '10px' }}>
               Intervalo {slotTime} completo. Selecciona otro para añadir más:
             </p>
           )}
@@ -91,7 +91,7 @@ export function StepConfirm({
               className="wizard-btn-next"
               onClick={onAddAnother}
               disabled={!canAddMore}
-              style={{ width: '100%', padding: '10px', background: canAddMore ? undefined : 'var(--bg-secondary)', color: canAddMore ? undefined : 'var(--text-muted)' }}
+              style={{ width: '100%', padding: '10px', background: canAddMore ? undefined : 'var(--bg-surface)', color: canAddMore ? undefined : 'var(--text-muted)' }}
             >
               + Añadir otro arroz {canAddMore ? `(quedan ${remainingPax} raciones)` : '(Lleno)'}
             </button>
@@ -113,7 +113,7 @@ export function StepConfirm({
           </div>
         </div>
 
-        <div className="confirm-row" style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)' }}>
+        <div className="confirm-row" style={{ marginTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
           <span className="confirm-label">Entrega</span>
           <span className="confirm-value">{recogida ? 'Recogida' : 'A domicilio'}</span>
         </div>

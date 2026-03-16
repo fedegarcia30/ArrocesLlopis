@@ -65,6 +65,12 @@ def requires_auth(f):
             
         except Exception as e:
             from app.utils.logger import logger
+            from sqlalchemy.exc import OperationalError
+            
+            if isinstance(e, OperationalError):
+                logger.error(f"Database connection failed during auth: {str(e)}")
+                return jsonify({"error": "Database connection failed. Please check server configuration."}), 503
+                
             logger.warning(f"Auth failed. Invalid token: {str(e)} - IP: {request.remote_addr}")
             return jsonify({"error": f"Invalid or expired token: {str(e)}"}), 401
 

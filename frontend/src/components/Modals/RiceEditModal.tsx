@@ -34,7 +34,7 @@ export function RiceEditModal({ rice, onClose, onSave, isSaving }: RiceEditModal
     };
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay">
             <div className={`modal-content glass-card ${view === 'recipe' ? 'recipe-view' : ''}`} onClick={(e) => e.stopPropagation()}>
                 <header className="modal-header">
                     <h2>{view === 'info' ? (rice ? 'Editar Arroz' : 'Nuevo Arroz') : `Receta: ${nombre}`}</h2>
@@ -72,27 +72,29 @@ export function RiceEditModal({ rice, onClose, onSave, isSaving }: RiceEditModal
                             />
                         </div>
 
-                        <div className="form-group">
-                            <label>Precio (por ración)</label>
-                            <input
-                                type="text"
-                                value={precio}
-                                onChange={(e) => setPrecio(e.target.value)}
-                                required
-                                placeholder="Ej: 13.50"
-                            />
-                        </div>
-
-
-                        <div className="form-group checkbox-group">
-                            <label className="checkbox-label">
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Precio / ración</label>
                                 <input
-                                    type="checkbox"
-                                    checked={disponible}
-                                    onChange={(e) => setDisponible(e.target.checked)}
+                                    type="text"
+                                    value={precio}
+                                    onChange={(e) => setPrecio(e.target.value)}
+                                    required
+                                    placeholder="13.50"
                                 />
-                                Disponible para pedidos
-                            </label>
+                            </div>
+
+                            <div className="form-group checkbox-group">
+                                <label>Estado</label>
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={disponible}
+                                        onChange={(e) => setDisponible(e.target.checked)}
+                                    />
+                                    Disponible para pedidos
+                                </label>
+                            </div>
                         </div>
 
                         <div className="modal-footer">

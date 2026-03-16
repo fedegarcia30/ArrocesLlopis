@@ -12,7 +12,11 @@ def get_ingredients():
     Lists all available ingredients with stock info.
     """
     try:
-        ingredients = Ingrediente.query.order_by(Ingrediente.nombre).all()
+        tipo = request.args.get('tipo')
+        query = Ingrediente.query
+        if tipo:
+            query = query.filter(Ingrediente.tipo == tipo)
+        ingredients = query.order_by(Ingrediente.nombre).all()
         return jsonify([
             {
                 "id": i.id,
@@ -20,7 +24,8 @@ def get_ingredients():
                 "unidad_medida": i.unidad_medida,
                 "stock_actual": float(i.stock_actual) if i.stock_actual else 0,
                 "stock_minimo": float(i.stock_minimo) if i.stock_minimo else 0,
-                "precio_actual": float(i.precio_actual) if i.precio_actual else 0
+                "precio_actual": float(i.precio_actual) if i.precio_actual else 0,
+                "tipo": i.tipo or 'alimentacion'
             } for i in ingredients
         ]), 200
     except Exception as e:
@@ -49,7 +54,8 @@ def create_ingredient():
             unidad_medida=data.get('unidad_medida', 'g'),
             stock_actual=data.get('stock_actual', 0),
             stock_minimo=data.get('stock_minimo', 0),
-            precio_actual=data.get('precio_actual', 0)
+            precio_actual=data.get('precio_actual', 0),
+            tipo=data.get('tipo', 'alimentacion')
         )
         
         db.session.add(nuevo_ingrediente)
@@ -76,7 +82,8 @@ def create_ingredient():
                 "unidad_medida": nuevo_ingrediente.unidad_medida,
                 "stock_actual": float(nuevo_ingrediente.stock_actual),
                 "stock_minimo": float(nuevo_ingrediente.stock_minimo),
-                "precio_actual": float(nuevo_ingrediente.precio_actual)
+                "precio_actual": float(nuevo_ingrediente.precio_actual),
+                "tipo": nuevo_ingrediente.tipo or 'alimentacion'
             }
         }), 201
     except Exception as e:
@@ -103,7 +110,9 @@ def update_ingredient(ingredient_id):
             ingredient.stock_actual = data['stock_actual']
         if 'stock_minimo' in data:
             ingredient.stock_minimo = data['stock_minimo']
-        
+        if 'tipo' in data:
+            ingredient.tipo = data['tipo']
+
         price_changed = False
         if 'precio_actual' in data:
             new_price = float(data['precio_actual'])

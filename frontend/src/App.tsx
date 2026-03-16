@@ -10,6 +10,8 @@ import { RicesPage } from './pages/RicesPage';
 import { StockPage } from './pages/StockPage';
 import { RepartosPage } from './pages/RepartosPage';
 import { MapaPage } from './pages/MapaPage';
+import { SafeAreaProvider } from './components/SafeAreaProvider';
+import { useScreenOrientation } from './hooks/useScreenOrientation';
 import type { ReactNode } from 'react';
 import './App.css';
 
@@ -61,8 +63,10 @@ function RoleRoute({ children, allowedRoles }: { children: ReactNode, allowedRol
 }
 
 function App() {
+  useScreenOrientation();
   return (
-    <BrowserRouter>
+    <SafeAreaProvider>
+      <BrowserRouter>
       <AuthProvider>
         <Routes>
           <Route
@@ -149,7 +153,8 @@ function App() {
 
         </Routes>
       </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </SafeAreaProvider>
   );
 }
 

@@ -6,13 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:mobile": "tsc -b && vite build --mode mobile",
+    "cap:sync": "npx cap sync",
+    "android:open": "npx cap open android",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
+    "@capacitor/screen-orientation": "^8.0.1",
     "@types/leaflet": "^1.9.21",
+    "capacitor-plugin-safe-area": "^5.0.0",
     "firebase": "^12.10.0",
     "leaflet": "^1.9.4",
     "react": "^19.2.0",

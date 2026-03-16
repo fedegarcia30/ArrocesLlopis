@@ -53,6 +53,8 @@ def get_clients():
     search = request.args.get('search', '').strip()
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 20, type=int)
+    sort_by = request.args.get('sort_by', 'nombre').strip()
+    sort_order = request.args.get('sort_order', 'asc').strip()
     
     query = Cliente.query.filter(Cliente.activo == True)
     if search:
@@ -61,7 +63,14 @@ def get_clients():
             (Cliente.telefono.like(f"%{search}%"))
         )
     
-    pagination = query.order_by(Cliente.nombre).paginate(page=page, per_page=per_page)
+    # Sorting logic
+    sort_column = getattr(Cliente, sort_by, Cliente.nombre)
+    if sort_order == 'desc':
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
+        
+    pagination = query.paginate(page=page, per_page=per_page)
     
     return jsonify({
         "clients": [serialize_client(c) for c in pagination.items],
@@ -119,113 +128,242 @@ def delete_client(client_id):
 def get_client_stats():
     """
     Returns administrative KPIs for clients with dynamic period support.
+    Supports: period=month|quarter|semester|ytd|all|custom
+    Custom range: start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
     """
     from datetime import datetime, timedelta
     from sqlalchemy import func
     from app.models import Pedido, Cliente
     from app import db
-    
+
     period = request.args.get('period', 'quarter')
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
     now = datetime.utcnow()
-    
-    # Define current and previous year time windows
-    if period == 'month':
-        start_date = now - timedelta(days=30)
+
+    has_comparison = True
+
+    if start_date_str and end_date_str:
+        # Custom date range
+        curr_start = datetime.strptime(start_date_str, '%Y-%m-%d')
+        curr_end = datetime.strptime(end_date_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+        delta = curr_end - curr_start
+        prev_end = curr_start - timedelta(days=1)
+        prev_start = prev_end - delta
+        label_period = "rango seleccionado"
+    elif period == 'all':
+        curr_start = datetime(2000, 1, 1)
+        curr_end = now
+        prev_start = None
+        prev_end = None
+        has_comparison = False
+        label_period = "histórico"
+    elif period == 'month':
+        curr_start = now - timedelta(days=30)
+        curr_end = now
+        prev_start = curr_start - timedelta(days=365)
+        prev_end = curr_end - timedelta(days=365)
         label_period = "mes"
     elif period == 'semester':
-        start_date = now - timedelta(days=180)
+        curr_start = now - timedelta(days=180)
+        curr_end = now
+        prev_start = curr_start - timedelta(days=365)
+        prev_end = curr_end - timedelta(days=365)
         label_period = "semestre"
     elif period == 'ytd':
-        start_date = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        curr_start = now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        curr_end = now
+        prev_start = curr_start.replace(year=curr_start.year - 1)
+        prev_end = curr_end.replace(year=curr_end.year - 1)
         label_period = "año (YTD)"
     else: # quarter (default)
-        start_date = now - timedelta(days=90)
+        curr_start = now - timedelta(days=90)
+        curr_end = now
+        prev_start = curr_start - timedelta(days=365)
+        prev_end = curr_end - timedelta(days=365)
         label_period = "trimestre"
 
-    # Precise boundaries
-    curr_start = start_date
-    curr_end = now
-    prev_start = curr_start - timedelta(days=365)
-    prev_end = curr_end - timedelta(days=365)
+    # 1. Total Clients who ordered in period (period-aware)
+    total_in_period = db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
+        .filter(
+            Pedido.fecha_pedido >= curr_start,
+            Pedido.fecha_pedido <= curr_end,
+            Pedido.status != 'cancelado',
+            Pedido.deleted_at.is_(None)
+        ).scalar() or 0
 
-    # 1. Total Clients & New Clients Growth (YoY)
-    total_active_clients = Cliente.query.filter(Cliente.activo == True).count()
-    new_curr = Cliente.query.filter((Cliente.created_at >= curr_start) & (Cliente.activo == True)).count()
-    new_prev = Cliente.query.filter((Cliente.created_at >= prev_start) & (Cliente.created_at <= prev_end) & (Cliente.activo == True)).count()
-    
-    growth_total = ((new_curr - new_prev) / new_prev * 100) if new_prev > 0 else (100 if new_curr > 0 else 0)
+    if has_comparison:
+        total_prev = db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
+            .filter(
+                Pedido.fecha_pedido >= prev_start,
+                Pedido.fecha_pedido <= prev_end,
+                Pedido.status != 'cancelado',
+                Pedido.deleted_at.is_(None)
+            ).scalar() or 0
+        growth_total = ((total_in_period - total_prev) / total_prev * 100) if total_prev > 0 else (100 if total_in_period > 0 else 0)
+    else:
+        growth_total = 0
 
-    # 2. Active Clients (YoY)
-    active_curr = db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
-        .filter(Pedido.fecha_pedido >= curr_start).scalar() or 0
-    active_prev = db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
-        .filter((Pedido.fecha_pedido >= prev_start) & (Pedido.fecha_pedido <= prev_end)).scalar() or 0
-    
-    growth_active = ((active_curr - active_prev) / active_prev * 100) if active_prev > 0 else (100 if active_curr > 0 else 0)
+    # 2. Dormant Clients (ordered in period but last order >12 weeks ago)
+    def count_dormant(start, end):
+        """Count clients whose last order within [start, end] is >12 weeks before end."""
+        last_orders = db.session.query(
+            Pedido.cliente_id,
+            func.max(Pedido.fecha_pedido).label('last_date')
+        ).filter(
+            Pedido.fecha_pedido >= start,
+            Pedido.fecha_pedido <= end,
+            Pedido.status != 'cancelado',
+            Pedido.deleted_at.is_(None)
+        ).group_by(Pedido.cliente_id).all()
 
-    # 3. Churn Clients (YoY)
-    # Churn Current: ordered in [T - 2*window, T - window] but NOT in [T - window, now]
-    window_delta = curr_end - curr_start
-    curr_churn_window_start = curr_start - window_delta
-    recent_buyers_sub = db.session.query(Pedido.cliente_id).filter(Pedido.fecha_pedido >= curr_start)
-    
-    churn_curr = db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
-        .filter((Pedido.fecha_pedido >= curr_churn_window_start) & (Pedido.fecha_pedido < curr_start))\
-        .filter(~Pedido.cliente_id.in_(recent_buyers_sub)).scalar() or 0
-        
-    # Churn Previous Year (YoY): ordered in [PrevT - window, PrevT] but NOT in [PrevT, PrevEnd]
-    prev_churn_window_start = prev_start - window_delta
-    hist_buyers_sub = db.session.query(Pedido.cliente_id).filter((Pedido.fecha_pedido >= prev_start) & (Pedido.fecha_pedido <= prev_end))
-    
-    churn_prev = db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
-        .filter((Pedido.fecha_pedido >= prev_churn_window_start) & (Pedido.fecha_pedido < prev_start))\
-        .filter(~Pedido.cliente_id.in_(hist_buyers_sub)).scalar() or 0
-        
-    growth_churn = ((churn_curr - churn_prev) / churn_prev * 100) if churn_prev > 0 else (100 if churn_curr > 0 else 0)
+        count = 0
+        for lo in last_orders:
+            weeks = (end - lo.last_date).days // 7
+            if weeks > 12:
+                count += 1
+        return count
 
-    # 4. VIP Clients (YoY)
-    def get_vip_count(start, end):
-        # Avg orders per client in this window
+    dormant_curr = count_dormant(curr_start, curr_end)
+    if has_comparison:
+        dormant_prev = count_dormant(prev_start, prev_end)
+        growth_dormant = ((dormant_curr - dormant_prev) / dormant_prev * 100) if dormant_prev > 0 else (100 if dormant_curr > 0 else 0)
+    else:
+        growth_dormant = 0
+
+    # 3. Churn/Lost Clients (same logic as /clients/analysis cohort "lost")
+    # Lost = clients who ordered in prev period but NOT in current period
+    if has_comparison:
+        valid_filter = [Pedido.status != 'cancelado', Pedido.deleted_at.is_(None)]
+
+        curr_buyer_ids = db.session.query(Pedido.cliente_id).filter(
+            Pedido.fecha_pedido >= curr_start,
+            Pedido.fecha_pedido <= curr_end,
+            *valid_filter
+        )
+        prev_buyer_ids_q = db.session.query(func.distinct(Pedido.cliente_id)).filter(
+            Pedido.fecha_pedido >= prev_start,
+            Pedido.fecha_pedido <= prev_end,
+            *valid_filter
+        )
+        # Lost current: ordered in prev but not in curr
+        churn_curr = prev_buyer_ids_q.filter(
+            ~Pedido.cliente_id.in_(curr_buyer_ids)
+        ).count()
+
+        # For growth: compare with the year before that
+        try:
+            pp_start = prev_start.replace(year=prev_start.year - 1)
+            pp_end = prev_end.replace(year=prev_end.year - 1)
+        except ValueError:
+            pp_start = prev_start.replace(year=prev_start.year - 1, day=28)
+            pp_end = prev_end.replace(year=prev_end.year - 1, day=28)
+
+        prev_buyer_sub_2 = db.session.query(Pedido.cliente_id).filter(
+            Pedido.fecha_pedido >= prev_start,
+            Pedido.fecha_pedido <= prev_end,
+            *valid_filter
+        )
+        pp_buyer_ids_q = db.session.query(func.distinct(Pedido.cliente_id)).filter(
+            Pedido.fecha_pedido >= pp_start,
+            Pedido.fecha_pedido <= pp_end,
+            *valid_filter
+        )
+        churn_prev = pp_buyer_ids_q.filter(
+            ~Pedido.cliente_id.in_(prev_buyer_sub_2)
+        ).count()
+
+        growth_churn = ((churn_curr - churn_prev) / churn_prev * 100) if churn_prev > 0 else (100 if churn_curr > 0 else 0)
+    else:
+        churn_curr = 0
+        growth_churn = 0
+
+    # 4. VIP Clients
+    def get_vip_data(start, end):
+        """Returns (count, list_of_ids) for VIP clients."""
+        base_filter = [
+            Pedido.fecha_pedido >= start,
+            Pedido.fecha_pedido <= end,
+            Pedido.status != 'cancelado',
+            Pedido.deleted_at.is_(None)
+        ]
         subq_avg = db.session.query(func.count(Pedido.id).label('ord_count'))\
-            .filter((Pedido.fecha_pedido >= start) & (Pedido.fecha_pedido <= end))\
+            .filter(*base_filter)\
             .group_by(Pedido.cliente_id).subquery()
         avg_val = db.session.query(func.avg(subq_avg.c.ord_count)).scalar() or 0
-        
-        # Count clients above avg
-        if avg_val == 0: return 0
-        return db.session.query(func.count(func.distinct(Pedido.cliente_id)))\
-            .group_by(Pedido.cliente_id)\
-            .having(func.count(Pedido.id) > avg_val)\
-            .filter((Pedido.fecha_pedido >= start) & (Pedido.fecha_pedido <= end)).count()
 
-    vip_curr = get_vip_count(curr_start, curr_end)
-    vip_prev = get_vip_count(prev_start, prev_end)
-    growth_vip = ((vip_curr - vip_prev) / vip_prev * 100) if vip_prev > 0 else (100 if vip_curr > 0 else 0)
+        if avg_val == 0:
+            return 0, []
+
+        vip_rows = db.session.query(Pedido.cliente_id)\
+            .filter(*base_filter)\
+            .group_by(Pedido.cliente_id)\
+            .having(func.count(Pedido.id) > avg_val).all()
+        vip_ids_list = [r.cliente_id for r in vip_rows]
+        return len(vip_ids_list), vip_ids_list
+
+    vip_curr, vip_curr_ids = get_vip_data(curr_start, curr_end)
+    if has_comparison:
+        vip_prev, _ = get_vip_data(prev_start, prev_end)
+        growth_vip = ((vip_curr - vip_prev) / vip_prev * 100) if vip_prev > 0 else (100 if vip_curr > 0 else 0)
+    else:
+        growth_vip = 0
+
+    sublabel = "total histórico" if not has_comparison else f"vs {label_period} anterior"
 
     return jsonify({
         "total_clients": {
-            "value": total_active_clients,
+            "value": total_in_period,
             "growth": round(growth_total, 1),
-            "label": "Total de clientes",
-            "sublabel": f"vs {label_period} año anterior"
+            "label": "Clientes en periodo",
+            "sublabel": sublabel
         },
-        "active_clients": {
-            "value": active_curr,
-            "growth": round(growth_active, 1),
-            "label": "Clientes activos",
-            "sublabel": f"vs {label_period} año anterior"
+        "dormant_clients": {
+            "value": dormant_curr,
+            "growth": round(growth_dormant, 1),
+            "label": "Clientes dormidos",
+            "sublabel": sublabel,
+            "inverse": True
         },
         "churn_clients": {
             "value": churn_curr,
             "growth": round(growth_churn, 1),
             "label": "Clientes perdidos",
-            "sublabel": f"vs {label_period} año anterior",
+            "sublabel": sublabel,
             "inverse": True
         },
         "power_users": {
             "value": vip_curr,
             "growth": round(growth_vip, 1),
             "label": "Clientes VIP",
-            "sublabel": f"vs {label_period} año anterior"
-        }
+            "sublabel": sublabel
+        },
+        "vip_ids": vip_curr_ids
     }), 200
+
+
+@api_v1_bp.route('/clients/geo', methods=['POST'])
+@requires_auth
+def get_clients_geo():
+    """
+    Returns geo data for a list of client IDs.
+    Used to show client locations on the map independently of orders.
+    """
+    data = request.get_json()
+    ids = data.get('ids', [])
+    if not ids:
+        return jsonify([]), 200
+
+    clientes = Cliente.query.filter(
+        Cliente.id.in_(ids),
+        Cliente.activo == True
+    ).all()
+
+    return jsonify([{
+        "cliente_id": c.id,
+        "nombre": c.nombre,
+        "lat": float(c.latitud) if c.latitud else None,
+        "lng": float(c.longitud) if c.longitud else None,
+        "direccion_limpia": c.direccion_limpia if hasattr(c, 'direccion_limpia') else "",
+        "codigo_postal": c.codigo_postal or ""
+    } for c in clientes]), 200

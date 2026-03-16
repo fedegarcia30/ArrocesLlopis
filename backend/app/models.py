@@ -77,6 +77,7 @@ class Ingrediente(db.Model):
     stock_actual = db.Column(db.Numeric(10, 3), default=0)
     stock_minimo = db.Column(db.Numeric(10, 3), default=0)
     precio_actual = db.Column(db.Numeric(10, 2), default=0) # Added for price tracking
+    tipo = db.Column(db.Enum('alimentacion', 'otros'), default='alimentacion')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

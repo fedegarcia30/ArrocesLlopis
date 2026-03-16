@@ -95,27 +95,14 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  background: #2ecc71;
+  border: none;
+  box-shadow: 0 0 4px rgba(46, 204, 113, 0.4);
 }
 
 .slot-dot.filled {
-  border-color: transparent;
-}
-
-.slot-card[data-status='green'] .slot-dot.filled {
-  background: var(--status-green);
-  box-shadow: 0 0 5px var(--status-green);
-}
-
-.slot-card[data-status='yellow'] .slot-dot.filled {
-  background: var(--status-yellow);
-  box-shadow: 0 0 5px var(--status-yellow);
-}
-
-.slot-card[data-status='red'] .slot-dot.filled {
-  background: var(--status-red);
-  box-shadow: 0 0 5px var(--status-red);
+  background: #e74c3c;
+  box-shadow: 0 0 4px rgba(231, 76, 60, 0.4);
 }
 
 .slot-info {

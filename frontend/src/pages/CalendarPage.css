@@ -120,8 +120,29 @@
 }
 
 @media (max-width: 767px) {
-    .calendar-page { padding: 20px; }
-    .calendar-header { flex-direction: column; align-items: stretch; }
+    .calendar-page { padding: 16px; gap: 16px; }
+    .calendar-header { flex-direction: column; align-items: stretch; gap: 12px; }
     .calendar-nav h2 { min-width: 0; flex: 1; }
-    .calendar-day { padding: 8px; min-height: 80px; }
+    .calendar-day { padding: 8px; min-height: 70px; }
+
+    .calendar-weekday {
+        /* Aumentado desde 10px para legibilidad mobile */
+        font-size: 11px;
+        padding-bottom: 8px;
+    }
+
+    .stat-pax {
+        /* Aumentado desde 10px para legibilidad mobile */
+        font-size: 11px;
+    }
+
+    .calendar-grid {
+        gap: 6px;
+    }
+
+    .calendar-nav button {
+        /* Touch target 44x44px */
+        width: 44px;
+        height: 44px;
+    }
 }

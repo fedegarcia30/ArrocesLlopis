@@ -86,6 +86,23 @@
     opacity: 0.7;
 }
 
+/* Indicador visual de scroll horizontal en week-grid */
+.week-grid-wrapper {
+    position: relative;
+}
+
+.week-grid-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 32px;
+    height: 100%;
+    background: linear-gradient(to right, transparent, var(--bg-primary, #0a0a0a));
+    pointer-events: none;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
 .repartos-pills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -142,9 +159,18 @@
 }
 
 @media (max-width: 767px) {
-  .repartos-page { padding: 20px; }
+  .repartos-page { padding: 16px; }
   .repartos-pills-grid { grid-template-columns: repeat(2, 1fr); }
   .day-card { min-width: 70px; }
+
+  .day-name {
+    /* Aumentado desde 10px para legibilidad mobile */
+    font-size: 12px;
+  }
+
+  .feedback-modal, .anular-modal {
+    padding: 20px 16px;
+  }
 }
 
 @media (max-width: 480px) {

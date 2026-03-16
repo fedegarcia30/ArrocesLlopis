@@ -215,8 +215,8 @@
 .stock-page .modal-close {
     font-size: 1.4rem;
     color: var(--text-muted);
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -376,12 +376,28 @@
 }
 
 @media (max-width: 767px) {
-    .stock-page { padding: 20px; }
-    .stock-header { flex-direction: column; align-items: stretch; }
+    .stock-page { padding: 16px; }
+    .stock-header { flex-direction: column; align-items: stretch; gap: 12px; }
     .stock-actions { flex-direction: column; align-items: stretch; }
     .stock-filters { width: 100%; }
     .stock-search:focus { width: 100%; }
-    .stock-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stock-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
     .stock-page .form-row { grid-template-columns: 1fr; }
-    .stock-page .modal-content { padding: 20px; max-width: 95vw; }
+    .stock-page .modal-content {
+        padding: 16px;
+        max-width: 100%;
+        max-height: 92vh;
+        overflow-y: auto;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    .stock-page .modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .stock-page .form-group input,
+    .stock-page .form-group select,
+    .stock-page .form-group textarea {
+        /* iOS auto-zoom prevention */
+        font-size: 16px;
+    }
 }

@@ -290,9 +290,34 @@
 
     .stat-info-btn {
         opacity: 1;
+        /* Ampliar área táctil a 44x44px con padding compensado para no alterar visualmente */
+        width: 22px;
+        height: 22px;
+        padding: 11px;
+        box-sizing: content-box;
+        top: -1px;
+        right: -1px;
+    }
+
+    .section-info-btn {
+        /* Ampliar área táctil a 44x44px */
+        width: 20px;
+        height: 20px;
+        padding: 12px;
+        box-sizing: content-box;
+        margin-left: 0;
     }
 
     .stat-info-modal {
         max-width: 100%;
+    }
+
+    .stat-info-overlay {
+        padding: 12px;
+        align-items: flex-end;
+    }
+
+    .stat-info-modal {
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
 }

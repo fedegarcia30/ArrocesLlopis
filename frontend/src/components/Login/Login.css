@@ -104,3 +104,14 @@
   border-radius: var(--radius-sm);
   font-weight: 700;
 }
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 40px 20px;
+  }
+
+  .login-form input {
+    /* iOS auto-zoom prevention */
+    font-size: 16px;
+  }
+}

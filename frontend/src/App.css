@@ -120,6 +120,7 @@
   transform: translate(-50%, -120%) scale(1.05);
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), 0 0 20px var(--gold-glow);
   min-width: 320px;
+  max-width: calc(100vw - 32px);
 }
 
 .btn-clear-selection {
@@ -163,18 +164,19 @@
 
 @media (max-width: 767px) {
   .dashboard {
-    padding: 20px;
-    gap: 20px;
+    padding: 16px;
+    gap: 16px;
   }
 
   .dashboard-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
   }
 
   .dashboard-split {
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
     overflow-y: auto;
   }
 
@@ -183,7 +185,17 @@
     width: 100%;
   }
 
+  .dashboard-right {
+    gap: 12px;
+  }
+
   .fab-new-order {
     width: 100%;
+    min-height: 48px;
+  }
+
+  .touch-drag-ghost {
+    min-width: 0;
+    width: calc(100vw - 32px);
   }
 }

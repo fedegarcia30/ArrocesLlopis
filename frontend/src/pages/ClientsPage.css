@@ -123,6 +123,14 @@
     font-size: 16px;
 }
 
+@media (max-width: 767px) {
+    .edit-btn, .delete-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+}
+
 .edit-btn:hover {
     background: rgba(212, 175, 55, 0.15);
     border-color: var(--gold-primary);
@@ -354,7 +362,7 @@
     .clients-table thead { display: none; }
     .clients-table td {
         display: block;
-        padding: 12px 24px;
+        padding: 12px 16px;
         text-align: right;
     }
     .clients-table td::before {
@@ -363,6 +371,7 @@
         font-weight: 800;
         color: var(--gold-primary);
         text-transform: uppercase;
-        font-size: 10px;
+        /* Aumentado desde 10px para legibilidad mobile */
+        font-size: 12px;
     }
 }

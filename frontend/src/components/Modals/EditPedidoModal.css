@@ -323,3 +323,66 @@
   font-size: 0.82rem;
   cursor: pointer;
 }
+
+/* ── Mobile fixes (max-width: 767px) ────────── */
+@media (max-width: 767px) {
+  .edit-pedido-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .edit-pedido-modal {
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    padding: 20px 16px 16px;
+    /* Asegurar que el modal no quede tapado por el teclado virtual */
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .edit-pedido-close {
+    /* Touch target 44x44px */
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+  }
+
+  .edit-pax-btn {
+    /* Touch target 44x44px */
+    width: 44px;
+    height: 44px;
+  }
+
+  .edit-input,
+  .edit-textarea {
+    /* iOS auto-zoom prevention: mínimo 16px */
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .edit-field-label {
+    font-size: 0.82rem;
+  }
+
+  .edit-arroz-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .edit-arroz-btn {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    min-height: 44px;
+  }
+
+  .edit-btn-primary,
+  .edit-btn-danger-outline,
+  .edit-btn-danger,
+  .edit-btn-secondary {
+    min-height: 44px;
+  }
+}

@@ -181,6 +181,24 @@
     font-size: 1.2rem;
 }
 
+@media (max-width: 767px) {
+    .btn-remove {
+        /* Touch target 44x44px */
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+    }
+
+    .recipe-footer {
+        padding: 16px;
+        gap: 10px;
+    }
+
+    .recipe-footer button {
+        min-height: 48px;
+    }
+}
+
 .btn-remove:hover {
     background: #ff6060;
     color: white;

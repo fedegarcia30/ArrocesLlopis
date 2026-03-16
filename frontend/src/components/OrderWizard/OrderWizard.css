@@ -57,8 +57,8 @@
 .wizard-close {
   font-size: 1.4rem;
   color: var(--text-muted);
-  min-height: 36px;
-  min-width: 36px;
+  min-height: 44px;
+  min-width: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -500,14 +500,22 @@
 
 /* ── Responsive ───────────────────────────────── */
 @media (max-width: 768px) {
+  .wizard-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
   .wizard-panel {
-    max-height: 98vh;
+    max-height: 95vh;
     padding: 16px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
   }
 
   .pax-btn {
-    width: 40px;
-    height: 40px;
+    /* Touch target 44x44px */
+    width: 44px;
+    height: 44px;
     font-size: 1.2rem;
   }
 
@@ -517,5 +525,13 @@
 
   .rice-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wizard-step input[type="text"],
+  .wizard-step input[type="tel"],
+  .wizard-step input[type="number"],
+  .wizard-step textarea {
+    /* iOS auto-zoom prevention */
+    font-size: 16px;
   }
 }

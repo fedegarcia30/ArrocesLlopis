@@ -12893,3 +12893,6 @@ AttributeError: type object 'PedidoLinea' has no attribute 'pax_linea'
 2026-03-15 17:24:43,282 | INFO     | app | [GET] /api/v1/rices/1/recipe - Status: 200 - Duration: 0.037s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
 2026-03-15 17:25:45,739 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
 2026-03-15 17:25:45,740 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.036s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-03-17 09:41:55,847 | INFO     | app | Logger initialized successfully at level INFO
+2026-03-17 09:41:56,452 | INFO     | app | Logger initialized successfully at level INFO
+2026-03-17 09:41:59,446 | INFO     | app | [GET] / - Status: 200 - Duration: 0.003s - IP: 127.0.0.1 - User: Anonymous

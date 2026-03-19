@@ -467,7 +467,7 @@ export function MapaPage({ filterClientIds, filterColor, filterLabel }: MapaPage
       {error && <div className="mapa-error">{error}</div>}
 
       <div className="mapa-container">
-        <MapContainer center={[40.4, -3.7]} zoom={7} style={{ height: '100%', width: '100%' }}>
+        <MapContainer center={[40.483, -3.706]} zoom={13} style={{ height: '100%', width: '100%' }}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -546,27 +546,29 @@ export function MapaPage({ filterClientIds, filterColor, filterLabel }: MapaPage
           }
         </div>
 
-        {/* Leyenda */}
-        {!isGeoMode && (
-          <div className="mapa-legend">
-            <div className="legend-section-label">{currLabel}</div>
-            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_LOCAL }} />Local</span>
-            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_REPARTO }} />Reparto</span>
-            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_MIXED }} />Ambos</span>
-            {compare && <>
-              <div className="legend-section-label" style={{ marginTop: 6 }}>{prevLabel}</div>
-              <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_LOCAL }} />Local</span>
-              <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_REPARTO }} />Reparto</span>
-              <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_MIXED }} />Ambos</span>
-              <div className="legend-section-label" style={{ marginTop: 6 }}>Ambos períodos</div>
-              <span className="legend-item">
-                <span className="legend-dot legend-dot-gradient" style={{ background: `linear-gradient(135deg, ${COLOR_OVERLAP_CURR}, ${COLOR_OVERLAP_PREV})` }} />
-                +{currLabel} / +{prevLabel}
-              </span>
-            </>}
-          </div>
-        )}
       </div>
+
+      {/* Leyenda — fuera del mapa */}
+      {!isGeoMode && (
+        <div className="mapa-legend">
+          <span className="legend-section-label">{currLabel}</span>
+          <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_LOCAL }} />Local</span>
+          <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_REPARTO }} />Reparto</span>
+          <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_MIXED }} />Ambos</span>
+          {compare && <>
+            <span className="legend-divider" />
+            <span className="legend-section-label">{prevLabel}</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_LOCAL }} />Local</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_REPARTO }} />Reparto</span>
+            <span className="legend-item"><span className="legend-dot" style={{ background: COLOR_PREV_MIXED }} />Ambos</span>
+            <span className="legend-divider" />
+            <span className="legend-item">
+              <span className="legend-dot legend-dot-gradient" style={{ background: `linear-gradient(135deg, ${COLOR_OVERLAP_CURR}, ${COLOR_OVERLAP_PREV})` }} />
+              Ambos períodos
+            </span>
+          </>}
+        </div>
+      )}
     </div>
   );
 }

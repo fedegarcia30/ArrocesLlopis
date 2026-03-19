@@ -171,35 +171,47 @@
 }
 
 .mapa-legend {
-  position: absolute;
-  bottom: calc(24px + var(--safe-bottom));
-  right: 24px;
-  z-index: 1000;
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 10px 16px;
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  padding: 20px;
   border-radius: var(--radius-md);
   border: var(--glass-border);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 200px;
+  box-shadow: var(--glass-shadow);
+}
+
+.legend-section-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--gold-primary);
+  white-space: nowrap;
+}
+
+.legend-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--glass-border-color, rgba(255,255,255,0.1));
+  flex-shrink: 0;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   font-size: var(--text-xs);
   font-weight: 600;
   color: var(--text-dim);
+  white-space: nowrap;
 }
 
 .legend-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 767px) {
@@ -215,9 +227,7 @@
   }
 
   .mapa-legend {
-    bottom: calc(100px + var(--safe-bottom));
-    right: 16px;
-    left: 16px;
-    min-width: 0;
+    padding: 8px 12px;
+    gap: 4px 12px;
   }
 }

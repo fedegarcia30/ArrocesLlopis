@@ -13,6 +13,7 @@ def test_invalid_auth_header(client):
     )
     assert response.status_code == 401
     assert "Invalid or expired token" in response.get_json()["error"]
+    assert "default credentials were not found" not in response.get_json()["error"]
 
 def test_dev_bypass_auth_header(client):
     # Tests that using DEV_BYPASS_TOKEN lets it pass the auth layer

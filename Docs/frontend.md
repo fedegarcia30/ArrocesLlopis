@@ -97,20 +97,24 @@ Rutas:
 - Soporta drag-and-drop para mover pedidos entre slots
 - Recibe `slots`, `loading`, `error`, callbacks `onSlotSelect`, `onDropOrder`
 
-### `OrderWizard` (4 pasos)
+### `OrderSheet` (hoja de pedido — alta y edición)
+Pantalla completa, una sola vista. Sustituye al antiguo `OrderWizard` de 4 pasos y a `EditPedidoModal`.
 ```
-Step 0 (StepContact)    → Buscar cliente por teléfono / crear nuevo
-Step 1 (StepSelection)  → Elegir arroz + PAX
-Step 2 (StepFulfillment)→ Recogida o domicilio + observaciones
-Step 3 (StepConfirm)    → Resumen + "Añadir otro arroz" o confirmar
+OrderSheet.tsx     → estado, validación ("Falta: …"), guardado (createOrder / PATCH lines)
+ClientPicker.tsx   → búsqueda por teléfono o nombre (GET /clients?search), alta inline,
+                     avisos de la ficha y "Repetir" últimos pedidos
+RiceCart.tsx       → carrito de arroces: toque = añadir, stepper −/+ y atajos 2…12
+SlotPicker.tsx     → chips de día (7 días + "Otra") y rejilla de franjas con capacidad real
+slotCapacity.ts    → cálculo de hueco descontando el propio pedido en modo edición
 ```
-- Soporta múltiples arroces por pedido (llama `createOrder` por cada item)
-- Se puede cambiar el slot activo desde el paso 3 si el original se llena
+- Props: `pedido?` (si viene → edición), `initialDate`, `initialTime?`, `onClose`, `onSaved({date, time, message})`
+- Tablet (≥900px): 2 columnas (cliente/entrega/notas · arroces/hora). Móvil: 1 columna reordenada con `display: contents` + `order`
+- Un pedido = un encargo con N líneas (`order.lines`)
+- Dirección cambiada: "guardar en ficha del cliente" (PUT /clients/:id) o "solo este pedido" (se anota en observaciones)
 
 ### `OrderCard`
-- Tarjeta de pedido con cambio de estado
-- Soporta drag táctil (`onDragStartTouch`) para móvil
-- Muestra: nombre cliente, arroz, PAX, hora, status badge
+- Toque → abre la hoja en modo edición. Badge de estado → avanza estado. Swipe der. → entregado, swipe izq. → editar. Pulsación larga → arrastrar a otra franja
+- Muestra: cliente, todas las líneas (`resumenLineas`), PAX, hora, 🏠/🛵, observaciones
 
 ### `Sidebar`
 - Iconos de navegación filtrados según rol del usuario

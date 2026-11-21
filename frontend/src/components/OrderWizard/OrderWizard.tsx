@@ -73,7 +73,7 @@ export function OrderWizard({ slot, allSlots, date, onClose, onOrderCreated }: O
 
   async function handleConfirm() {
     // Ensure the last selection is added if not already
-    let finalItems = [...items];
+    const finalItems = [...items];
     if (currentRice && !items.find(i => i.rice.id === currentRice.id && i.pax === currentPax)) {
       finalItems.push({ rice: currentRice, pax: currentPax });
     }
@@ -83,26 +83,25 @@ export function OrderWizard({ slot, allSlots, date, onClose, onOrderCreated }: O
     setSubmitting(true);
     setError('');
     try {
-      // Create orders sequentially
-      for (const item of finalItems) {
-        await createOrder({
-          date,
-          time: activeSlot.time,
-          client: {
-            id: client?.id ?? null,
-            nombre: client?.nombre || clientName,
-            telefono: phone,
-            direccion: client?.direccion || clientAddress,
-            codigo_postal: client?.codigo_postal || clientCp,
-          },
-          order: {
+      await createOrder({
+        date,
+        time: activeSlot.time,
+        client: {
+          id: client?.id ?? null,
+          nombre: client?.nombre || clientName,
+          telefono: phone,
+          direccion: client?.direccion || clientAddress,
+          codigo_postal: client?.codigo_postal || clientCp,
+        },
+        order: {
+          lines: finalItems.map(item => ({
             arroz_id: item.rice.id,
             pax: item.pax,
-            recogida,
-            observaciones: observaciones || undefined,
-          },
-        });
-      }
+          })),
+          recogida,
+          observaciones: observaciones || undefined,
+        },
+      });
       onOrderCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear los pedidos');

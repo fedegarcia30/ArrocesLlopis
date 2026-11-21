@@ -11,6 +11,8 @@ class Cliente(db.Model):
     observaciones = db.Column(db.Text)
     num_pedidos = db.Column(db.Integer, default=0)
     raciones = db.Column(db.Integer, default=0)
+    municipio = db.Column(db.String(100))
+    provincia = db.Column(db.String(100))
     activo = db.Column(db.Boolean, default=True)
     direccion_limpia = db.Column(db.String(500))
     latitud = db.Column(db.Numeric(10, 8))
@@ -66,6 +68,7 @@ class PedidoLinea(db.Model):
     pedido_id = db.Column(db.Integer, db.ForeignKey('pedidos.id'), nullable=False)
     arroz_id = db.Column(db.Integer, db.ForeignKey('arroces.id'), nullable=False)
     precio_unitario = db.Column(db.Numeric(10, 2), nullable=False)
+    raciones = db.Column(db.Integer, nullable=False, default=0)
 
     arroz = db.relationship('Arroz', lazy=True)
 
@@ -124,6 +127,7 @@ class HistoricoPrecio(db.Model):
     tipo_item = db.Column(db.Enum('venta', 'compra'), nullable=False) # 'venta' (arroz), 'compra' (ingrediente)
     precio = db.Column(db.Numeric(10, 2), nullable=False)
     fecha_inicio = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_fin = db.Column(db.DateTime)
 
 class PedidoFeedback(db.Model):
     __tablename__ = 'pedido_feedback'

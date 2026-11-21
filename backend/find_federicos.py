@@ -14,7 +14,7 @@ def find_federicos():
             start_date = datetime(2026, 1, 1)
             orders = db.session.query(
                 func.count(Pedido.id).label('orders'),
-                func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('spent'),
+                func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('spent'),
                 func.sum(Pedido.pax).label('rations_total')
             ).join(PedidoLinea).filter(
                 Pedido.cliente_id == c.id,

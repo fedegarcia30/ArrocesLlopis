@@ -1,5 +1,5 @@
 import pytest
-from app.models import Pedido, Cliente
+from app.models import Pedido, Cliente, PedidoLinea
 
 def test_create_order_new_client(client, runster_headers):
     payload = {
@@ -38,8 +38,19 @@ def test_create_order_slot_full_rejected(client, app, runster_headers):
         
         test_date = datetime.date(2026, 6, 15)
         for _ in range(6):
-            p = Pedido(cliente_id=c.id, pax=2, fecha=test_date, intervalo="15:00", arroz_id=1)
+            p = Pedido(
+                cliente_id=c.id,
+                pax=2,
+                fecha_pedido=datetime.datetime.combine(test_date, datetime.time(15, 0))
+            )
             db.session.add(p)
+            db.session.flush()
+            db.session.add(PedidoLinea(
+                pedido_id=p.id,
+                arroz_id=1,
+                precio_unitario=15,
+                raciones=2
+            ))
         db.session.commit()
         
     # Attempt 7th order

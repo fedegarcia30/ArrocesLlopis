@@ -57,7 +57,8 @@ async function request<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: response.statusText }));
-    throw new ApiError(response.status, error.message || 'Error de servidor');
+    // El backend usa tanto { message } como { error } según el endpoint
+    throw new ApiError(response.status, error.message || error.error || 'Error de servidor');
   }
 
   return response.json();

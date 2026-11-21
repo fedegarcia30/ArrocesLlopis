@@ -23,6 +23,8 @@ CREATE TABLE clientes (
     observaciones TEXT,
     num_pedidos INT DEFAULT 0,
     raciones INT DEFAULT 0 COMMENT 'Total de raciones pedidas históricamente',
+    municipio VARCHAR(100),
+    provincia VARCHAR(100),
     activo BOOLEAN DEFAULT TRUE COMMENT 'Cliente activo/inactivo',
     direccion_limpia VARCHAR(500) COMMENT 'Dirección normalizada para geocodificación',
     latitud DECIMAL(10, 8) COMMENT 'Latitud GPS',
@@ -31,7 +33,8 @@ CREATE TABLE clientes (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP NULL,
     INDEX idx_telefono (telefono),
-    INDEX idx_nombre (nombre)
+    INDEX idx_nombre (nombre),
+    INDEX idx_municipio (municipio)
 );
 
 CREATE TABLE arroces (
@@ -59,15 +62,13 @@ CREATE TABLE usuarios (
     INDEX idx_rol (rol)
 );
 
--- 4. Pedidos (arroz_id directo, sin tabla intermedia para simplificar el módulo de pedidos)
+-- 4. Pedidos (1 encargo con varias líneas en pedido_lineas)
 CREATE TABLE pedidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
     usuario_asignado_id INT,
-    arroz_id INT NOT NULL,
     pax INT NOT NULL CHECK (pax >= 2),
-    fecha DATE NOT NULL,
-    intervalo VARCHAR(10) NOT NULL,
+    fecha_pedido DATETIME NOT NULL,
     observaciones TEXT,
     status ENUM('nuevo', 'preparando', 'listo', 'entregado', 'cancelado') DEFAULT 'nuevo',
     entregado BOOLEAN DEFAULT FALSE,
@@ -80,12 +81,33 @@ CREATE TABLE pedidos (
     deleted_at TIMESTAMP NULL,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE RESTRICT,
     FOREIGN KEY (usuario_asignado_id) REFERENCES usuarios(id) ON DELETE SET NULL,
-    FOREIGN KEY (arroz_id) REFERENCES arroces(id) ON DELETE RESTRICT,
-    INDEX idx_fecha (fecha),
-    INDEX idx_intervalo (intervalo),
+    INDEX idx_fecha (fecha_pedido),
     INDEX idx_cliente (cliente_id),
     INDEX idx_status (status),
     INDEX idx_usuario (usuario_asignado_id)
+);
+
+CREATE TABLE pedido_lineas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id INT NOT NULL,
+    arroz_id INT NOT NULL,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    raciones INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
+    FOREIGN KEY (arroz_id) REFERENCES arroces(id) ON DELETE RESTRICT,
+    UNIQUE KEY unique_linea (pedido_id, arroz_id),
+    INDEX idx_pedido_lineas_arroz (arroz_id)
+);
+
+CREATE TABLE historico_precios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT NOT NULL,
+    tipo_item ENUM('venta', 'compra') NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    fecha_inicio DATETIME DEFAULT CURRENT_TIMESTAMP,
+    fecha_fin DATETIME NULL,
+    INDEX idx_historico_precios_item
+        (tipo_item, item_id, fecha_inicio)
 );
 
 -- 5. FASE 2: Stock y Compras
@@ -170,14 +192,15 @@ DELIMITER ;
 CREATE OR REPLACE VIEW vista_pedidos_detallados AS
 SELECT
     p.id, p.cliente_id, c.nombre AS cliente_nombre, c.telefono, c.direccion, c.codigo_postal,
-    p.pax, p.fecha, p.intervalo, p.status, p.observaciones,
-    a.nombre AS arroz_nombre,
-    (a.precio * p.pax) AS precio_final,
+    p.pax, p.fecha_pedido, p.status, p.observaciones,
+    l.arroz_id, a.nombre AS arroz_nombre, l.raciones,
+    (l.raciones * l.precio_unitario) AS precio_linea,
     u.username AS asignado,
     p.created_at
 FROM pedidos p
 JOIN clientes c ON p.cliente_id = c.id
-JOIN arroces a ON p.arroz_id = a.id
+JOIN pedido_lineas l ON l.pedido_id = p.id
+JOIN arroces a ON l.arroz_id = a.id
 LEFT JOIN usuarios u ON p.usuario_asignado_id = u.id
 WHERE p.deleted_at IS NULL;
 

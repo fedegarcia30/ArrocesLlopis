@@ -10,6 +10,7 @@ MySQL. Schema en `database/schema.sql`. ORM: SQLAlchemy (backend/app/models.py).
 id, nombre, telefono, direccion, codigo_postal, observaciones
 num_pedidos   # auto-actualizado por trigger MySQL
 raciones      # total de raciones históricas
+municipio, provincia # localización estructurada
 activo        # soft-enable
 created_at, updated_at, deleted_at  # soft-delete via deleted_at
 ```
@@ -54,6 +55,7 @@ id
 pedido_id     # FK → pedidos
 arroz_id      # FK → arroces
 precio_unitario  # snapshot del precio en el momento del pedido
+raciones      # raciones de este arroz dentro del encargo
 ```
 > Un pedido puede tener múltiples líneas (un cliente puede pedir varios tipos de arroz).
 
@@ -93,7 +95,7 @@ id, compra_id, ingrediente_id, cantidad, precio_unitario
 
 ### HistoricoPrecio (`historico_precios`)
 ```python
-id, item_id, tipo_item ('venta'|'compra'), precio, fecha_inicio
+id, item_id, tipo_item ('venta'|'compra'), precio, fecha_inicio, fecha_fin
 ```
 
 ## Vistas MySQL

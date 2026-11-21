@@ -29,7 +29,8 @@ def _serialize_pedido(pedido, cliente, lineas):
                 "id": l.id,
                 "arroz_id": l.arroz_id,
                 "arroz_nombre": l.arroz.nombre if l.arroz else "",
-                "precio_unitario": float(l.precio_unitario)
+                "precio_unitario": float(l.precio_unitario),
+                "raciones": l.raciones
             } for l in lineas
         ],
         "created_at": pedido.created_at.isoformat() if pedido.created_at else None
@@ -101,7 +102,7 @@ def update_pedido_status(pedido_id):
         # Restore stock
         lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
         for l in lineas:
-            adjust_stock_from_order(l.arroz_id, pedido.pax, restore=True)
+            adjust_stock_from_order(l.arroz_id, l.raciones, restore=True)
         # Update client stats: decrement
         if cliente:
             cliente.num_pedidos = max(0, (cliente.num_pedidos or 0) - 1)
@@ -111,7 +112,7 @@ def update_pedido_status(pedido_id):
         # Subtract stock again if uncanceled
         lineas = PedidoLinea.query.filter_by(pedido_id=pedido.id).all()
         for l in lineas:
-            adjust_stock_from_order(l.arroz_id, pedido.pax, restore=False)
+            adjust_stock_from_order(l.arroz_id, l.raciones, restore=False)
         # Update client stats: increment
         if cliente:
             cliente.num_pedidos = (cliente.num_pedidos or 0) + 1
@@ -185,29 +186,73 @@ def update_pedido(pedido_id):
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    # Handle stock updates on PAX/Rice change
+    old_lines = PedidoLinea.query.filter_by(pedido_id=pedido_id).all()
     old_pax = pedido.pax
-    new_pax = data.get('pax', old_pax)
-    
-    current_linea = PedidoLinea.query.filter_by(pedido_id=pedido_id).first()
-    old_arroz_id = current_linea.arroz_id if current_linea else None
-    new_arroz_id = data.get('arroz_id', old_arroz_id)
 
-    # If the order is active, synchronize stock
-    if pedido.status != 'cancelado':
-        if old_arroz_id != new_arroz_id:
-            # Different rice: restore old, subtract new
-            if old_arroz_id:
-                adjust_stock_from_order(old_arroz_id, old_pax, restore=True)
-            if new_arroz_id:
-                adjust_stock_from_order(new_arroz_id, new_pax, restore=False)
-        elif old_pax != new_pax:
-            # Same rice, different PAX: adjust difference
-            diff = new_pax - old_pax
-            if diff > 0: # Subtract more stock
-                adjust_stock_from_order(old_arroz_id, diff, restore=False)
-            elif diff < 0: # Restore stock
-                adjust_stock_from_order(old_arroz_id, abs(diff), restore=True)
+    if 'lines' in data:
+        try:
+            grouped = {}
+            for line in data['lines']:
+                arroz_id = int(line['arroz_id'])
+                raciones = int(line['pax'])
+                if raciones < 1:
+                    raise ValueError
+                grouped[arroz_id] = grouped.get(arroz_id, 0) + raciones
+        except (KeyError, TypeError, ValueError):
+            return jsonify({"error": "Líneas de pedido inválidas"}), 400
+
+        new_pax = sum(grouped.values())
+        if new_pax < 2:
+            return jsonify({"error": "Minimum 2 PAX per order"}), 400
+
+        if pedido.status != 'cancelado':
+            for line in old_lines:
+                adjust_stock_from_order(line.arroz_id, line.raciones, restore=True)
+
+        for line in old_lines:
+            db.session.delete(line)
+        db.session.flush()
+
+        for arroz_id, raciones in grouped.items():
+            arroz = Arroz.query.get(arroz_id)
+            if not arroz:
+                return jsonify({"error": "Arroz not found"}), 404
+            db.session.add(PedidoLinea(
+                pedido_id=pedido_id,
+                arroz_id=arroz_id,
+                precio_unitario=float(arroz.precio),
+                raciones=raciones
+            ))
+            if pedido.status != 'cancelado':
+                adjust_stock_from_order(arroz_id, raciones, restore=False)
+
+        pedido.pax = new_pax
+        if pedido.status != 'cancelado':
+            cliente = Cliente.query.get(pedido.cliente_id)
+            if cliente:
+                cliente.raciones = (cliente.raciones or 0) + new_pax - old_pax
+    else:
+        current_linea = old_lines[0] if old_lines else None
+        new_pax = int(data.get('pax', old_pax))
+
+        if 'pax' in data and pedido.status != 'cancelado':
+            if current_linea:
+                diff = new_pax - old_pax
+                if diff > 0:
+                    adjust_stock_from_order(current_linea.arroz_id, diff, restore=False)
+                elif diff < 0:
+                    adjust_stock_from_order(current_linea.arroz_id, abs(diff), restore=True)
+                current_linea.raciones = max(0, current_linea.raciones + diff)
+
+        if 'arroz_id' in data and current_linea:
+            new_arroz = Arroz.query.get(data['arroz_id'])
+            if not new_arroz:
+                return jsonify({"error": "Arroz not found"}), 404
+            if pedido.status != 'cancelado':
+                adjust_stock_from_order(current_linea.arroz_id, current_linea.raciones, restore=True)
+                adjust_stock_from_order(new_arroz.id, current_linea.raciones, restore=False)
+            current_linea.arroz_id = new_arroz.id
+            current_linea.precio_unitario = new_arroz.precio
 
     # Apply updates
     if 'fecha_pedido' in data:
@@ -222,7 +267,7 @@ def update_pedido(pedido_id):
         except ValueError as e:
             return jsonify({"error": f"Invalid date format: {str(e)}"}), 400
 
-    if 'pax' in data:
+    if 'pax' in data and 'lines' not in data:
         new_pax_val = int(data['pax'])
         # If order is active, sync client raciones
         if pedido.status != 'cancelado':
@@ -235,17 +280,14 @@ def update_pedido(pedido_id):
     if 'observaciones' in data:
         pedido.observaciones = data['observaciones']
 
+    if 'local_recogida' in data:
+        # Igual que en la creación: un pedido de recogida en local no deja
+        # recipientes que recoger, así que se marca recogido=True.
+        pedido.local_recogida = bool(data['local_recogida'])
+        pedido.recogido = pedido.local_recogida
+
     if 'recogido' in data:
         pedido.recogido = bool(data['recogido'])
-
-    if 'arroz_id' in data:
-        arroz = Arroz.query.get(data['arroz_id'])
-        if not arroz:
-            return jsonify({"error": "Arroz not found"}), 404
-        linea = PedidoLinea.query.filter_by(pedido_id=pedido_id).first()
-        if linea:
-            linea.arroz_id = arroz.id
-            linea.precio_unitario = arroz.precio
 
     if 'direccion' in data:
         cliente = Cliente.query.get(pedido.cliente_id)

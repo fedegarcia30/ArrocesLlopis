@@ -1,12 +1,25 @@
 from flask import request, jsonify
 from datetime import datetime, timedelta
-from app.models import Cliente, Pedido, PedidoLinea, Arroz
+from app.models import Cliente, Pedido, PedidoLinea, Arroz, HistoricoPrecio
 from app import db
 from . import api_v1_bp
 from .availability import MAX_ORDERS_PER_SLOT, MAX_PAX_PER_SLOT
 from app.auth import requires_auth
 from app.utils.logger import logger
 from app.utils.stock import adjust_stock_from_order
+
+
+def precio_vigente(arroz_id, fecha):
+    history = HistoricoPrecio.query.filter(
+        HistoricoPrecio.item_id == arroz_id,
+        HistoricoPrecio.tipo_item == 'venta',
+        HistoricoPrecio.fecha_inicio <= fecha,
+        (HistoricoPrecio.fecha_fin.is_(None)) | (HistoricoPrecio.fecha_fin > fecha)
+    ).order_by(HistoricoPrecio.fecha_inicio.desc()).first()
+    if history:
+        return float(history.precio)
+    arroz = Arroz.query.get(arroz_id)
+    return float(arroz.precio) if arroz else None
 
 
 @api_v1_bp.route('/orders/create', methods=['POST', 'OPTIONS'])
@@ -26,8 +39,18 @@ def create_order():
     order_time = data['time']
     client_data = data['client']
     order_data = data['order']
-    requested_pax = int(order_data.get('pax', 0))
+    lines = order_data.get('lines')
+    if lines:
+        try:
+            items = [(int(line['arroz_id']), int(line['pax'])) for line in lines]
+        except (KeyError, TypeError, ValueError):
+            return jsonify({"success": False, "message": "Líneas de pedido inválidas"}), 400
+    else:
+        items = [(int(order_data['arroz_id']), int(order_data.get('pax', 0)))]
 
+    if any(pax < 1 for _, pax in items):
+        return jsonify({"success": False, "message": "Cada línea debe tener al menos 1 ración"}), 400
+    requested_pax = sum(pax for _, pax in items)
     if requested_pax < 2:
         return jsonify({"success": False, "message": "Minimum 2 PAX per order"}), 400
 
@@ -60,11 +83,14 @@ def create_order():
             "message": "Lo sentimos, el hueco seleccionado ya no tiene disponibilidad (máximo 6 pedidos o 72 raciones)."
         }), 400
 
-    # Validate arroz exists
-    arroz_id = order_data.get('arroz_id')
-    arroz = Arroz.query.get(arroz_id)
-    if not arroz:
-        return jsonify({"success": False, "message": "Arroz no encontrado"}), 400
+    # Validate rice lines and aggregate duplicate items
+    aggregated_items = {}
+    for arroz_id, pax in items:
+        arroz = Arroz.query.get(arroz_id)
+        if not arroz:
+            return jsonify({"success": False, "message": "Arroz no encontrado"}), 400
+        aggregated_items[arroz_id] = aggregated_items.get(arroz_id, 0) + pax
+    requested_pax = sum(aggregated_items.values())
 
     try:
         # Client handling
@@ -91,13 +117,16 @@ def create_order():
         db.session.add(nuevo_pedido)
         db.session.flush()
 
-        # Create pedido_linea
-        linea = PedidoLinea(
-            pedido_id=nuevo_pedido.id,
-            arroz_id=arroz.id,
-            precio_unitario=float(arroz.precio)
-        )
-        db.session.add(linea)
+        # Create one line per rice
+        for arroz_id, pax in aggregated_items.items():
+            price = precio_vigente(arroz_id, fecha_pedido)
+            db.session.add(PedidoLinea(
+                pedido_id=nuevo_pedido.id,
+                arroz_id=arroz_id,
+                precio_unitario=price,
+                raciones=pax
+            ))
+            adjust_stock_from_order(arroz_id, pax)
 
         # Update client totals
         cliente = Cliente.query.get(cliente_id)
@@ -105,12 +134,8 @@ def create_order():
             cliente.num_pedidos = (cliente.num_pedidos or 0) + 1
             cliente.raciones = (cliente.raciones or 0) + requested_pax
 
-        # Adjust stock before commit to ensure it's persisted
-        adjust_stock_from_order(arroz.id, requested_pax)
-        
         db.session.commit()
-        
-        logger.info(f"Order #{nuevo_pedido.id} created successfully for client #{cliente_id} ({requested_pax} PAX, Arroz: {arroz.nombre})")
+        logger.info(f"Order #{nuevo_pedido.id} created successfully for client #{cliente_id} ({requested_pax} PAX, {len(aggregated_items)} lines)")
 
         return jsonify({
             "success": True,

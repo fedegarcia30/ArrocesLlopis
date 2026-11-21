@@ -68,7 +68,7 @@ Redirección post-login:
 
 ## Pedido Multi-Arroz
 
-Un mismo cliente puede pedir varios tipos de arroz. El OrderWizard permite añadir varios tipos antes de confirmar. Cada tipo de arroz genera un `Pedido` independiente (con su propia `PedidoLinea`). Cada pedido cuenta por separado hacia el límite de 6 por slot. No hay restricción de un pedido por cliente ni por slot.
+Un mismo cliente puede pedir varios tipos de arroz en un **único pedido** (encargo) con N líneas en `pedido_lineas` (cada una con sus `raciones` y su precio snapshot). `pedidos.pax` = suma de raciones de las líneas. El pedido cuenta **una vez** hacia el límite de 6 por slot; sus raciones suman para el límite de 72. No hay restricción de un pedido por cliente ni por slot.
 
 ## Validación Doble
 

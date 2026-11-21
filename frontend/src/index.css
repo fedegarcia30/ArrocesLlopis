@@ -47,6 +47,34 @@
   /* Animations */
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Semáforo / estados */
+  --status-green: #2ecc71;
+  --status-green-bg: rgba(46, 204, 113, 0.14);
+  --status-yellow: #f1c40f;
+  --status-yellow-bg: rgba(241, 196, 15, 0.14);
+  --status-red: #e74c3c;
+  --status-red-bg: rgba(231, 76, 60, 0.14);
+  --status-blue: #3b82f6;
+  --status-blue-bg: rgba(59, 130, 246, 0.14);
+
+  /* Alias heredados: varios componentes usaban estos nombres sin que
+     estuvieran definidos (badges sin color, modales transparentes). */
+  --gold: var(--gold-primary);
+  --accent-gold: var(--gold-primary);
+  --gold-hover: var(--gold-light);
+  --gold-dim: rgba(212, 175, 55, 0.7);
+  --gold-bg: rgba(212, 175, 55, 0.12);
+  --border-gold: 1px solid rgba(212, 175, 55, 0.35);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --text-primary: var(--text-main);
+  --text-secondary: var(--text-dim);
+  --surface: #151518;
+  --surface-light: #1d1d21;
+  --bg-secondary: #141417;
+  --bg-card: #18181b;
+  --bg-glass: rgba(20, 20, 22, 0.85);
+  --radius: var(--radius-sm);
 }
 
 * {
@@ -142,3 +170,17 @@ button {
   cursor: pointer;
   font-family: inherit;
 }
+
+/* Botón principal genérico (dorado) */
+.btn-primary {
+  flex: 2;
+  min-height: var(--touch-min);
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-primary);
+  color: #0a0a0b;
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+.btn-primary:hover { background: var(--gold-light); box-shadow: 0 4px 16px var(--gold-glow); }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }

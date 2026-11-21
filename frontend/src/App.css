@@ -187,3 +187,22 @@
     width: 100%;
   }
 }
+/* Aviso breve tras guardar un pedido */
+.app-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(32px + var(--safe-bottom));
+  transform: translateX(-50%);
+  z-index: 400;
+  padding: 14px 24px;
+  border-radius: 100px;
+  background: var(--status-green);
+  color: #062b14;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease-out;
+}
+
+@media (max-width: 767px) {
+  .app-toast { bottom: calc(110px + var(--safe-bottom)); }
+}

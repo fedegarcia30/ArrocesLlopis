@@ -11,6 +11,8 @@ def serialize_client(c):
         "telefono": c.telefono,
         "direccion": c.direccion,
         "codigo_postal": c.codigo_postal,
+        "municipio": c.municipio,
+        "provincia": c.provincia,
         "observaciones": c.observaciones,
         "num_pedidos": c.num_pedidos,
         "activo": c.activo,
@@ -79,6 +81,15 @@ def get_clients():
         "current_page": pagination.page
     }), 200
 
+@api_v1_bp.route('/clients/<int:client_id>', methods=['GET'])
+@requires_auth
+def get_client(client_id):
+    """
+    Devuelve la ficha de un cliente (usada al editar un pedido).
+    """
+    client = Cliente.query.get_or_404(client_id)
+    return jsonify(serialize_client(client)), 200
+
 @api_v1_bp.route('/clients/<int:client_id>', methods=['PUT'])
 @requires_auth
 def update_client(client_id):
@@ -92,6 +103,8 @@ def update_client(client_id):
     if 'telefono' in data: client.telefono = data['telefono']
     if 'direccion' in data: client.direccion = data['direccion']
     if 'codigo_postal' in data: client.codigo_postal = data['codigo_postal']
+    if 'municipio' in data: client.municipio = data['municipio']
+    if 'provincia' in data: client.provincia = data['provincia']
     if 'observaciones' in data: client.observaciones = data['observaciones']
     
     from app import db

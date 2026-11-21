@@ -3,6 +3,7 @@ from app.models import Arroz, HistoricoPrecio
 from . import api_v1_bp
 from app.auth import requires_auth
 from app import db
+from datetime import datetime
 
 @api_v1_bp.route('/rices', methods=['GET', 'POST', 'OPTIONS'])
 @requires_auth
@@ -79,6 +80,11 @@ def rice_detail(id):
         if 'disponible' in data: arroz.disponible = data['disponible']
         
         if price_changed:
+            db.session.query(HistoricoPrecio).filter(
+                HistoricoPrecio.item_id == arroz.id,
+                HistoricoPrecio.tipo_item == 'venta',
+                HistoricoPrecio.fecha_fin.is_(None)
+            ).update({HistoricoPrecio.fecha_fin: datetime.utcnow()}, synchronize_session=False)
             history = HistoricoPrecio(
                 item_id=arroz.id,
                 tipo_item='venta',

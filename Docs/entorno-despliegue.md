@@ -37,7 +37,7 @@ DATABASE_URL=mysql+mysqlconnector://root:password@localhost/arroces_llopis
 SECRET_KEY=tu-clave-secreta
 FIREBASE_CREDENTIALS_PATH=./firebase-credentials.json   # ruta al JSON de service account
 # O alternativamente:
-VITE_FIREBASE_PROJECT_ID=tu-project-id                  # si no hay JSON, usa Application Default Credentials
+VITE_FIREBASE_PROJECT_ID=tu-project-id                  # permite verificar ID tokens sin ADC
 ```
 
 ### Frontend (`.env` en `frontend/`)
@@ -71,7 +71,9 @@ npm run preview      # Previsualizar el build de producción localmente
 ### Setup Backend (Service Account)
 1. Firebase Console → Project Settings → Service Accounts → Generate new private key
 2. Guardar el JSON como `backend/firebase-credentials.json`
-3. Configurar `FIREBASE_CREDENTIALS_PATH` en `.env`
+3. Configurar `FIREBASE_CREDENTIALS_PATH` en `.env` si el backend necesita llamar a APIs
+   administrativas de Firebase. Para verificar ID tokens, basta el project ID: el backend
+   valida firma y claims usando los certificados públicos de Firebase.
 
 ### Setup Frontend
 Las variables `VITE_FIREBASE_*` en `frontend/src/config/firebase.ts` se leen del entorno.

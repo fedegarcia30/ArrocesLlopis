@@ -562,7 +562,7 @@ function FeedbackModal({ clientName, submitting, onSubmit, onCancel }: FeedbackM
             Saltar
           </button>
           <button
-            className="wizard-btn-next"
+            className="btn-primary"
             onClick={() => onSubmit(rating, comentario)}
             disabled={submitting}
           >

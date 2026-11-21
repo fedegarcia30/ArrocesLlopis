@@ -1,5 +1,5 @@
 import pytest
-from app.models import Pedido
+from app.models import Pedido, PedidoLinea
 from app import db
 import datetime
 
@@ -33,8 +33,19 @@ def test_availability_max_orders_reached(client, app, runster_headers):
         
         test_date = datetime.date(2026, 5, 10)
         for _ in range(6):
-            p = Pedido(cliente_id=c.id, pax=2, fecha=test_date, intervalo="13:00", arroz_id=1)
+            p = Pedido(
+                cliente_id=c.id,
+                pax=2,
+                fecha_pedido=datetime.datetime.combine(test_date, datetime.time(13, 0))
+            )
             db.session.add(p)
+            db.session.flush()
+            db.session.add(PedidoLinea(
+                pedido_id=p.id,
+                arroz_id=1,
+                precio_unitario=15,
+                raciones=2
+            ))
         db.session.commit()
 
     response = client.post(
@@ -67,8 +78,19 @@ def test_availability_max_pax_reached(client, app, runster_headers):
         db.session.commit()
         
         test_date = datetime.date(2026, 5, 10)
-        p = Pedido(cliente_id=c.id, pax=72, fecha=test_date, intervalo="14:00", arroz_id=1)
+        p = Pedido(
+            cliente_id=c.id,
+            pax=72,
+            fecha_pedido=datetime.datetime.combine(test_date, datetime.time(14, 0))
+        )
         db.session.add(p)
+        db.session.flush()
+        db.session.add(PedidoLinea(
+            pedido_id=p.id,
+            arroz_id=1,
+            precio_unitario=15,
+            raciones=72
+        ))
         db.session.commit()
 
     response = client.post(

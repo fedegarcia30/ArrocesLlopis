@@ -1,6 +1,6 @@
 # Guía de Usuario — Arroces Llopis Management
 
-> Última actualización: Marzo 2026
+> Última actualización: Noviembre 2026
 
 ---
 
@@ -164,47 +164,37 @@ nuevo → preparando → listo → entregado
 
 > ⚠️ Al cancelar un pedido, el stock de ingredientes se restaura automáticamente.
 
-**Editar un pedido** (desliza a la izquierda la tarjeta): Abre el modal de edición donde puedes cambiar:
-- Tipo de arroz
-- Número de raciones (PAX)
-- Dirección de entrega (si es reparto)
+**Editar un pedido**: toca la tarjeta (o deslízala a la izquierda). Se abre la misma **hoja de pedido** que al crearlo, con todo relleno. Puedes cambiar:
+- Arroces y raciones (añadir o quitar arroces del encargo)
+- Día y hora (solo se ofrecen franjas donde cabe el pedido)
+- Tipo de entrega (local ↔ domicilio) y dirección
 - Observaciones
 
-Si cambias la dirección de un cliente que tiene más pedidos, el sistema te avisa antes de guardar y te muestra qué otros pedidos se verán afectados.
+Si cambias la dirección, la hoja pregunta si es la **dirección habitual del cliente** (se actualiza su ficha y afecta a sus próximos repartos) o **solo para este pedido** (se anota en observaciones).
 
-**Cancelar un pedido**: Dentro del modal de edición, pulsa "Cancelar pedido" y confirma. El pedido pasa a estado `cancelado` y el stock se restaura.
+**Cancelar un pedido**: en la hoja de edición, pulsa "Cancelar pedido" y confirma. El pedido pasa a `cancelado` y el stock se restaura. Un pedido cancelado se puede **reactivar** desde la misma hoja.
 
 **Mover un pedido a otra franja** (arrastrar y soltar): Arrastra una tarjeta de pedido a otro hueco horario. Aparece un modal de confirmación con el resumen del cambio. Si el cliente tiene varios pedidos en el mismo hueco, todos se mueven juntos.
 
 #### Crear un nuevo pedido
 
-Pulsa **"NUEVO PEDIDO"** (arriba a la derecha) para abrir el asistente de 4 pasos.
+Pulsa **"+ Nuevo pedido"** (arriba). No hace falta seleccionar antes una franja: si hay una seleccionada con hueco, se propone como hora.
 
-**Paso 1 — Datos del cliente:**
-1. Introduce el teléfono del cliente. El sistema busca automáticamente si ya existe.
-2. Si existe: los datos se pre-rellenan (nombre, dirección, CP). Puedes editarlos.
-3. Si no existe: rellena manualmente nombre (obligatorio), teléfono, dirección y CP.
+Se abre la **hoja de pedido**, una sola pantalla con todo lo necesario. En tablet se ve en dos columnas (cliente y entrega a la izquierda, arroces y hora a la derecha); en móvil, en una columna. Los bloques se pueden rellenar **en cualquier orden**, según vaya hablando el cliente:
 
-**Paso 2 — Selección de arroz:**
-1. Verás el catálogo de arroces disponibles con su precio por ración.
-2. Selecciona un arroz y después introduce las raciones (PAX).
-   - **Mínimo: 2 raciones**
-   - **Máximo: las raciones que queden disponibles en el hueco seleccionado**
-3. Pulsa "Siguiente".
+1. **Cliente** — escribe el teléfono **o** el nombre (mínimo 3 caracteres). Toca el cliente en la lista.
+   - Si no existe, pulsa **"+ Crear cliente nuevo"**: se rellenan teléfono o nombre con lo que ya escribiste.
+   - Para un cliente habitual verás sus avisos (alergias, notas de su ficha) y sus **últimos pedidos**. **"Repetir"** carga los mismos arroces, raciones y tipo de entrega.
+2. **Arroces** — toca un arroz para añadirlo (2 raciones por defecto). Ajusta las raciones con **− / +** o con los atajos **2 · 4 · 6 · 8 · 10 · 12**. Puedes añadir varios arroces: todos van en el **mismo pedido**.
+3. **Día y hora** — elige el día (hoy, mañana, los próximos días u "Otra" fecha) y la franja. Cada franja muestra las raciones y pedidos que le quedan; las que no tienen hueco para el pedido aparecen desactivadas.
+4. **Entrega** — **Recoge en local** o **A domicilio**. Si es a domicilio, se rellena la dirección de la ficha del cliente; corrígela si hace falta.
+5. **Observaciones** (opcional) — atajos para las notas más habituales o texto libre.
 
-**Paso 3 — Tipo de entrega:**
-1. Elige entre **Recogida en local** o **Reparto a domicilio**.
-2. Si es reparto, verifica o modifica la dirección de entrega.
-3. Añade observaciones si el cliente tiene alguna indicación especial.
+La barra inferior resume el pedido (cliente, día, hora, entrega, raciones y total) e indica **qué falta**. Cuando está todo, pulsa **"Confirmar pedido"**. Aparece un aviso de confirmación y, si el pedido es para otro día, la pantalla salta a ese día.
 
-**Paso 4 — Confirmación:**
-1. Revisa el resumen: tipo de arroz, raciones, horario, tipo de entrega.
-2. ¿El cliente quiere más de un tipo de arroz? Pulsa **"Añadir otro arroz"**: vuelves al Paso 2 con el mismo cliente para añadir otro tipo. Repite cuantas veces necesites.
-3. Cuando esté todo correcto, pulsa **"Confirmar Pedido"**.
+> ℹ️ Varios arroces del mismo cliente forman **un único pedido**, que cuenta como 1 hacia el límite de 6 pedidos por franja. Las raciones de todos los arroces suman para el límite de 72.
 
-> ℹ️ Cada tipo de arroz genera un pedido independiente en el mismo hueco. Si añades 2 tipos, se crean 2 pedidos, que cuentan como 2 hacia el límite de 6 por hueco.
-
-> ⚠️ Si al confirmar el hueco ya está lleno (por otro pedido simultáneo), el sistema te informará y podrás elegir otro hueco.
+> ⚠️ Si al confirmar la franja ya está llena (por otro pedido simultáneo), la hoja muestra el aviso, refresca la disponibilidad y puedes elegir otra hora sin perder lo escrito.
 
 **¿Puede un mismo cliente tener varios pedidos?** Sí. No hay restricción de un pedido por cliente. Puedes crear tantos pedidos como quieras para el mismo cliente, en el mismo hueco o en distintos huecos.
 
@@ -344,7 +334,7 @@ Tiene acceso a:
 
 #### Pantalla: Pedidos del día (`/diario`)
 
-El cocinero ve exactamente la misma pantalla que el gerente pero **sin el botón "Nuevo Pedido"**. No puede crear pedidos.
+El cocinero ve exactamente la misma pantalla que el gerente pero **sin el botón "+ Nuevo pedido"**. No puede crear pedidos.
 
 Lo que sí puede:
 - Ver todos los pedidos del día organizados por franjas horarias.
@@ -533,7 +523,7 @@ Si marcaste como recogido por error, pulsa la tarjeta (que aparece con aspecto d
 - **PAX mínimo**: 2 raciones por pedido.
 - **PAX máximo**: lo que reste de capacidad en la franja.
 - Un mismo cliente puede tener varios pedidos en el mismo hueco o en diferentes.
-- Cada tipo de arroz crea un pedido independiente (cuenta como 1 hacia el límite de 6).
+- Un pedido puede llevar varios arroces (líneas); cuenta como 1 hacia el límite de 6.
 - El precio del arroz queda fijado en el momento de crear el pedido.
 
 ### Stock
@@ -557,13 +547,13 @@ Si marcaste como recogido por error, pulsa la tarjeta (que aparece con aspecto d
 ## Apéndice B: Preguntas frecuentes
 
 **¿Qué hago si el cliente llama para cambiar de arroz o de raciones?**
-Ve a `/diario`, busca el pedido, desliza a la izquierda para abrir el modal de edición y modifica lo que necesites.
+Ve a `/diario`, busca el pedido y toca su tarjeta: se abre la hoja de pedido para modificar lo que necesites.
 
 **¿Qué hago si el cliente cancela?**
-Desde el modal de edición, pulsa "Cancelar pedido". El stock se restaura automáticamente.
+Desde la hoja de edición, pulsa "Cancelar pedido". El stock se restaura automáticamente.
 
 **¿Puedo crear un pedido para un cliente nuevo que no está en el sistema?**
-Sí. En el Paso 1 del asistente, si el teléfono no existe, rellena los datos manualmente. El cliente se crea automáticamente al confirmar el pedido.
+Sí. En el bloque Cliente de la hoja de pedido, pulsa "+ Crear cliente nuevo" y rellena teléfono y nombre. El cliente se crea automáticamente al confirmar el pedido.
 
 **¿Qué ocurre si dos personas intentan hacer un pedido en el mismo hueco al mismo tiempo y solo queda uno?**
 El backend valida la disponibilidad en el momento de confirmar. El primero en confirmar ocupa el hueco; el segundo recibe un aviso de "hueco lleno" y puede elegir otra franja.
@@ -575,4 +565,4 @@ En la tarjeta de pedido: un icono 🏠 indica recogida en local; 🛵 indica rep
 No. La pantalla de Repartos solo muestra pedidos de reparto a domicilio. Los pedidos de recogida en local los gestiona el personal del restaurante.
 
 **¿Qué pasa con un arroz que desactivo?**
-Deja de aparecer en el asistente de nuevo pedido (no se puede seleccionar para nuevos pedidos), pero los pedidos existentes con ese arroz se mantienen intactos.
+Deja de aparecer en la hoja de pedido (no se puede seleccionar para nuevos pedidos), pero los pedidos existentes con ese arroz se mantienen intactos.

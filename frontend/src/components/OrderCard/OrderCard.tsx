@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react';
 import type { TouchEvent as ReactTouchEvent } from 'react';
-import type { Pedido } from '../../types';
+import type { OrderStatus, Pedido } from '../../types';
 import { updateOrderStatus } from '../../api/pedidos';
 import { useAuth } from '../../hooks/useAuth';
+import { resumenLineas } from '../../utils/pedidos';
 import './OrderCard.css';
 
 interface OrderCardProps {
@@ -33,7 +34,9 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
     minute: '2-digit',
   }) : '';
 
-  const riceName = pedido.lineas?.[0]?.arroz_nombre || 'Arroz';
+  const riceName = resumenLineas(pedido);
+  // Evita que el click sintético tras un swipe/arrastre abra la edición
+  const suppressClickRef = useRef(false);
 
   function handleTouchStart(e: ReactTouchEvent) {
     if (isUpdating) return;
@@ -48,6 +51,7 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
     longPressTimerRef.current = window.setTimeout(() => {
       if (!hasDeterminedDirectionRef.current) {
         isDraggingTouchRef.current = true;
+        suppressClickRef.current = true;
         setIsSwiping(false);
         if (onDragStartTouch) {
           onDragStartTouch(pedido, touch.clientX, touch.clientY);
@@ -89,6 +93,7 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
       }
     }
 
+    suppressClickRef.current = true;
     // Limits
     if (diffX > 120) setTranslateX(120);
     else if (diffX < -120) setTranslateX(-120);
@@ -130,7 +135,7 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
     e.stopPropagation();
     if (isUpdating) return;
 
-    const statusFlow: Record<string, string> = {
+    const statusFlow: Record<string, OrderStatus> = {
       'nuevo': 'preparando',
       'preparando': 'listo',
       'listo': 'entregado',
@@ -145,7 +150,7 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
 
     setIsUpdating(true);
     try {
-      await updateOrderStatus(pedido.id, nextStatus as any);
+      await updateOrderStatus(pedido.id, nextStatus);
       if (onStatusChange) onStatusChange();
     } catch (err) {
       console.error('Error cycling status:', err);
@@ -203,6 +208,11 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
           e.dataTransfer.effectAllowed = 'move';
         }}
         onDragEnd={() => setIsNativeDragging(false)}
+        onClick={() => {
+          if (suppressClickRef.current) { suppressClickRef.current = false; return; }
+          if (onEdit) onEdit(pedido);
+        }}
+        onTouchStartCapture={() => { suppressClickRef.current = false; }}
       >
         <div>
           <span className="order-id">#{String(pedido.id).padStart(4, '0')}</span>
@@ -210,10 +220,14 @@ export function OrderCard({ pedido, onStatusChange, onEdit, onDragStartTouch, is
         <div className="order-card-body">
           <div className="order-client-name">{pedido.cliente_nombre || `Cliente #${pedido.cliente_id}`}</div>
           <div className="order-details">
+            <span className="order-delivery" title={pedido.local_recogida ? 'Recoge en local' : 'Reparto a domicilio'}>
+              {pedido.local_recogida ? '🏠' : '🛵'}
+            </span>
             <span className="order-rice-badge">{riceName}</span>
             <span className="order-pax-badge">{pedido.pax} PAX</span>
             <span className="order-time">{time}</span>
           </div>
+          {pedido.observaciones && <div className="order-notes">📝 {pedido.observaciones}</div>}
         </div>
         <span 
           className={`order-status-badge ${pedido.status}`}

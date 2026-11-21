@@ -126,3 +126,43 @@ def test_update_pedido_status_invalid(client, app, runster_headers):
         headers=runster_headers
      )
      assert response.status_code == 400
+
+
+def test_update_pedido_local_recogida(client, app, runster_headers):
+    """Cambiar el tipo de entrega desde la hoja de edición."""
+    with app.app_context():
+        c = Cliente(nombre="Entrega", telefono="555")
+        db.session.add(c)
+        db.session.commit()
+        p = Pedido(cliente_id=c.id, pax=4, fecha_pedido=datetime.datetime(2026, 6, 20, 13, 0),
+                   status='nuevo', local_recogida=True, recogido=True)
+        db.session.add(p)
+        db.session.commit()
+        pedido_id = p.id
+
+    # Local -> domicilio: queda pendiente de recoger recipientes
+    response = client.patch(f'/api/v1/pedidos/{pedido_id}', json={"local_recogida": False}, headers=runster_headers)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["local_recogida"] is False
+    assert data["recogido"] is False
+
+    # Domicilio -> local
+    response = client.patch(f'/api/v1/pedidos/{pedido_id}', json={"local_recogida": True}, headers=runster_headers)
+    assert response.get_json()["recogido"] is True
+
+
+def test_get_client_by_id(client, app, runster_headers):
+    with app.app_context():
+        c = Cliente(nombre="Ficha", telefono="666", direccion="Calle Mayor 1", codigo_postal="46001")
+        db.session.add(c)
+        db.session.commit()
+        client_id = c.id
+
+    response = client.get(f'/api/v1/clients/{client_id}', headers=runster_headers)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["nombre"] == "Ficha"
+    assert data["codigo_postal"] == "46001"
+
+    assert client.get('/api/v1/clients/999999', headers=runster_headers).status_code == 404

@@ -121,8 +121,8 @@
 }
 
 .order-status-badge.preparando {
-  background: var(--status-yellow-bg);
-  color: var(--status-yellow);
+  background: var(--status-blue-bg);
+  color: var(--status-blue);
 }
 
 .order-status-badge.listo {
@@ -139,3 +139,18 @@
   background: var(--status-red-bg);
   color: var(--status-red);
 }
+/* Toque = editar: el cursor y el estado activo lo comunican */
+.order-card { cursor: pointer; }
+.order-details { flex-wrap: wrap; align-items: center; }
+.order-delivery { font-size: 0.95rem; }
+.order-notes {
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: var(--status-yellow);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.order-status-badge { min-height: 36px; display: inline-flex; align-items: center; padding: 0 14px; }

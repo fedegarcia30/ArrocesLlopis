@@ -73,6 +73,13 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
 }
 ```
 
+### Ficha de cliente por id
+**Endpoint**: `GET /api/v1/clients/:id`
+**Auth**: Requerido
+**Descripción**: Devuelve la ficha completa del cliente (mismos campos que el listado `GET /clients`). Lo usa la hoja de pedido al editar un pedido existente. `404` si no existe.
+
+> La hoja de pedido busca clientes con `GET /api/v1/clients?search=<texto>` (coincidencia parcial por nombre **o** teléfono), no con `/clients/lookup`.
+
 ---
 
 ## 3. Creación de Pedido (Order Creation)
@@ -93,8 +100,10 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
     "codigo_postal": "28001"
   },
   "order": {
-    "arroz_id": 1,
-    "pax": 4,
+    "lines": [
+      { "arroz_id": 1, "pax": 4 },
+      { "arroz_id": 2, "pax": 2 }
+    ],
     "recogida": true, // true si es recogida en local, false si es a domicilio
     "observaciones": "Sin sal"
   }
@@ -168,7 +177,8 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
         "id": 1,
         "arroz_id": 1,
         "arroz_nombre": "Señoret",
-        "precio_unitario": 13.50
+        "precio_unitario": 13.50,
+        "raciones": 4
       }
     ],
     "created_at": "2026-05-09T10:30:00"
@@ -213,6 +223,11 @@ o
   "fecha_pedido": "2026-03-08 14:00"
 }
 ```
+
+Campos admitidos: `fecha_pedido`, `lines` (`[{arroz_id, pax}]`, sustituye todas las líneas), `observaciones`, `direccion` (actualiza la ficha del cliente), `recogido` y `local_recogida`.
+
+- `local_recogida` (bool): cambia el tipo de entrega. Igual que en la creación, fija `recogido = local_recogida` (un pedido de recogida en local no deja recipientes que recoger).
+- ⚠️ `fecha_pedido` no se valida contra la capacidad de la franja en el backend; el frontend lo comprueba antes de enviar.
 
 **⚠️ Crítico**: El backend DEBE aceptar y persistir el campo `recogido` (booleano → `TINYINT(1)` en MySQL). Cuando `recogido = true`, guardar `1` en la base de datos.
 

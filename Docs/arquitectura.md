@@ -49,7 +49,7 @@ ArrocesLlopis/
 │   │   ├── components/
 │   │   │   ├── Layout/          # Layout.tsx (Outlet) + Sidebar.tsx
 │   │   │   ├── AvailabilityGrid/ # Grid de slots por hora
-│   │   │   ├── OrderWizard/     # Wizard 4 pasos para nuevo pedido
+│   │   │   ├── OrderSheet/      # Hoja de pedido (alta y edición, una pantalla)
 │   │   │   ├── OrderCard/       # Tarjeta de pedido individual
 │   │   │   ├── Modals/          # RiceEditModal, RecipeEditor, ConfirmMoveModal
 │   │   │   ├── Stats/           # AdminStatCard

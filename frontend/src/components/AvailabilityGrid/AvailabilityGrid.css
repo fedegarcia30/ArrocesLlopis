@@ -64,6 +64,12 @@
   transform: translateX(3px);
 }
 
+/* Semáforo: barra lateral de color según ocupación */
+.slot-card { border-left-width: 4px; border-left-style: solid; }
+.slot-card[data-status="green"]  { border-left-color: var(--status-green); }
+.slot-card[data-status="yellow"] { border-left-color: var(--status-yellow); }
+.slot-card[data-status="red"]    { border-left-color: var(--status-red); opacity: 0.75; }
+
 .slot-card.selected {
   border-color: var(--gold);
   background: rgba(212, 175, 55, 0.08);

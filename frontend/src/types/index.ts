@@ -6,6 +6,8 @@ export interface Cliente {
   telefono?: string;
   direccion?: string;
   codigo_postal?: string;
+  municipio?: string;
+  provincia?: string;
   observaciones?: string;
   num_pedidos?: number;
   raciones?: number;
@@ -71,6 +73,7 @@ export interface PedidoLinea {
   pedido_id: number;
   arroz_id: number;
   precio_unitario: number;
+  raciones: number;
   arroz_nombre?: string;
 }
 
@@ -133,8 +136,9 @@ export interface OrderCreateRequest {
     codigo_postal: string;
   };
   order: {
-    arroz_id: number;
-    pax: number;
+    arroz_id?: number;
+    pax?: number;
+    lines?: { arroz_id: number; pax: number }[];
     recogida: boolean;
     observaciones?: string;
   };

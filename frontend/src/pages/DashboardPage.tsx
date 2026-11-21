@@ -1,19 +1,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AvailabilityGrid } from '../components/AvailabilityGrid/AvailabilityGrid';
-import { OrderWizard } from '../components/OrderWizard/OrderWizard';
+import { OrderSheet, type OrderSavedInfo } from '../components/OrderSheet/OrderSheet';
 import { OrderCard } from '../components/OrderCard/OrderCard';
 import { OrderSummaryPill } from '../components/OrderCard/OrderSummaryPill';
 import { ConfirmMoveModal } from '../components/Modals/ConfirmMoveModal';
-import { EditPedidoModal } from '../components/Modals/EditPedidoModal';
 import { getPedidos, updatePedido } from '../api/pedidos';
 import { useAvailability } from '../hooks/useAvailability';
 import type { Slot, Pedido } from '../types';
 import { useAuth } from '../hooks/useAuth';
-
-function todayString(): string {
-  return new Date().toISOString().slice(0, 10);
-}
+import { resumenLineas, todayIso } from '../utils/pedidos';
 
 function getTimeString(isoString: string): string {
   return new Date(isoString).toLocaleTimeString('es-ES', {
@@ -24,18 +20,18 @@ function getTimeString(isoString: string): string {
 
 export function DashboardPage() {
   const [searchParams] = useSearchParams();
-  const initialDate = searchParams.get('date') || todayString();
+  const initialDate = searchParams.get('date') || todayIso();
 
   const [selectedSlot, setSelectedSlot] = useState<Slot | null>(null);
-  const [wizardSlot, setWizardSlot] = useState<Slot | null>(null);
+  // Hoja de pedido: pedido=null → alta; pedido → edición
+  const [sheet, setSheet] = useState<{ pedido: Pedido | null; time: string | null } | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loadingPedidos, setLoadingPedidos] = useState(false);
   const [date, setDate] = useState<string>(initialDate);
   const ordersSectionRef = useRef<HTMLElement>(null);
   const { user } = useAuth();
   const { slots, loading: loadingSlots, error: errorSlots, reload: refetchAvailability } = useAvailability(date);
-
-  const [editingPedido, setEditingPedido] = useState<Pedido | null>(null);
 
   // Move confirmation state
   const [pendingMove, setPendingMove] = useState<{
@@ -101,8 +97,8 @@ export function DashboardPage() {
         );
 
         const summary = relatedOrders.length > 1
-          ? `${relatedOrders.length} pedidos (${relatedOrders.map(o => `${o.lineas?.[0]?.arroz_nombre || 'Arroz'} x${o.pax}`).join(', ')})`
-          : `Pedido #${String(touchDragInfo.order.id).padStart(4, '0')} (${touchDragInfo.order.lineas?.[0]?.arroz_nombre || 'Arroz'} x${touchDragInfo.order.pax})`;
+          ? `${relatedOrders.length} pedidos (${relatedOrders.map(resumenLineas).join(', ')})`
+          : `Pedido #${String(touchDragInfo.order.id).padStart(4, '0')} (${resumenLineas(touchDragInfo.order)})`;
 
         setPendingMove({
           orderIds: relatedOrders.map(o => o.id),
@@ -166,15 +162,22 @@ export function DashboardPage() {
   }
 
   function handleNewOrder() {
-    if (selectedSlot?.available) {
-      setWizardSlot(selectedSlot);
-    }
+    // Si hay una franja con hueco seleccionada, se usa como hora sugerida
+    setSheet({ pedido: null, time: selectedSlot?.available ? selectedSlot.time : null });
   }
 
-  function handleOrderCreated() {
-    setWizardSlot(null);
-    loadPedidos();
-    refetchAvailability();
+  function handleOrderSaved(info: OrderSavedInfo) {
+    setSheet(null);
+    setToast(info.message);
+    window.setTimeout(() => setToast(null), 3500);
+    if (info.date !== date) {
+      // Saltamos al día del pedido para que se vea dónde ha quedado
+      setSelectedSlot(null);
+      setDate(info.date);
+    } else {
+      loadPedidos();
+      refetchAvailability();
+    }
   }
 
   async function handleConfirmMove() {
@@ -201,13 +204,8 @@ export function DashboardPage() {
       <div className="dashboard-header">
         <h1 className="dashboard-title">Arroces Llopis</h1>
         {user?.rol !== 'cocinero' && (
-          <button
-            className="fab-new-order"
-            onClick={handleNewOrder}
-            disabled={!selectedSlot?.available}
-            title={selectedSlot ? 'Nuevo Pedido' : 'Selecciona una franja para nuevo pedido'}
-          >
-            + NUEVO PEDIDO
+          <button className="fab-new-order" onClick={handleNewOrder}>
+            + Nuevo pedido{selectedSlot?.available ? ` · ${selectedSlot.time}` : ''}
           </button>
         )}
         <div className="dashboard-header-controls">
@@ -238,8 +236,8 @@ export function DashboardPage() {
               );
 
               const summary = relatedOrders.length > 1
-                ? `${relatedOrders.length} pedidos (${relatedOrders.map(o => `${o.lineas?.[0]?.arroz_nombre || 'Arroz'} x${o.pax}`).join(', ')})`
-                : `Pedido #${String(orderId).padStart(4, '0')} (${order.lineas?.[0]?.arroz_nombre || 'Arroz'} x${order.pax})`;
+                ? `${relatedOrders.length} pedidos (${relatedOrders.map(resumenLineas).join(', ')})`
+                : `Pedido #${String(orderId).padStart(4, '0')} (${resumenLineas(order)})`;
 
               setPendingMove({
                 orderIds: relatedOrders.map(o => o.id),
@@ -287,7 +285,7 @@ export function DashboardPage() {
                     key={pedido.id}
                     pedido={pedido}
                     onStatusChange={loadPedidos}
-                    onEdit={setEditingPedido}
+                    onEdit={(p) => setSheet({ pedido: p, time: null })}
                     onDragStartTouch={(order, x, y) => setTouchDragInfo({ order, x, y, overTime: null })}
                     isDragging={touchDragInfo?.order.id === pedido.id}
                   />
@@ -313,27 +311,17 @@ export function DashboardPage() {
         </section>
       </div>
 
-      {wizardSlot && (
-        <OrderWizard
-          slot={wizardSlot}
-          allSlots={slots}
-          date={date}
-          onClose={() => setWizardSlot(null)}
-          onOrderCreated={handleOrderCreated}
+      {sheet && (
+        <OrderSheet
+          pedido={sheet.pedido}
+          initialDate={date}
+          initialTime={sheet.time}
+          onClose={() => setSheet(null)}
+          onSaved={handleOrderSaved}
         />
       )}
 
-      {editingPedido && (
-        <EditPedidoModal
-          pedido={editingPedido}
-          onClose={() => setEditingPedido(null)}
-          onSaved={() => {
-            setEditingPedido(null);
-            loadPedidos();
-            refetchAvailability();
-          }}
-        />
-      )}
+      {toast && <div className="app-toast" role="status">{toast}</div>}
 
       {pendingMove && (
         <ConfirmMoveModal
@@ -361,7 +349,7 @@ export function DashboardPage() {
             </div>
             <div className="order-details">
               <span className="order-rice-badge">
-                {touchDragInfo.order.lineas?.[0]?.arroz_nombre || 'Arroz'}
+                {resumenLineas(touchDragInfo.order)}
               </span>
               <span className="order-pax-badge">{touchDragInfo.order.pax} PAX</span>
               <span className="order-time">{getTimeString(touchDragInfo.order.fecha_pedido)}</span>

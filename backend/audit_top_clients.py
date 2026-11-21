@@ -18,7 +18,7 @@ def audit_clients():
         stats = db.session.query(
             Cliente.nombre,
             func.count(Pedido.id).label('orders'),
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('spent'),
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('spent'),
             func.sum(Pedido.pax).label('rations_total')
         ).join(Pedido, Cliente.id == Pedido.cliente_id)\
          .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
@@ -28,7 +28,7 @@ def audit_clients():
              Pedido.deleted_at.is_(None)
          )\
          .group_by(Cliente.id)\
-         .order_by(func.sum(Pedido.pax * PedidoLinea.precio_unitario).desc())\
+         .order_by(func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).desc())\
          .all()
 
         print("\n--- Ranking de Ingresos 2026 (Top 10) ---")

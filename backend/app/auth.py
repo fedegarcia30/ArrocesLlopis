@@ -2,20 +2,35 @@ from functools import wraps
 from flask import request, jsonify
 import firebase_admin
 from firebase_admin import credentials, auth
+from google.auth.credentials import AnonymousCredentials
 import os
+from pathlib import Path
 
 
 def init_firebase():
     if firebase_admin._apps:
         return
     creds_path = os.environ.get('FIREBASE_CREDENTIALS_PATH')
-    project_id = os.environ.get('VITE_FIREBASE_PROJECT_ID')
+    project_id = (
+        os.environ.get('VITE_FIREBASE_PROJECT_ID')
+        or os.environ.get('GOOGLE_CLOUD_PROJECT')
+    )
 
-    if creds_path and os.path.exists(creds_path):
-        cred = credentials.Certificate(creds_path)
-        firebase_admin.initialize_app(cred)
+    if creds_path:
+        credential_file = Path(creds_path)
+        if not credential_file.is_absolute():
+            credential_file = Path(__file__).resolve().parents[1] / credential_file
+        if not credential_file.is_file():
+            raise FileNotFoundError(
+                f"Firebase service account file not found: {credential_file}"
+            )
+        firebase_admin.initialize_app(credentials.Certificate(str(credential_file)))
     elif project_id:
-        firebase_admin.initialize_app(options={'projectId': project_id})
+        # Local ID-token verification uses public signing certificates and needs no ADC.
+        firebase_admin.initialize_app(
+            credential=AnonymousCredentials(),
+            options={'projectId': project_id}
+        )
     else:
         firebase_admin.initialize_app()
 

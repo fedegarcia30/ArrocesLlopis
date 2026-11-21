@@ -41,3 +41,9 @@
     overflow: hidden;
     flex: 1;
 }
+/* Color por estado (según la guía de usuario) */
+.order-summary-pill[data-status="preparando"] { border-color: var(--status-blue); background: var(--status-blue-bg); }
+.order-summary-pill[data-status="listo"]      { border-color: var(--status-green); background: var(--status-green-bg); }
+.order-summary-pill[data-status="entregado"],
+.order-summary-pill[data-status="cancelado"]  { opacity: 0.45; }
+.order-summary-pill[data-status="cancelado"] .pill-rice { text-decoration: line-through; }

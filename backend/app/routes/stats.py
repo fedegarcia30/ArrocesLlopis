@@ -80,8 +80,8 @@ def get_dashboard_stats():
 
         # Billing, Rations & Count
         stats = db.session.query(
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('revenue'),
-            func.sum(Pedido.pax).label('rations'),
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('revenue'),
+            func.sum(PedidoLinea.raciones).label('rations'),
             func.count(func.distinct(Pedido.id)).label('orders_count')
         ).join(PedidoLinea).filter(*valid_orders_filter).first()
 
@@ -99,46 +99,46 @@ def get_dashboard_stats():
         # Top Arroces
         top_arroces = db.session.query(
             Arroz.nombre,
-            func.sum(Pedido.pax).label('total_rations'),
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('subtotal')
+            func.sum(PedidoLinea.raciones).label('total_rations'),
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('subtotal')
         ).join(PedidoLinea, Arroz.id == PedidoLinea.arroz_id)\
          .join(Pedido, Pedido.id == PedidoLinea.pedido_id)\
          .filter(*valid_orders_filter)\
          .group_by(Arroz.id)\
-         .order_by(func.sum(Pedido.pax).desc())\
+         .order_by(func.sum(PedidoLinea.raciones).desc())\
          .limit(5).all()
 
         # Top Clients by Revenue (as requested)
         top_clients = db.session.query(
             Cliente.nombre,
-            func.count(Pedido.id).label('orders'),
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('spent'),
-            func.sum(Pedido.pax).label('rations_total')
+            func.count(func.distinct(Pedido.id)).label('orders'),
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('spent'),
+            func.sum(PedidoLinea.raciones).label('rations_total')
         ).join(Pedido, Cliente.id == Pedido.cliente_id)\
          .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
          .filter(*valid_orders_filter)\
          .group_by(Cliente.id)\
-         .order_by(func.sum(Pedido.pax * PedidoLinea.precio_unitario).desc())\
+         .order_by(func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).desc())\
          .limit(5).all()
 
         # Top Zip Codes
         top_zipcodes = db.session.query(
             Cliente.codigo_postal,
-            func.count(Pedido.id).label('orders'),
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('revenue')
+            func.count(func.distinct(Pedido.id)).label('orders'),
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('revenue')
         ).join(Pedido, Cliente.id == Pedido.cliente_id)\
          .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
          .filter(*valid_orders_filter)\
          .group_by(Cliente.codigo_postal)\
-         .order_by(func.count(Pedido.id).desc())\
+         .order_by(func.count(func.distinct(Pedido.id)).desc())\
          .limit(5).all()
 
         # Busiest Month
         busiest = db.session.query(
             extract('month', Pedido.fecha_pedido).label('month'),
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('rev')
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('rev')
         ).join(PedidoLinea).filter(*valid_orders_filter)\
-         .group_by('month').order_by(func.sum(Pedido.pax * PedidoLinea.precio_unitario).desc()).first()
+         .group_by('month').order_by(func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).desc()).first()
 
         months_map = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
         busiest_month = months_map[int(busiest.month)-1] if busiest else None
@@ -207,8 +207,8 @@ def get_dashboard_stats():
     def get_yearly_trend(year):
         trend = db.session.query(
             extract('month', Pedido.fecha_pedido).label('month'),
-            func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('rev'),
-            func.sum(Pedido.pax).label('rats'),
+            func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('rev'),
+            func.sum(PedidoLinea.raciones).label('rats'),
             func.count(func.distinct(Pedido.id)).label('ords'),
             func.count(func.distinct(Pedido.cliente_id)).label('cli')
         ).join(PedidoLinea).filter(
@@ -488,8 +488,8 @@ def get_client_weekly_stats(client_id):
     
     orders = db.session.query(
         func.date(Pedido.fecha_pedido).label('fecha'),
-        func.sum(Pedido.pax).label('rations'),
-        func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('revenue'),
+        func.sum(PedidoLinea.raciones).label('rations'),
+        func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('revenue'),
         func.count(func.distinct(Pedido.id)).label('orders_count')
     ).select_from(Pedido)\
      .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
@@ -658,14 +658,14 @@ def get_clients_analysis():
     zone_stats = db.session.query(
         Cliente.codigo_postal,
         Arroz.nombre,
-        func.sum(Pedido.pax).label('total_rations')
+        func.sum(PedidoLinea.raciones).label('total_rations')
     ).select_from(Cliente)\
      .join(Pedido, Cliente.id == Pedido.cliente_id)\
      .join(PedidoLinea, Pedido.id == PedidoLinea.pedido_id)\
      .join(Arroz, Arroz.id == PedidoLinea.arroz_id)\
      .filter(*zone_filter)\
      .group_by(Cliente.codigo_postal, Arroz.id)\
-     .order_by(Cliente.codigo_postal, func.sum(Pedido.pax).desc()).all()
+     .order_by(Cliente.codigo_postal, func.sum(PedidoLinea.raciones).desc()).all()
      
     patterns_by_cp = {}
     for row in zone_stats:
@@ -725,8 +725,8 @@ def get_client_full_history(client_id):
     monthly_rows = db.session.query(
         y_col.label('y'),
         m_col.label('m'),
-        func.sum(Pedido.pax).label('rations'),
-        func.sum(Pedido.pax * PedidoLinea.precio_unitario).label('revenue'),
+        func.sum(PedidoLinea.raciones).label('rations'),
+        func.sum(PedidoLinea.raciones * PedidoLinea.precio_unitario).label('revenue'),
         func.count(func.distinct(Pedido.id)).label('orders_count')
     ).join(PedidoLinea).filter(
         Pedido.cliente_id == client_id,

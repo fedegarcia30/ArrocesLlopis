@@ -27,7 +27,9 @@ def create_test_app():
     return app
 
 @pytest.fixture
-def app():
+def app(monkeypatch):
+    monkeypatch.setenv('VITE_FIREBASE_PROJECT_ID', 'arroces-llopis-test')
+    monkeypatch.delenv('FIREBASE_CREDENTIALS_PATH', raising=False)
     app = create_test_app()
     
     with app.app_context():

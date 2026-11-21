@@ -7,8 +7,9 @@ import { getRices } from '../../api/arroces';
 import { getClient, updateCliente } from '../../api/clientes';
 import { createOrder, getPedidos, updateOrderStatus, updatePedido } from '../../api/pedidos';
 import { useAvailability } from '../../hooks/useAvailability';
+import { useAuth } from '../../hooks/useAuth';
 import type { Arroz, Cliente, Pedido } from '../../types';
-import { eur, fechaCorta, fechaPedido, horaPedido } from '../../utils/pedidos';
+import { eur, fechaCorta, fechaPedido, horaPedido, puedeEditarFecha, todayIso } from '../../utils/pedidos';
 import './OrderSheet.css';
 
 export interface OrderSavedInfo {
@@ -31,6 +32,8 @@ const QUICK_NOTES = ['Sin gluten', 'Sin marisco', 'Alergia frutos secos', 'Llama
 
 export function OrderSheet({ pedido, initialDate, initialTime, onClose, onSaved }: Props) {
   const isEdit = !!pedido;
+  const { user } = useAuth();
+  const esAdmin = user?.rol === 'admin';
 
   // ── Catálogo ──
   const [rices, setRices] = useState<Arroz[]>([]);
@@ -145,11 +148,12 @@ export function OrderSheet({ pedido, initialDate, initialTime, onClose, onSaved 
     const m: string[] = [];
     if (!client && !(newClient && newClient.nombre.trim() && newClient.telefono.replace(/\D/g, '').length >= 6)) m.push('cliente');
     if (lines.length === 0) m.push('arroz');
+    if (!puedeEditarFecha(date, user?.rol)) m.push('fecha futura (solo el admin puede usar días pasados)');
     if (!time) m.push('hora');
     else if (!slotOk) m.push(loadingSlots ? 'comprobando hueco…' : `hueco en ${time}`);
     if (domicilio && !direccion.trim()) m.push('dirección');
     return m;
-  }, [client, newClient, lines.length, time, loadingSlots, selectedSlot, slotOk, domicilio, direccion]);
+  }, [client, newClient, lines.length, time, loadingSlots, slotOk, domicilio, direccion, date, user?.rol]);
 
   function mark<T>(setter: (v: T) => void) {
     return (v: T) => { setter(v); setDirty(true); };
@@ -349,6 +353,7 @@ export function OrderSheet({ pedido, initialDate, initialTime, onClose, onSaved 
               loading={loadingSlots}
               neededPax={totalPax}
               own={own}
+              minDate={esAdmin ? undefined : todayIso()}
             />
           </section>
         </div>

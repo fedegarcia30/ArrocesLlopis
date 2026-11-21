@@ -102,7 +102,7 @@ Notas:
 | # | Decisión | Recomendación | Alternativa |
 |---|---|---|---|
 | D1 | Semántica de `pedidos` | **1 pedido = 1 encargo con N líneas** (multi-producto real). Coincide con la legacy y con el carrito multi-item que ya tiene el frontend | 1 pedido por arroz (modelo actual; menor cambio pero pierde la estructura de encargo) |
-| D2 | Productos a importar | **Los 14** (todos son platos del menú) | Solo categoría "Arroces" (9) |
+| D2 | Productos a importar | **Los 14** (todos los platos) y un arroz inactivo `Sin identificar` para las líneas legacy sin producto | Solo categoría "Arroces" (9) |
 | D3 | Normalización de nombres | **Title Case** con mapeo explícito (sección 6.1) | Mantener MAYÚSCULAS legacy |
 | D4 | `caldo` de arroces | **NULL** (la legacy no lo tiene) | Mapeo manual por nombre (Señoret/Negro/Banda → Pescado) |
 | D5 | Estado histórico | `Realizado → entregado` (entregado=True), `Anulado → cancelado`, `Pendiente de aclarar → nuevo` | `Realizado → listo` |
@@ -210,8 +210,16 @@ Script propuesto: `database/migrate_sqlite_to_mysql.py` (Python, usa
     | POLLO EN PEPITORIA | Pollo en Pepitoria |
 
   - `precio`: precio vigente = `precios` con `vigente_hasta IS NULL`
-    (`precio_por_racion_centimos / 100`).
+    (`precio_por_racion_centimos / 100`). `Pollo en Pepitoria` no tiene precio legacy:
+    se confirmó un precio actual de **13,50 €** y se crea su histórico desde la fecha
+    de migración.
   - `caldo`: NULL. `disponible`: TRUE.
+- Si existen detalles sin producto, crear `Sin identificar` con `disponible=FALSE`.
+  Como `arroces.precio` debe ser positivo, su precio de catálogo técnico es 0,01 €;
+  sus snapshots históricos desconocidos se guardan a 0 € y no generan ingresos.
+- Se permite `pedido_lineas.precio_unitario = 0` solo para snapshots históricos cuyo
+  precio no existe en el origen. Los pedidos nuevos siguen usando el precio vigente
+  positivo del arroz.
 - Insertar en `historico_precios` una fila por cada fila legacy de `precios`:
   - `item_id` = id MySQL del arroz mapeado,
   - `tipo_item` = 'venta',
@@ -253,7 +261,7 @@ Por cada `pedidos` legacy (1:1 con `pedidos` MySQL):
   - `hora` = `franjas[id_franja].hora_entrega` si `id_franja` no NULL; si NULL →
     `'13:00'` (placeholder documentado; afecta a 133 pedidos).
   - `datetime = fecha + ' ' + hora`.
-- `pax` = `SUM(detalle_pedidos.raciones)` del pedido (NULL→0). Si `pax < 1`, **saltar
+- `pax` = suma de raciones de las líneas mapeadas (NULL→0). Si `pax < 1`, **saltar
   el pedido** y loguearlo.
 - `status`:
 
@@ -270,14 +278,16 @@ Por cada `pedidos` legacy (1:1 con `pedidos` MySQL):
 
 Por cada `detalle_pedidos` del pedido:
 
-- Saltar si `id_producto` es NULL (3 filas) y loguear.
-- `arroz_id` = `map_arroz[id_producto]`.
+- Si `id_producto` es NULL o no se puede mapear, asociar al arroz inactivo
+  `Sin identificar`; su `precio_unitario` es 0 al no tener precio de origen.
+- En otro caso, `arroz_id` = `map_arroz[id_producto]`.
 - `raciones` = `detalle_pedidos.raciones` (NULL→0).
 - `precio_unitario`:
   - Si `id_precio` válido → `precios[id_precio].precio_por_racion_centimos / 100.0`.
   - Si no → resolver por fecha: `precios` con
     `id_producto` igual y `vigente_desde <= fecha_pedido < vigente_hasta`; si no hay,
-    usar `arroces.precio` actual.
+    usar `arroces.precio` actual cuando exista precio histórico para ese arroz; si no,
+    guardar 0 para indicar precio histórico desconocido.
 - Insertar `pedido_lineas(pedido_id, arroz_id, precio_unitario, raciones)`.
 
 #### D. `anotaciones` (opcional, decisión D8)
@@ -352,11 +362,16 @@ Ejecutar y comprobar:
 
 ```sql
 SELECT COUNT(*) FROM clientes;      -- esperado: 2973
-SELECT COUNT(*) FROM pedidos;       -- esperado: 6103 (menos los pax<1 saltados)
-SELECT COUNT(*) FROM pedido_lineas; -- esperado: 7856 (7859 - 3 id_producto NULL)
-SELECT COUNT(*) FROM arroces;       -- esperado: 14
-SELECT COUNT(*) FROM historico_precios; -- esperado: 22
+SELECT COUNT(*) FROM pedidos;       -- resultado: 6094 (9 pedidos con pax<1 omitidos)
+SELECT COUNT(*) FROM pedido_lineas; -- resultado: 7769
+SELECT COUNT(*) FROM arroces;       -- resultado: 15 (14 legacy + Sin identificar)
+SELECT COUNT(*) FROM historico_precios; -- resultado: 23 (22 legacy + Pepitoria)
 ```
+
+Las 7.769 líneas resultan de 7.859 detalles menos 9 de pedidos omitidos, 80 filas
+duplicadas agregadas por arroz/pedido y 1 detalle con raciones NULL/cero. Las tres
+líneas sin producto se conservaron bajo `Sin identificar`. Comprobado: todos los
+pedidos cumplen `pax = SUM(pedido_lineas.raciones)` y no hay pedidos sin líneas.
 
 Ingresos históricos por año (deben coincidir legacy vs MySQL):
 
@@ -379,7 +394,7 @@ WHERE p.estado <> 'Anulado'
 GROUP BY substr(j.fecha,1,4) ORDER BY y;
 ```
 
-Ambos resultados deben ser iguales (salvo redondeo de céntimos). También comprobar
+Los ingresos de 2020–2025 coinciden con la legacy al céntimo. También comprobar
 `SUM(raciones)`, número de pedidos por año y distribución por franja.
 
 ---
@@ -544,17 +559,17 @@ await createOrder({
 
 ## 11. Orden de ejecución / checklist
 
-1. ☐ Fase 0: backup `mysqldump`.
-2. ☐ Fase 1: `ALTER TABLE`s (archivo SQL).
-3. ☐ Fase 2: `TRUNCATE` de tablas transaccionales.
-4. ☐ Fase 3: escribir y ejecutar `database/migrate_sqlite_to_mysql.py`.
-5. ☐ Fase 4: queries de verificación (recuentos + ingresos por año).
-6. ☐ Fase 5: cambios backend (`models.py`, `orders.py`, `pedidos.py`, `rices.py`,
+1. ☑ Fase 0: backup `mysqldump` externo.
+2. ☑ Fase 1: `ALTER TABLE`s (archivo SQL).
+3. ☑ Fase 2: `TRUNCATE` de tablas transaccionales.
+4. ☑ Fase 3: escribir y ejecutar `database/migrate_sqlite_to_mysql.py`.
+5. ☑ Fase 4: queries de verificación (recuentos + ingresos por año).
+6. ☑ Fase 5: cambios backend (`models.py`, `orders.py`, `pedidos.py`, `rices.py`,
    `stats.py`, `clients.py`).
-7. ☐ Fase 6: cambios frontend (`types`, `OrderWizard`, revisión de renderizados).
-8. ☐ Validar: `python -m pytest backend/tests` (si aplica), `cd frontend && npm run build`
-   y `npm run lint`.
-9. ☐ Fase 7: actualizar `schema.sql`, `compartido.md`, `Docs/base-datos.md`.
+7. ☑ Fase 6: cambios frontend (`types`, `OrderWizard`, revisión de renderizados).
+8. ☑ Validar: 17 tests backend y build frontend aprobados. ESLint sigue reportando
+   errores preexistentes en otras partes del frontend.
+9. ☑ Fase 7: actualizar `schema.sql`, `compartido.md`, `Docs/base-datos.md`.
 
 ---
 

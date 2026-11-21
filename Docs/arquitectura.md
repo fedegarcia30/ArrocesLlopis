@@ -48,7 +48,7 @@ ArrocesLlopis/
 │   │   │   └── useAvailability.ts # Disponibilidad de slots
 │   │   ├── components/
 │   │   │   ├── Layout/          # Layout.tsx (Outlet) + Sidebar.tsx
-│   │   │   ├── AvailabilityGrid/ # Grid de slots por hora
+│   │   │   ├── DayBoard/        # Filas por franja del cuadro de pedidos
 │   │   │   ├── OrderSheet/      # Hoja de pedido (alta y edición, una pantalla)
 │   │   │   ├── OrderCard/       # Tarjeta de pedido individual
 │   │   │   ├── Modals/          # RiceEditModal, RecipeEditor, ConfirmMoveModal

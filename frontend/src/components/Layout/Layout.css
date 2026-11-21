@@ -40,6 +40,7 @@
 }
 
 .sidebar-link {
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,11 +107,18 @@
     display: none;
   }
 
+  /* Hasta 8 accesos (admin): se reparten el ancho sin salirse de la barra */
+  .sidebar { justify-content: space-evenly; padding: 0 6px; gap: 0; }
   .sidebar-link {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
+    flex: 1 1 0;
+    max-width: 52px;
+    width: auto;
+    height: 46px;
+    border-radius: 14px;
+    font-size: 1.25rem;
   }
+  .sidebar-link:hover { transform: none; }
+  .sidebar-logout { font-size: 1rem; }
 
   .layout-content {
     padding: 16px;

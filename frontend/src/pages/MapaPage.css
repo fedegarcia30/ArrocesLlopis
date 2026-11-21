@@ -87,7 +87,7 @@
 }
 
 .mapa-filter-btn.active.mapa-filter-local { background: #d4af37; color: #000; border-color: #d4af37; }
-.mapa-filter-btn.active.mapa-filter-reparto { background: #3498db; color: #fff; border-color: #3498db; }
+.mapa-filter-btn.active.mapa-filter-reparto { background: #4ECDC4; color: #062b29; border-color: #4ECDC4; }
 .mapa-filter-btn.active.mapa-filter-todos { background: #fff; color: #000; border-color: #fff; }
 
 /* ── Stats comparison bar ────────────────────── */
@@ -220,4 +220,41 @@
     left: 16px;
     min-width: 0;
   }
+}
+
+/* ── Ajustes responsive ─────────────────────── */
+.mapa-filter-btn { min-height: 40px; }
+
+/* Comparar con el año anterior: era un botón sin estilo (parecía texto suelto) */
+.mapa-compare-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 100px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  background: var(--bg-surface);
+  border: 1px dashed rgba(139, 92, 246, 0.6);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+.mapa-compare-btn::before { content: '⇄ '; }
+.mapa-compare-btn.active { background: rgba(139, 92, 246, 0.2); border-style: solid; border-color: #8B5CF6; color: var(--text-main); }
+
+/* Leyenda compacta: no debe tapar el mapa */
+.mapa-legend { padding: 12px 14px; gap: 6px; min-width: 0; right: 14px; bottom: calc(14px + var(--safe-bottom)); }
+.mapa-legend .legend-dot { width: 10px; height: 10px; }
+.legend-section-label { font-size: 0.7rem; font-weight: 700; color: var(--text-main); }
+
+@media (max-width: 767px) {
+  .mapa-header { gap: 8px; }
+  .mapa-month-nav { width: 100%; justify-content: space-between; }
+  .mapa-filters { flex: 1; }
+  .mapa-legend {
+    left: auto;
+    right: 8px;
+    bottom: 8px;
+    padding: 8px 10px;
+    gap: 4px;
+  }
+  .mapa-legend .legend-item { font-size: 0.65rem; gap: 6px; }
 }

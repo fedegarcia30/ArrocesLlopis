@@ -4,6 +4,74 @@ import { getClientStats, getAnalysisDashboard } from '../api/clientes';
 import { AdminStatCard, type StatInfo } from '../components/Stats/AdminStatCard';
 import { SectionInfoBtn } from '../components/Stats/SectionInfoBtn';
 import { MapaPage } from './MapaPage';
+import { eur, todayIso } from '../utils/pedidos';
+
+const FIRST_YEAR = 2020; // primer año con histórico migrado
+
+/** Mueve una fecha de referencia un periodo hacia atrás (-1) o hacia delante (+1). */
+function shiftRef(ref: string, period: string, dir: number): string {
+    const [y, m, d] = ref.split('-').map(Number);
+    const dt = new Date(y, m - 1, d);
+    if (period === 'week') dt.setDate(dt.getDate() + 7 * dir);
+    else {
+        const months = period === 'month' ? 1 : period === 'quarter' ? 3 : period === 'semester' ? 6 : 12;
+        dt.setDate(1);
+        dt.setMonth(dt.getMonth() + months * dir);
+    }
+    const mm = String(dt.getMonth() + 1).padStart(2, '0');
+    const dd = String(dt.getDate()).padStart(2, '0');
+    return `${dt.getFullYear()}-${mm}-${dd}`;
+}
+
+const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+function periodLabel(ref: string, period: string): string {
+    const [y, m, d] = ref.split('-').map(Number);
+    if (period === 'week') {
+        const dt = new Date(y, m - 1, d);
+        dt.setDate(dt.getDate() - ((dt.getDay() + 6) % 7));
+        return `Semana del ${dt.getDate()} ${MESES[dt.getMonth()].slice(0, 3).toLowerCase()} ${dt.getFullYear()}`;
+    }
+    if (period === 'month') return `${MESES[m - 1]} ${y}`;
+    if (period === 'quarter') return `${Math.floor((m - 1) / 3) + 1}º Trimestre ${y}`;
+    if (period === 'semester') return `${m <= 6 ? 1 : 2}º Semestre ${y}`;
+    return `Año ${y}`;
+}
+
+const NAV_PERIODS = ['week', 'month', 'quarter', 'semester', 'ytd'];
+
+/** Navegación entre periodos: por defecto el actual; ‹ › y salto de año. */
+function PeriodNav({ period, value, onChange }: { period: string; value: string | null; onChange: (ref: string | null) => void }) {
+    const today = todayIso();
+    const base = value ?? today;
+    const canNext = periodKey(shiftRef(base, period, 1), period) <= periodKey(today, period);
+    const thisYear = Number(today.slice(0, 4));
+    const years = Array.from({ length: thisYear - FIRST_YEAR + 1 }, (_, i) => thisYear - i);
+    const goTo = (r: string) => onChange(periodKey(r, period) >= periodKey(today, period) ? null : r);
+    return (
+        <div className="period-nav">
+            <button className="period-nav-btn" onClick={() => goTo(shiftRef(base, period, -1))} aria-label="Periodo anterior">‹</button>
+            <span className="period-nav-label">{periodLabel(base, period)}</span>
+            <button className="period-nav-btn" onClick={() => goTo(shiftRef(base, period, 1))} disabled={!canNext} aria-label="Periodo siguiente">›</button>
+            <select className="period-nav-year" value={Number(base.slice(0, 4))} onChange={e => goTo(`${e.target.value}${base.slice(4)}`)} aria-label="Año">
+                {years.map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+            {value && <button className="period-nav-today" onClick={() => onChange(null)}>Actual</button>}
+        </div>
+    );
+}
+
+/** Índice del periodo para comparar si una referencia es posterior a hoy. */
+function periodKey(ref: string, period: string): number {
+    const [y, m, d] = ref.split('-').map(Number);
+    if (period === 'week') {
+        const dt = new Date(y, m - 1, d);
+        dt.setDate(dt.getDate() - ((dt.getDay() + 6) % 7));
+        return dt.getTime();
+    }
+    const size = period === 'month' ? 1 : period === 'quarter' ? 3 : period === 'semester' ? 6 : 12;
+    return y * 12 + Math.floor((m - 1) / size) * size;
+}
 import './AdminDashboard.css';
 
 export function AdminDashboard() {
@@ -14,6 +82,8 @@ export function AdminDashboard() {
     const [clientAnalysis, setClientAnalysis] = useState<any>(null);
     const [period, setPeriod] = useState('quarter');
     const [mode, setMode] = useState<'full' | 'mtd'>('full');
+    // null = periodo actual (por defecto); si no, una fecha dentro del periodo elegido
+    const [ref, setRef] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [loadingClients, setLoadingClients] = useState(false);
     const [trendMetric, setTrendMetric] = useState<'revenue' | 'rations' | 'orders' | 'clients'>('revenue');
@@ -25,8 +95,8 @@ export function AdminDashboard() {
         setLoading(true);
         try {
             const [revData, expData] = await Promise.all([
-                getDashboardStats(period, mode),
-                getExpenseStats(period, mode)
+                getDashboardStats(period, mode, ref),
+                getExpenseStats(period, mode, ref)
             ]);
             setStats(revData);
             setExpenseStats(expData);
@@ -35,7 +105,7 @@ export function AdminDashboard() {
         } finally {
             setLoading(false);
         }
-    }, [period, mode]);
+    }, [period, mode, ref]);
 
     const loadClientData = useCallback(async () => {
         if (period === 'custom' && (!customStart || !customEnd)) return;
@@ -43,9 +113,11 @@ export function AdminDashboard() {
         try {
             const sd = period === 'custom' ? customStart : undefined;
             const ed = period === 'custom' ? customEnd : undefined;
+            // En periodos navegables se usan periodos de calendario (el actual, hasta hoy)
+            const r = NAV_PERIODS.includes(period) ? (ref ?? todayIso()) : undefined;
             const [cStats, cAnalysis] = await Promise.all([
-                getClientStats(period, sd, ed),
-                getAnalysisDashboard(period, sd, ed)
+                getClientStats(period, sd, ed, r),
+                getAnalysisDashboard(period, sd, ed, r)
             ]);
             setClientStats(cStats);
             setClientAnalysis(cAnalysis);
@@ -54,7 +126,7 @@ export function AdminDashboard() {
         } finally {
             setLoadingClients(false);
         }
-    }, [period, customStart, customEnd]);
+    }, [period, customStart, customEnd, ref]);
 
     useEffect(() => {
         loadStats();
@@ -262,11 +334,11 @@ export function AdminDashboard() {
                             <button
                                 key={p}
                                 className={period === p ? 'active' : ''}
-                                onClick={() => setPeriod(p)}
+                                onClick={() => { setPeriod(p); setRef(null); }}
                             >
                                 {activeTab === 'clients'
                                     ? clientPeriodLabels[p]
-                                    : (p === 'week' ? 'Semana' : p === 'month' ? 'Mes' : p === 'quarter' ? 'Trimestre' : p === 'semester' ? 'Semestre' : 'Año Actual')
+                                    : (p === 'week' ? 'Semana' : p === 'month' ? 'Mes' : p === 'quarter' ? 'Trimestre' : p === 'semester' ? 'Semestre' : 'Año')
                                 }
                             </button>
                         ))}
@@ -290,11 +362,16 @@ export function AdminDashboard() {
                         </div>
                     )}
 
+                    {NAV_PERIODS.includes(period) && (
+                        <PeriodNav period={period} value={ref} onChange={setRef} />
+                    )}
+
                     {activeTab !== 'clients' && (
-                        <div className="mode-toggle">
+                        <div className={`mode-toggle ${ref ? 'disabled' : ''}`} title={ref ? 'En periodos pasados se muestra siempre el periodo completo' : undefined}>
                             <button
                                 className={`mode-btn ${mode === 'mtd' ? 'active' : ''}`}
                                 onClick={() => setMode('mtd')}
+                                disabled={!!ref}
                                 title="Solo pedidos hasta el día de hoy"
                             >
                                 Hasta Hoy
@@ -440,7 +517,7 @@ export function AdminDashboard() {
                                                                     <span className="item-name">{c.nombre}</span>
                                                                     <span className="item-sub">{c.rations} raciones · {c.orders} pedidos</span>
                                                                 </div>
-                                                                <span className="item-value">{c.spent.toFixed(2)}€</span>
+                                                                <span className="item-value">{eur(c.spent)}</span>
                                                             </div>
                                                         ))}
                                                     </div>
@@ -520,7 +597,7 @@ export function AdminDashboard() {
                                             <span className="item-name">{a.nombre}</span>
                                             <span className="item-sub">{a.rations} raciones</span>
                                         </div>
-                                        <span className="item-value">{a.subtotal.toFixed(2)}€</span>
+                                        <span className="item-value">{eur(a.subtotal)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -537,7 +614,7 @@ export function AdminDashboard() {
                                             <span className="item-name">{c.nombre}</span>
                                             <span className="item-sub">{c.rations} raciones · {c.orders} pedidos</span>
                                         </div>
-                                        <span className="item-value">{c.spent.toFixed(2)}€</span>
+                                        <span className="item-value">{eur(c.spent)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -552,7 +629,7 @@ export function AdminDashboard() {
                                             <span className="item-name">CP {z.cp}</span>
                                             <span className="item-sub">{z.orders} pedidos</span>
                                         </div>
-                                        <span className="item-value">{z.revenue.toFixed(2)}€</span>
+                                        <span className="item-value">{eur(z.revenue)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -578,9 +655,9 @@ export function AdminDashboard() {
                                     <div key={i} className="ranking-item">
                                         <div className="item-info">
                                             <span className="item-name">{ing.nombre}</span>
-                                            <span className="item-sub">{ing.qty.toFixed(1)} {ing.unit} comprados</span>
+                                            <span className="item-sub">{ing.qty.toLocaleString('es-ES', { maximumFractionDigits: 1 })} {ing.unit} comprados</span>
                                         </div>
-                                        <span className="item-value">{ing.spent.toFixed(2)}€</span>
+                                        <span className="item-value">{eur(ing.spent)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -595,7 +672,7 @@ export function AdminDashboard() {
                                             <span className="item-name">{p.nombre}</span>
                                             <span className="item-sub">{p.count} facturas</span>
                                         </div>
-                                        <span className="item-value">{p.spent.toFixed(2)}€</span>
+                                        <span className="item-value">{eur(p.spent)}</span>
                                     </div>
                                 ))}
                             </div>
@@ -628,7 +705,7 @@ function TrendChart({ data, periodLabel, metricType }: { data: DashboardStats['h
     const months = ['E', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
 
     const formatTooltipValue = (val: number) => {
-        if (metricType === 'revenue') return `${val.toFixed(0)}€`;
+        if (metricType === 'revenue') return `${val.toLocaleString('es-ES', { maximumFractionDigits: 0 })} €`;
         return val.toString();
     };
 

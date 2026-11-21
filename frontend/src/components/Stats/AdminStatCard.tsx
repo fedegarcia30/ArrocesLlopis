@@ -98,10 +98,10 @@ export function AdminStatCard({ data, periodLabel, info }: AdminStatCardProps) {
                     <div className="stat-info">
                         <div className="stat-label">{periodLabel || label}</div>
                         <div className="stat-value">
-                            {typeof value === 'number' && !label.includes('Ticket')
-                                ? value.toLocaleString()
+                            {typeof value === 'number'
+                                ? value.toLocaleString('es-ES', { maximumFractionDigits: label.includes('Ticket') ? 2 : 0 })
                                 : value}
-                            {label.includes('Facturación') || label.includes('Ticket') ? '€' : ''}
+                            {/Facturación|Ticket|Gasto/.test(label) ? ' €' : ''}
                         </div>
                     </div>
                     <div className="stat-growth">

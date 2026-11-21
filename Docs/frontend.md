@@ -92,10 +92,14 @@ Rutas:
 
 ## Componentes Clave
 
-### `AvailabilityGrid`
-- Muestra los slots del día con colores (green/yellow/red)
-- Soporta drag-and-drop para mover pedidos entre slots
-- Recibe `slots`, `loading`, `error`, callbacks `onSlotSelect`, `onDropOrder`
+### `DashboardPage` (`/diario`) — tablero fijo
+- 11 franjas × 6 casillas que se reparten el alto disponible (`flex: 1` por fila): jornada completa sin scroll en tablet, PC y móvil
+- Cabecera: ‹ día › (fecha corta ≤1180px), KPIs, "+ Nuevo pedido"
+- Producción (raciones por arroz / faltan) + botones de resaltar (atenúan, no ocultan) + lista de cancelados
+- `DayBoard/SlotRow`: fila de franja; casillas libres = hueco (clic → alta en esa hora), rayadas si no quedan raciones. Destino de drag & drop
+- `DayBoard/OrderTile`: casilla de pedido. Clic → detalle; arrastre nativo o pulsación larga (450 ms) para mover
+- `DayBoard/OrderDetail`: panel de detalle con estado en 4 botones y acceso a editar (hoja inferior en móvil)
+- Refresco cada 60 s (pausado con paneles abiertos o arrastrando). Fecha en `?date=`
 
 ### `OrderSheet` (hoja de pedido — alta y edición)
 Pantalla completa, una sola vista. Sustituye al antiguo `OrderWizard` de 4 pasos y a `EditPedidoModal`.
@@ -111,10 +115,6 @@ slotCapacity.ts    → cálculo de hueco descontando el propio pedido en modo ed
 - Tablet (≥900px): 2 columnas (cliente/entrega/notas · arroces/hora). Móvil: 1 columna reordenada con `display: contents` + `order`
 - Un pedido = un encargo con N líneas (`order.lines`)
 - Dirección cambiada: "guardar en ficha del cliente" (PUT /clients/:id) o "solo este pedido" (se anota en observaciones)
-
-### `OrderCard`
-- Toque → abre la hoja en modo edición. Badge de estado → avanza estado. Swipe der. → entregado, swipe izq. → editar. Pulsación larga → arrastrar a otra franja
-- Muestra: cliente, todas las líneas (`resumenLineas`), PAX, hora, 🏠/🛵, observaciones
 
 ### `Sidebar`
 - Iconos de navegación filtrados según rol del usuario
@@ -176,20 +176,24 @@ slotCapacity.ts    → cálculo de hueco descontando el propio pedido en modo ed
 ## Páginas
 
 ### `DashboardPage` (`/diario`)
-Vista operativa principal. Split izquierda (AvailabilityGrid) / derecha (lista de pedidos).
-- Seleccionar slot → muestra pedidos de esa franja
-- Sin slot seleccionado → resumen agrupado por hora (OrderSummaryPill)
-- Drag & drop (ratón y táctil) para mover pedidos entre slots → `ConfirmMoveModal`
-- FAB "NUEVO PEDIDO" (oculto para `cocinero`)
+Vista operativa principal: línea de tiempo del día (ver componente `DashboardPage` arriba).
+- Drag & drop (ratón y táctil) para mover pedidos entre franjas → `ConfirmMoveModal`
+- "+ Nuevo pedido" oculto para `cocinero`
 
 ### `CalendarPage` (`/calendar`)
-Vista mensual. Cada día muestra `count` y `total_pax`. Clic en día navega a `/diario?date=YYYY-MM-DD`.
+Mes completo en pantalla (filas que se reparten el alto). Cada día: raciones y pedidos, intensidad de color (`--heat`) relativa al máximo del mes, hoy resaltado, pasados atenuados. Totales del mes en cabecera. Clic en día → `/diario?date=YYYY-MM-DD`.
 
 ### `AdminDashboard` (`/admin/dashboard`)
-Panel de estadísticas. Tabs "Ingresos" / "Gastos". Filtros de período (quarter, month, semester, ytd) y modo (full, mtd).
+Panel de estadísticas. Tabs Ingresos / Gastos y Stock / Clientes. Tipo de periodo + `PeriodNav` (‹ › y año; por defecto el actual) que envía `ref` a `/stats/dashboard`, `/stats/expenses`, `/clients/stats` y `/clients/analysis`. Modo full/mtd (solo periodo actual).
 
 ### `StockPage` (`/stock`)
-Gestión de inventario. Lista de ingredientes con estado de stock (ok/warning/critical). Modo compra para registrar entradas de stock.
+Inventario en tarjetas compactas ordenadas por urgencia (critical → warning → ok) con barra de nivel (marca central = mínimo). Filtros por tipo y por estado. Modal de compra con críticos primero y total calculado.
+
+### `ClientsPage` (`/clientes`)
+Lista + ficha. iPad/PC: dos paneles; móvil: ficha a pantalla completa. Ficha con datos editables, últimos pedidos (`GET /pedidos?cliente_id`), borrar (con confirmación) y `ClientAnalysisModal`. Paginación con "Cargar más".
+
+### `RepartosPage` (`/repartos`)
+Pestañas Recogidas / Repartos con contador de pendientes. Repartos: navegación por semanas, día de hoy abierto, tarjetas por hora con Llamar / Cómo llegar (Google Maps) / ✓ Entregado. Recogidas: por semana, más antiguas primero, ≥7 días en rojo, valoración 1–10 opcional al marcar recogido.
 
 ### `RicesPage` (`/arroces`)
-CRUD de arroces con `RiceEditModal`. Desde aquí también se gestiona la receta de cada arroz (`RecipeEditor`).
+CRUD de arroces con `RiceEditModal` (incluye receta con `RecipeEditor`). Interruptor de disponibilidad por tarjeta (`PUT /rices/:id {disponible}`, optimista). Disponibles primero.

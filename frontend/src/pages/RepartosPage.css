@@ -1,152 +1,323 @@
-.repartos-page {
+/* ═══════════════════════════════════════════════
+   Repartos y Recogidas — pensado para el móvil del repartidor,
+   en tablet/PC las tarjetas pasan a 2–3 columnas.
+   ═══════════════════════════════════════════════ */
+
+.rp-page {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  gap: 24px;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 32px;
-  animation: fadeIn 0.4s ease-out;
+  gap: 14px;
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease-out;
 }
 
-/* ── Tab bar ─────────────────────────────────── */
-.logistics-tabs {
-  display: flex;
-  gap: 12px;
-  padding: 6px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
-  border: var(--glass-border);
-  flex-shrink: 0;
-}
+.rp-view[hidden] { display: none; }
+.rp-view { display: flex; flex-direction: column; gap: 14px; }
 
-.logistics-tab {
-  flex: 1;
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  font-family: 'Inter', sans-serif;
-  font-size: var(--text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  transition: var(--transition-fast);
-}
-
-.logistics-tab.active {
-  background: var(--gold-primary);
-  color: #000;
-  box-shadow: 0 4px 12px var(--gold-glow);
-}
-
-.repartos-section-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: var(--text-xl);
-  font-weight: 800;
-  color: var(--gold-primary);
-  margin-bottom: 16px;
-}
-
-.week-grid {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding-bottom: 12px;
-  scrollbar-width: none;
-}
-
-.day-card {
-  flex: 1;
-  min-width: 80px;
-  padding: 16px;
-  text-align: center;
-  border: var(--glass-border);
-  background: var(--glass-bg);
-  border-radius: var(--radius-md);
-  transition: var(--transition-smooth);
-}
-
-.day-card.active {
-    background: var(--text-main);
-    color: #000;
-    border-color: var(--text-main);
-}
-
-.day-number {
-  font-family: 'Montserrat', sans-serif;
-  font-size: var(--text-xl);
-  font-weight: 800;
-  display: block;
-}
-
-.day-name {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    opacity: 0.7;
-}
-
-.repartos-pills-grid {
+/* ── Pestañas ───────────────────────────────── */
+.rp-tabs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  background: var(--bg-surface);
+  border: var(--glass-border);
+  border-radius: var(--radius-md);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  backdrop-filter: blur(12px);
 }
 
-.reparto-pill {
-  min-height: 140px;
-  display: flex;
-  flex-direction: column;
-}
-
-.pill-inner {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.pill-client {
-  font-family: 'Montserrat', sans-serif;
-  font-size: var(--text-sm);
+.rp-tabs button {
+  min-height: 48px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--text-dim);
+}
+
+.rp-tabs button.active { background: var(--gold-primary); color: #000; box-shadow: 0 4px 12px var(--gold-glow); }
+
+.rp-tab-badge {
+  display: inline-block;
+  min-width: 22px;
+  padding: 0 6px;
+  margin-left: 4px;
+  border-radius: 100px;
+  background: var(--status-red);
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 22px;
+}
+
+/* ── Semana ─────────────────────────────────── */
+.rp-weeknav { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+.rp-navbtn {
+  width: var(--touch-min);
+  height: var(--touch-min);
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: var(--glass-border);
+  color: var(--text-main);
+  font-size: 1.4rem;
+}
+
+.rp-week-label { font-weight: 700; min-width: 150px; text-align: center; }
+
+.rp-today {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 100px;
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-primary);
+  font-weight: 700;
+  font-size: var(--text-xs);
+}
+
+.rp-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+
+.rp-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px;
+  min-height: 72px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-bg);
+  border: 2px solid rgba(255, 255, 255, 0.06);
   color: var(--text-main);
 }
 
-.pill-rice-line {
-  font-size: var(--text-xs);
+.rp-day.today { border-color: rgba(212, 175, 55, 0.45); }
+.rp-day.selected { border-color: var(--gold-primary); background: var(--gold-bg); }
+.rp-day.empty { opacity: 0.45; }
+.rp-day-name { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; color: var(--text-dim); }
+.rp-day-num { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: var(--text-lg); line-height: 1.1; }
+
+.rp-day-count {
+  min-width: 26px;
+  padding: 0 6px;
+  border-radius: 100px;
+  background: var(--gold-primary);
+  color: #000;
+  font-weight: 800;
+  font-size: 0.78rem;
+  line-height: 20px;
+}
+
+.rp-day.empty .rp-day-count { background: none; color: var(--text-muted); }
+.rp-day-count.done { background: var(--status-green); }
+
+/* ── Resumen del día ────────────────────────── */
+.rp-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.rp-summary h2 { font-size: var(--text-xl); margin: 0; }
+.rp-summary h2::first-letter { text-transform: uppercase; }
+.rp-progress { display: flex; align-items: center; gap: 10px; flex: 1; max-width: 360px; min-width: 200px; }
+.rp-progress-bar { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.rp-progress-bar span { display: block; height: 100%; background: var(--status-green); transition: width 0.3s; }
+.rp-progress-text { font-size: var(--text-sm); color: var(--text-dim); white-space: nowrap; }
+
+.rp-empty { text-align: center; color: var(--text-muted); padding: 40px 0; }
+
+/* ── Lista ──────────────────────────────────── */
+.rp-list { display: flex; flex-direction: column; gap: 18px; padding-bottom: 12px; }
+
+.rp-slot-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--text-lg);
+  color: var(--text-main);
+  margin: 0 0 8px;
+}
+
+.rp-slot-title span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  min-width: 24px;
+  text-align: center;
+  padding: 0 7px;
+  line-height: 22px;
+  border-radius: 100px;
+  background: var(--bg-surface-hover);
   color: var(--text-dim);
-  line-height: 1.4;
 }
 
-.pill-footer {
-    margin-top: auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.rp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+  align-items: stretch;
 }
 
-.pill-time {
-    font-weight: 800;
-    color: var(--gold-primary);
-    font-size: var(--text-sm);
+/* ── Tarjeta ────────────────────────────────── */
+.rp-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: var(--glass-border);
+  border-left: 4px solid var(--gold-primary);
 }
 
-/* Modales */
-.feedback-modal, .anular-modal {
-    background: var(--glass-bg);
-    backdrop-filter: blur(24px);
-    border: var(--glass-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--glass-shadow);
-    padding: 32px;
+.rp-card.urgent { border-left-color: var(--status-red); }
+
+.rp-card-head { display: flex; flex-direction: column; gap: 2px; }
+.rp-card-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: var(--text-base); }
+.rp-card-meta { font-size: var(--text-xs); color: var(--text-dim); }
+.rp-card.urgent .rp-card-meta { color: var(--status-red); font-weight: 600; }
+
+.rp-card-lines { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+
+.rp-card-lines li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: var(--bg-surface-hover);
+  font-size: var(--text-sm);
 }
 
+.rp-card-lines strong { color: var(--gold-primary); }
+
+.rp-card-notes {
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--status-yellow-bg);
+  color: var(--status-yellow);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.rp-card-addr { font-size: var(--text-sm); color: var(--text-main); }
+
+.rp-card-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 2px; }
+.rp-card-time {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--gold-primary);
+  color: #000;
+  font-size: 0.85rem;
+  line-height: 24px;
+  vertical-align: 1px;
+}
+.rp-card.done .rp-card-time { background: var(--bg-surface-hover); color: var(--text-dim); margin-right: 0; }
+
+.rp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-hover);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rp-btn-primary { flex: 1 1 140px; background: var(--status-green); border-color: var(--status-green); color: #04260f; }
+.rp-btn-danger { background: var(--status-red); border-color: var(--status-red); color: #fff; }
+.rp-btn:disabled { opacity: 0.5; }
+
+/* Tarjeta ya hecha: una línea compacta */
+.rp-card.done {
+  align-self: start;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 14px;
+  border-left-color: var(--status-green);
+  opacity: 0.6;
+}
+
+.rp-card.done .rp-card-name { flex: 1; font-size: var(--text-sm); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-card-check { color: var(--status-green); font-weight: 800; }
+.rp-card-done-label { font-size: var(--text-xs); color: var(--status-green); font-weight: 700; }
+.rp-undo { min-height: 40px; padding: 0 12px; border-radius: var(--radius-sm); color: var(--text-dim); font-size: var(--text-xs); font-weight: 600; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+/* ── Modales ────────────────────────────────── */
+.rp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.rp-modal {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+.rp-modal-title { font-size: var(--text-lg); color: var(--text-main); margin: 0; }
+.rp-modal-sub, .rp-modal-text { color: var(--text-dim); font-size: var(--text-sm); }
+.rp-modal-text strong { color: var(--text-main); }
+
+.rp-rating { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; }
+
+.rp-rating button {
+  min-height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  font-weight: 700;
+}
+
+.rp-rating button.lit { background: var(--gold-bg); border-color: rgba(212, 175, 55, 0.5); color: var(--gold-primary); }
+.rp-rating button.current { background: var(--gold-primary); color: #000; }
+
+.rp-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: var(--text-base);
+  resize: vertical;
+}
+
+.rp-modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ── Móvil ──────────────────────────────────── */
 @media (max-width: 767px) {
-  .repartos-page { padding: 20px; }
-  .repartos-pills-grid { grid-template-columns: repeat(2, 1fr); }
-  .day-card { min-width: 70px; }
-}
-
-@media (max-width: 480px) {
-    .repartos-pills-grid { grid-template-columns: 1fr; }
+  .rp-page { gap: 10px; }
+  .rp-days { gap: 4px; }
+  .rp-day { min-height: 64px; padding: 6px 0; }
+  .rp-summary h2 { font-size: var(--text-lg); }
+  .rp-progress { max-width: none; flex-basis: 100%; }
+  .rp-cards { grid-template-columns: minmax(0, 1fr); }
+  .rp-card-actions .rp-btn:not(.rp-btn-primary) { flex: 1; padding: 0 10px; }
+  .rp-card-actions .rp-btn-primary { flex-basis: 100%; min-height: 54px; font-size: var(--text-base); }
+  .rp-overlay { align-items: flex-end; padding: 0; }
+  .rp-modal { max-width: none; border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding-bottom: calc(22px + var(--safe-bottom)); }
+  .rp-rating { grid-template-columns: repeat(5, 1fr); }
 }

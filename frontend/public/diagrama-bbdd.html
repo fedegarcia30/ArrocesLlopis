@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagrama interactivo - MySQL local</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --panel: #182235;
+      --panel-2: #202c40;
+      --line: #3a4a62;
+      --text: #edf3ff;
+      --muted: #9dacC4;
+      --gold: #d9ad5b;
+      --read: #68a9ff;
+      --write: #f2b84b;
+      --green: #51c878;
+      --red: #ef7272;
+      --shadow: 0 12px 34px rgba(0, 0, 0, .32);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; overflow: hidden; background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; }
+    button, input { font: inherit; }
+    .app { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+    aside { z-index: 20; display: flex; flex-direction: column; padding: 18px; border-right: 1px solid rgba(217,173,91,.18); background: rgba(24,34,53,.96); }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(217,173,91,.5); border-radius: 12px; color: var(--gold); background: rgba(217,173,91,.08); font-weight: 800; }
+    h1 { margin: 0; font-size: 17px; }
+    .subtitle { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    #search { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; outline: none; color: var(--text); background: #111827; }
+    #search:focus { border-color: var(--gold); }
+    .section-title { margin: 16px 0 8px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .09em; }
+    .flow-list { overflow-y: auto; display: flex; flex-direction: column; gap: 7px; padding-right: 4px; }
+    .flow { width: 100%; display: grid; grid-template-columns: 34px 1fr; gap: 9px; align-items: center; padding: 9px; border: 1px solid transparent; border-radius: 10px; text-align: left; color: var(--text); background: transparent; cursor: pointer; }
+    .flow:hover, .flow.active { border-color: rgba(217,173,91,.38); background: rgba(217,173,91,.08); }
+    .flow-num { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 8px; color: #172033; background: var(--gold); font-weight: 800; }
+    .flow-name { font-size: 12px; font-weight: 700; }
+    .flow-route { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: auto; padding-top: 12px; border-top: 1px solid var(--line); }
+    .legend span { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; }
+    main { position: relative; overflow: hidden; background-image: radial-gradient(circle, rgba(157,172,196,.13) 1px, transparent 1px); background-size: 22px 22px; }
+    .toolbar { position: absolute; z-index: 15; top: 14px; right: 14px; display: flex; gap: 7px; }
+    .tool { height: 38px; min-width: 38px; border: 1px solid var(--line); border-radius: 9px; color: var(--text); background: rgba(24,34,53,.94); cursor: pointer; box-shadow: var(--shadow); }
+    .tool:hover { border-color: var(--gold); }
+    .flow-status { position: absolute; z-index: 14; left: 18px; top: 14px; max-width: 520px; display: none; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid rgba(217,173,91,.35); border-radius: 10px; background: rgba(24,34,53,.98); box-shadow: var(--shadow); }
+    .flow-status.show { display: flex; }
+    .flow-status strong { color: var(--gold); }
+    .flow-status small { color: var(--muted); }
+    .flow-step-main { min-width: 310px; }
+    .flow-input { margin-top: 7px; padding: 7px 9px; border-left: 3px solid var(--write); border-radius: 4px; color: #dbe4f3; background: rgba(242,184,75,.07); font-family: ui-monospace, Consolas, monospace; font-size: 10px; line-height: 1.45; }
+    .flow-controls { display: flex; gap: 6px; align-items: center; margin-left: auto; }
+    .flow-control { height: 32px; min-width: 32px; border: 1px solid var(--line); border-radius: 8px; color: var(--text); background: #111827; cursor: pointer; }
+    .flow-control:hover:not(:disabled) { border-color: var(--gold); }
+    .flow-control:disabled { cursor: not-allowed; opacity: .35; }
+    #viewport { position: absolute; inset: 0; overflow: hidden; cursor: grab; }
+    #viewport.dragging { cursor: grabbing; }
+    #canvas { position: absolute; width: 1500px; height: 820px; transform-origin: 0 0; }
+    #edges { position: absolute; inset: 0; width: 1500px; height: 820px; pointer-events: none; overflow: visible; }
+    .edge-halo { fill: none; stroke: rgba(5,10,20,.78); stroke-width: 8; }
+    .edge { fill: none; stroke: #8da9c7; stroke-width: 2.4; opacity: .98; }
+    .edge-dot { fill: #dfe9f5; stroke: #111827; stroke-width: 2; }
+    .edge-label-bg { fill: #111827; stroke: rgba(217,173,91,.38); stroke-width: 1; }
+    .edge-label { fill: #dfe9f5; font-size: 10px; font-weight: 800; text-anchor: middle; }
+    .edge-group.active-read .edge-halo { stroke: rgba(104,169,255,.32); }
+    .edge-group.active-read .edge { stroke: var(--read); stroke-width: 5; stroke-dasharray: 9 7; animation: dash 1s linear infinite; }
+    .edge-group.active-write .edge-halo { stroke: rgba(242,184,75,.32); }
+    .edge-group.active-write .edge { stroke: var(--write); stroke-width: 5; stroke-dasharray: 9 7; animation: dash .75s linear infinite; }
+    .edge-group.active-read .edge-dot,
+    .edge-group.active-write .edge-dot { fill: var(--gold); }
+    @keyframes dash { to { stroke-dashoffset: -32; } }
+    .table-card { position: absolute; width: 220px; min-height: 82px; border: 1px solid rgba(157,172,196,.22); border-radius: 12px; background: rgba(32,44,64,.97); box-shadow: var(--shadow); cursor: grab; transition: border-color .18s, box-shadow .18s, transform .18s; }
+    .table-card:hover { border-color: rgba(217,173,91,.7); }
+    .table-card.selected { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(217,173,91,.12), var(--shadow); }
+    .table-card.reading { border-color: var(--read); box-shadow: 0 0 0 4px rgba(104,169,255,.15), var(--shadow); transform: scale(1.025); }
+    .table-card.writing { border-color: var(--write); box-shadow: 0 0 0 5px rgba(242,184,75,.15), var(--shadow); transform: scale(1.04); }
+    .table-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-bottom: 1px solid rgba(157,172,196,.14); }
+    .table-name { font-size: 13px; font-weight: 800; letter-spacing: .02em; }
+    .table-kind { color: var(--muted); font-size: 9px; text-transform: uppercase; }
+    .columns { padding: 7px 12px 9px; }
+    .column { display: grid; grid-template-columns: 18px 1fr auto; gap: 5px; align-items: center; height: 21px; color: #dbe4f3; font-size: 10px; }
+    .column-type { color: var(--muted); font-size: 9px; }
+    .key { color: var(--gold); font-size: 9px; }
+    .ops { display: flex; gap: 4px; padding: 0 10px 9px; }
+    .op { width: 21px; height: 21px; display: grid; place-items: center; border-radius: 5px; font-size: 9px; font-weight: 800; }
+    .op.read { color: #bcd8ff; background: rgba(104,169,255,.16); }
+    .op.write { color: #ffe1a3; background: rgba(242,184,75,.16); }
+    .op.cud { color: #bff0ca; background: rgba(81,200,120,.14); }
+    .detail { position: absolute; z-index: 18; right: 14px; bottom: 14px; width: 340px; max-height: calc(100% - 70px); display: none; overflow-y: auto; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(24,34,53,.98); box-shadow: var(--shadow); }
+    .detail.show { display: block; }
+    .detail h2 { margin: 0 0 4px; color: var(--gold); font-size: 15px; }
+    .detail-close { float: right; border: 0; color: var(--muted); background: transparent; cursor: pointer; }
+    .detail-copy { color: var(--muted); font-size: 11px; }
+    .detail-list { margin-top: 12px; }
+    .detail-row { display: grid; grid-template-columns: 1fr 90px; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(157,172,196,.1); font-size: 11px; }
+    .detail-row span:last-child { color: var(--muted); text-align: right; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="brand-mark">AL</div>
+        <div>
+          <h1>BBDD MySQL local</h1>
+          <p class="subtitle">Esquema y flujo de operaciones</p>
+        </div>
+      </div>
+      <input id="search" type="search" placeholder="Buscar tabla o campo..." aria-label="Buscar">
+      <div class="section-title">Flujos interactivos</div>
+      <div id="flows" class="flow-list"></div>
+      <div class="legend">
+        <span><i class="dot" style="background:var(--read)"></i> Lectura</span>
+        <span><i class="dot" style="background:var(--write)"></i> Escritura</span>
+        <span><i class="dot" style="background:var(--green)"></i> Commit</span>
+        <span><i class="dot" style="background:var(--red)"></i> Rollback</span>
+      </div>
+    </aside>
+    <main>
+      <div id="flowStatus" class="flow-status"></div>
+      <div class="toolbar">
+        <button class="tool" id="resetView" title="Recentrar">⌂</button>
+        <button class="tool" id="zoomOut" title="Alejar">−</button>
+        <button class="tool" id="zoomIn" title="Acercar">+</button>
+      </div>
+      <div id="viewport">
+        <div id="canvas">
+          <svg id="edges" aria-hidden="true"></svg>
+        </div>
+      </div>
+      <section id="detail" class="detail"></section>
+    </main>
+  </div>
+
+  <script>
+    const tables = {
+      clientes: { x: 30, y: 70, cols: [["id","int","PK"],["nombre","varchar",""],["telefono","varchar",""],["num_pedidos","int",""],["raciones","int",""],["municipio","varchar",""],["latitud","decimal",""],["activo","bool",""]] },
+      usuarios: { x: 30, y: 500, cols: [["id","int","PK"],["username","varchar","UK"],["password_hash","varchar",""],["rol","enum",""],["activo","bool",""]] },
+      pedidos: { x: 330, y: 250, cols: [["id","int","PK"],["cliente_id","int","FK"],["usuario_asignado_id","int","FK"],["pax","int",""],["fecha_pedido","datetime",""],["status","enum",""],["deleted_at","timestamp",""]] },
+      pedido_lineas: { x: 610, y: 250, cols: [["id","int","PK"],["pedido_id","int","FK"],["arroz_id","int","FK"],["precio_unitario","decimal",""],["raciones","int",""]] },
+      pedido_feedback: { x: 610, y: 500, cols: [["id","int","PK"],["pedido_id","int","FK UK"],["rating","int",""],["comentario","text",""]] },
+      arroces: { x: 890, y: 70, cols: [["id","int","PK"],["nombre","varchar","UK"],["precio","decimal",""],["caldo","varchar",""],["disponible","bool",""],["deleted_at","timestamp",""]] },
+      arroz_ingredientes: { x: 890, y: 320, cols: [["id","int","PK"],["arroz_id","int","FK"],["ingrediente_id","int","FK"],["cantidad_por_racion","decimal",""]] },
+      ingredientes: { x: 1180, y: 320, cols: [["id","int","PK"],["nombre","varchar","UK"],["unidad_medida","varchar",""],["stock_actual","decimal",""],["stock_minimo","decimal",""],["precio_actual","decimal",""],["tipo","enum",""]] },
+      historico_precios: { x: 1180, y: 70, cols: [["id","int","PK"],["item_id","int",""],["tipo_item","enum",""],["precio","decimal",""],["fecha_inicio","datetime",""],["fecha_fin","datetime",""]] },
+      proveedores: { x: 1180, y: 620, cols: [["id","int","PK"],["nombre","varchar",""],["contacto","varchar",""],["telefono","varchar",""],["email","varchar",""]] },
+      compras: { x: 890, y: 620, cols: [["id","int","PK"],["proveedor_id","int","FK"],["fecha_compra","date",""],["total","decimal",""],["observaciones","text",""]] },
+      compra_lineas: { x: 610, y: 620, cols: [["id","int","PK"],["compra_id","int","FK"],["ingrediente_id","int","FK"],["cantidad","decimal",""],["precio_unitario","decimal",""]] }
+    };
+
+    const relationships = [
+      ["clientes","pedidos","1:N"],["usuarios","pedidos","1:N"],
+      ["pedidos","pedido_lineas","1:N"],["arroces","pedido_lineas","1:N"],
+      ["pedidos","pedido_feedback","1:0/1"],["arroces","arroz_ingredientes","1:N"],
+      ["ingredientes","arroz_ingredientes","1:N"],["proveedores","compras","1:N"],
+      ["compras","compra_lineas","1:N"],["ingredientes","compra_lineas","1:N"]
+    ];
+
+    const flows = [
+      { name:"Crear pedido", route:"POST /orders/create", steps:[
+        ["read","pedidos","Comprobar hueco disponible"],
+        ["read","arroces","Validar arroces y precio vigente"],
+        ["read","historico_precios","Buscar precio vigente"],
+        ["write","clientes","Crear cliente si no existe"],
+        ["write","pedidos","Crear cabecera del pedido"],
+        ["write","pedido_lineas","Crear líneas y raciones"],
+        ["write","ingredientes","Descontar stock según receta"],
+        ["write","clientes","Actualizar num_pedidos y raciones"],
+        ["commit","COMMIT","Confirmar toda la operación"]
+      ]},
+      { name:"Cancelar pedido", route:"PATCH /pedidos/:id/status", steps:[
+        ["read","pedidos","Leer estado anterior"],
+        ["read","pedido_lineas","Obtener arroz y raciones"],
+        ["read","clientes","Obtener totales históricos"],
+        ["write","pedidos","Cambiar status a cancelado"],
+        ["write","ingredientes","Restaurar stock"],
+        ["write","clientes","Decrementar pedidos y raciones"],
+        ["commit","COMMIT","Confirmar cambios"]
+      ]},
+      { name:"Reactivar pedido", route:"PATCH /pedidos/:id/status", steps:[
+        ["read","pedidos","Leer estado cancelado"],
+        ["read","pedido_lineas","Obtener líneas activas"],
+        ["write","pedidos","Cambiar a nuevo/preparando/listo"],
+        ["write","ingredientes","Volver a descontar stock"],
+        ["write","clientes","Incrementar pedidos y raciones"],
+        ["commit","COMMIT","Confirmar cambios"]
+      ]},
+      { name:"Editar pedido", route:"PATCH /pedidos/:id", steps:[
+        ["read","pedidos","Leer pedido actual"],
+        ["read","pedido_lineas","Guardar líneas antiguas"],
+        ["write","pedido_lineas","Eliminar líneas antiguas"],
+        ["read","arroces","Validar nuevos arroces"],
+        ["write","pedido_lineas","Crear nuevas líneas"],
+        ["write","ingredientes","Restaurar/restar stock"],
+        ["write","clientes","Recalcular raciones"],
+        ["commit","COMMIT","Confirmar cambios"]
+      ]},
+      { name:"Registrar compra", route:"POST /ingredients/purchase", steps:[
+        ["write","compras","Crear cabecera de compra"],
+        ["read","ingredientes","Buscar ingrediente"],
+        ["write","ingredientes","Sumar stock y actualizar precio"],
+        ["write","historico_precios","Crear historial si cambia precio"],
+        ["write","compra_lineas","Crear líneas de compra"],
+        ["write","compras","Guardar total"],
+        ["commit","COMMIT","Confirmar compra"]
+      ]},
+      { name:"Actualizar receta", route:"POST /rices/:id/recipe", steps:[
+        ["read","arroces","Validar el arroz"],
+        ["read","arroz_ingredientes","Leer receta anterior"],
+        ["write","arroz_ingredientes","Eliminar composición antigua"],
+        ["write","arroz_ingredientes","Insertar ingredientes y cantidades"],
+        ["commit","COMMIT","Confirmar receta"]
+      ]},
+      { name:"Guardar feedback", route:"POST /pedidos/:id/feedback", steps:[
+        ["read","pedidos","Validar que el pedido existe"],
+        ["read","pedido_feedback","Buscar feedback existente"],
+        ["write","pedido_feedback","Crear o actualizar rating/comentario"],
+        ["commit","COMMIT","Confirmar feedback"]
+      ]},
+      { name:"Cambiar estado", route:"PATCH /pedidos/:id/status", steps:[
+        ["read","pedidos","Leer estado actual"],
+        ["write","pedidos","Actualizar status"],
+        ["write","pedidos","Marcar entregado si procede"],
+        ["commit","COMMIT","Confirmar cambio"]
+      ]},
+      { name:"Consultar análisis", route:"GET /stats/dashboard", steps:[
+        ["read","pedidos","Consultar pedidos y periodo"],
+        ["read","pedido_lineas","Agrupar productos vendidos"],
+        ["read","clientes","Calcular clientes y zonas"],
+        ["read","arroces","Obtener nombres de arroz"],
+        ["read","compras","Consultar gastos"],
+        ["read","ingredientes","Consultar alertas de stock"]
+      ]}
+    ];
+
+    const canvas = document.getElementById("canvas");
+    const viewport = document.getElementById("viewport");
+    const svg = document.getElementById("edges");
+    const detail = document.getElementById("detail");
+    let scale = .82, panX = 20, panY = 20, activeTimer = null;
+
+    function tableLabel(name) {
+      return name.replace(/_/g, "_");
+    }
+
+    Object.entries(tables).forEach(([name,data]) => {
+      const card = document.createElement("article");
+      card.className = "table-card";
+      card.id = "table-" + name;
+      card.style.left = data.x + "px";
+      card.style.top = data.y + "px";
+      card.dataset.table = name;
+      card.innerHTML = `
+        <header class="table-head"><span class="table-name">${tableLabel(name)}</span><span class="table-kind">tabla</span></header>
+        <div class="columns">${data.cols.map(c => `<div class="column"><span class="key">${c[2] || "·"}</span><b>${c[0]}</b><span class="column-type">${c[1]}</span></div>`).join("")}</div>
+        <div class="ops"><span class="op read" title="Lecturas">R</span><span class="op write" title="Escrituras">W</span><span class="op cud" title="Commit">C</span></div>`;
+      card.addEventListener("click", () => showDetail(name));
+      canvas.appendChild(card);
+    });
+
+    relationships.forEach(([a,b,label]) => {
+      const ns = "http://www.w3.org/2000/svg";
+      const group = document.createElementNS(ns,"g");
+      group.setAttribute("class","edge-group");
+      group.dataset.edge = a + "|" + b;
+      const halo = document.createElementNS(ns,"path");
+      halo.setAttribute("class","edge-halo");
+      const path = document.createElementNS(ns,"path");
+      path.setAttribute("class","edge");
+      const startDot = document.createElementNS(ns,"circle");
+      startDot.setAttribute("class","edge-dot edge-start");
+      startDot.setAttribute("r","5");
+      const endDot = document.createElementNS(ns,"circle");
+      endDot.setAttribute("class","edge-dot edge-end");
+      endDot.setAttribute("r","5");
+      const labelBg = document.createElementNS(ns,"rect");
+      labelBg.setAttribute("class","edge-label-bg");
+      labelBg.setAttribute("rx","7");
+      const labelText = document.createElementNS(ns,"text");
+      labelText.setAttribute("class","edge-label");
+      labelText.textContent = label;
+      group.append(halo,path,startDot,endDot,labelBg,labelText);
+      svg.appendChild(group);
+    });
+
+    function getCard(name) { return document.getElementById("table-" + name); }
+
+    function edgePoint(card, side) {
+      const r = card.getBoundingClientRect();
+      const cr = canvas.getBoundingClientRect();
+      return {
+        x: (r.left - cr.left) / scale + (side === "right" ? r.width/scale : 0),
+        y: (r.top - cr.top) / scale + r.height/(2*scale)
+      };
+    }
+
+    function drawEdges() {
+      relationships.forEach(([a,b,label]) => {
+        const ac = getCard(a), bc = getCard(b);
+        const ca = {x: ac.offsetLeft + ac.offsetWidth, y: ac.offsetTop + ac.offsetHeight/2};
+        const cb = {x: bc.offsetLeft, y: bc.offsetTop + bc.offsetHeight/2};
+        let p1 = ca, p2 = cb;
+        if (ac.offsetLeft > bc.offsetLeft) {
+          p1 = {x: ac.offsetLeft, y: ac.offsetTop + ac.offsetHeight/2};
+          p2 = {x: bc.offsetLeft + bc.offsetWidth, y: bc.offsetTop + bc.offsetHeight/2};
+        }
+        const dx = Math.abs(p2.x-p1.x)*.48;
+        const d = `M ${p1.x} ${p1.y} C ${p1.x+dx} ${p1.y}, ${p2.x-dx} ${p2.y}, ${p2.x} ${p2.y}`;
+        const group = [...svg.children].find(p => p.dataset.edge === a+"|"+b);
+        if (!group) return;
+        group.querySelector(".edge-halo").setAttribute("d",d);
+        group.querySelector(".edge").setAttribute("d",d);
+        const startDot = group.querySelector(".edge-start");
+        const endDot = group.querySelector(".edge-end");
+        startDot.setAttribute("cx",p1.x);
+        startDot.setAttribute("cy",p1.y);
+        endDot.setAttribute("cx",p2.x);
+        endDot.setAttribute("cy",p2.y);
+
+        const mx = (p1.x+p2.x)/2;
+        const my = (p1.y+p2.y)/2;
+        const labelText = group.querySelector(".edge-label");
+        const labelBg = group.querySelector(".edge-label-bg");
+        const labelWidth = Math.max(42, label.length*7+16);
+        labelText.setAttribute("x",mx);
+        labelText.setAttribute("y",my-7);
+        labelBg.setAttribute("x",mx-labelWidth/2);
+        labelBg.setAttribute("y",my-21);
+        labelBg.setAttribute("width",labelWidth);
+        labelBg.setAttribute("height",18);
+      });
+    }
+
+    function applyView() { canvas.style.transform = `translate(${panX}px,${panY}px) scale(${scale})`; }
+    function resetView() { scale=.82; panX=20; panY=20; applyView(); }
+    document.getElementById("zoomIn").onclick = () => { scale=Math.min(1.5,scale+.1); applyView(); };
+    document.getElementById("zoomOut").onclick = () => { scale=Math.max(.45,scale-.1); applyView(); };
+    document.getElementById("resetView").onclick = resetView;
+
+    let draggingViewport=false, dragStart={x:0,y:0}, panStart={x:0,y:0};
+    viewport.addEventListener("pointerdown", e => {
+      if (e.target.closest(".table-card")) return;
+      draggingViewport=true; viewport.classList.add("dragging");
+      dragStart={x:e.clientX,y:e.clientY}; panStart={x:panX,y:panY};
+      viewport.setPointerCapture(e.pointerId);
+    });
+    viewport.addEventListener("pointermove", e => {
+      if (!draggingViewport) return;
+      panX=panStart.x+(e.clientX-dragStart.x); panY=panStart.y+(e.clientY-dragStart.y); applyView();
+    });
+    viewport.addEventListener("pointerup", () => { draggingViewport=false; viewport.classList.remove("dragging"); });
+    viewport.addEventListener("wheel", e => {
+      e.preventDefault(); scale=Math.max(.45,Math.min(1.5,scale+(e.deltaY<0?.08:-.08))); applyView();
+    }, {passive:false});
+
+    document.querySelectorAll(".table-card").forEach(card => {
+      card.addEventListener("pointerdown", e => {
+        e.stopPropagation();
+        const startX=e.clientX, startY=e.clientY, left=card.offsetLeft, top=card.offsetTop;
+        card.setPointerCapture(e.pointerId);
+        const move = ev => {
+          card.style.left=(left+(ev.clientX-startX)/scale)+"px";
+          card.style.top=(top+(ev.clientY-startY)/scale)+"px";
+          tables[card.dataset.table].x=card.offsetLeft;
+          tables[card.dataset.table].y=card.offsetTop;
+          drawEdges();
+        };
+        const up = () => { card.removeEventListener("pointermove",move); card.removeEventListener("pointerup",up); };
+        card.addEventListener("pointermove",move); card.addEventListener("pointerup",up);
+      });
+    });
+
+    const flowList=document.getElementById("flows");
+    flows.forEach((flow,i) => {
+      const button=document.createElement("button");
+      button.className="flow";
+      button.innerHTML=`<span class="flow-num">${i+1}</span><span><span class="flow-name">${flow.name}</span><span class="flow-route">${flow.route}</span></span>`;
+      button.onclick=() => runFlow(i,button);
+      flowList.appendChild(button);
+    });
+
+    function clearActive() {
+      document.querySelectorAll(".table-card").forEach(c => c.classList.remove("reading","writing","selected"));
+      document.querySelectorAll(".edge-group").forEach(g => g.classList.remove("active-read","active-write"));
+    }
+
+    const stepInputs = {
+      clientes: "id, nombre, telefono, direccion, codigo_postal, num_pedidos, raciones",
+      usuarios: "id, username, rol, activo",
+      pedidos: "id, cliente_id, usuario_asignado_id, pax, fecha_pedido, status",
+      pedido_lineas: "pedido_id, arroz_id, precio_unitario, raciones",
+      pedido_feedback: "pedido_id, rating, comentario",
+      arroces: "id, nombre, precio, disponible",
+      arroz_ingredientes: "arroz_id, ingrediente_id, cantidad_por_racion",
+      ingredientes: "ingrediente_id, nombre, stock_actual, stock_minimo, precio_actual",
+      historico_precios: "item_id, tipo_item, precio, fecha_inicio, fecha_fin",
+      proveedores: "proveedor_id, nombre, telefono, email",
+      compras: "proveedor_id, fecha_compra, total, observaciones",
+      compra_lineas: "compra_id, ingrediente_id, cantidad, precio_unitario"
+    };
+
+    let activeFlowIndex = null;
+    let activeStepIndex = 0;
+
+    function runFlow(index,button) {
+      if (activeTimer) {
+        clearInterval(activeTimer);
+        activeTimer = null;
+      }
+      clearActive();
+      document.querySelectorAll(".flow").forEach(f=>f.classList.remove("active"));
+      button.classList.add("active");
+      activeFlowIndex = index;
+      activeStepIndex = 0;
+      showFlowStep();
+    }
+
+    function showFlowStep() {
+      if (activeFlowIndex === null) return;
+      clearActive();
+      const flow=flows[activeFlowIndex], status=document.getElementById("flowStatus");
+      status.classList.add("show");
+      const [action,target,text]=flow.steps[activeStepIndex];
+      const isCommit = target === "COMMIT";
+      const inputLabel = isCommit
+        ? "Sin datos nuevos: confirma atomicamente todas las operaciones anteriores"
+        : `Entrada: ${stepInputs[target] || "campos de la tabla"}`;
+      status.innerHTML=`
+        <div class="flow-step-main">
+          <strong>Paso ${activeStepIndex+1}/${flow.steps.length}</strong>
+          <small> · ${flow.route} · ${text}</small>
+          <div class="flow-input">${inputLabel}</div>
+        </div>
+        <div class="flow-controls">
+          <button class="flow-control" id="previousStep" ${activeStepIndex===0?"disabled":""} title="Paso anterior">‹</button>
+          <button class="flow-control" id="nextStep" ${activeStepIndex===flow.steps.length-1?"disabled":""} title="Paso siguiente">›</button>
+          <button class="flow-control" id="closeStep" title="Cerrar flujo">×</button>
+        </div>`;
+
+      if (!isCommit) {
+        const card=getCard(target);
+        card.classList.add(action==="read"?"reading":"writing");
+        relationships.forEach(([a,b]) => {
+          if (a===target || b===target) {
+            const group=[...svg.children].find(p=>p.dataset.edge===a+"|"+b);
+            if(group) group.classList.add(action==="read"?"active-read":"active-write");
+          }
+        });
+      } else {
+        status.querySelector(".flow-step-main").innerHTML += `<div class="flow-input">Accion: COMMIT · todas las operaciones se confirman juntas</div>`;
+      }
+
+      status.querySelector("#closeStep").onclick=()=>{
+        status.classList.remove("show");
+        clearActive();
+        document.querySelectorAll(".flow").forEach(f=>f.classList.remove("active"));
+      };
+      status.querySelector("#previousStep").onclick=()=>{
+        if(activeStepIndex>0){ activeStepIndex--; showFlowStep(); }
+      };
+      status.querySelector("#nextStep").onclick=()=>{
+        if(activeStepIndex<flow.steps.length-1){ activeStepIndex++; showFlowStep(); }
+      };
+    }
+
+    function showDetail(name) {
+      clearActive();
+      const card=getCard(name); card.classList.add("selected");
+      const data=tables[name];
+      detail.innerHTML=`<button class="detail-close">✕</button><h2>${name}</h2>
+        <p class="detail-copy">${data.cols.length} campos visibles en el diagrama</p>
+        <div class="detail-list">${data.cols.map(c=>`<div class="detail-row"><b>${c[0]}</b><span>${c[1]} ${c[2]?"· "+c[2]:""}</span></div>`).join("")}</div>`;
+      detail.classList.add("show");
+      detail.querySelector(".detail-close").onclick=()=>detail.classList.remove("show");
+    }
+
+    document.getElementById("search").addEventListener("input",e=>{
+      const q=e.target.value.toLowerCase().trim();
+      document.querySelectorAll(".table-card").forEach(card=>{
+        const name=card.dataset.table;
+        const hayName=name.includes(q);
+        const hayCol=tables[name].cols.some(c=>c[0].includes(q)||c[1].includes(q));
+        card.style.opacity=!q||hayName||hayCol?"1":".18";
+      });
+    });
+
+    resetView();
+    requestAnimationFrame(drawEdges);
+  </script>
+</body>
+</html>

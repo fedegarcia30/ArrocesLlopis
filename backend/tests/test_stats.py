@@ -52,3 +52,43 @@ def test_dashboard_stats_aggregate_multi_line_orders(client, app, runster_header
     zipcode_stat = next(item for item in data["top_zipcodes"] if item["cp"] == "12345")
     assert zipcode_stat["orders"] == 1
     assert zipcode_stat["revenue"] == 80
+
+
+def test_dashboard_stats_reference_period(client, runster_headers):
+    """?ref=YYYY-MM-DD permite analizar un periodo pasado (por defecto, el actual)."""
+    response = client.get('/api/v1/stats/dashboard?period=quarter&mode=mtd&ref=2025-02-10', headers=runster_headers)
+    assert response.status_code == 200
+    info = response.get_json()["period_info"]
+    # periodo pasado: se fuerza periodo completo (sin prefijo "1-N")
+    assert info["current"]["label"] == "1º Trimestre 2025"
+    assert info["previous"]["label"] == "1º Trimestre 2024"
+
+    response = client.get('/api/v1/stats/dashboard?period=ytd&ref=2024-06-01', headers=runster_headers)
+    assert response.get_json()["period_info"]["current"]["label"] == "Año 2024"
+
+    response = client.get('/api/v1/stats/expenses?period=month&ref=2024-03-15', headers=runster_headers)
+    assert response.status_code == 200
+
+
+def test_client_stats_reference_period(client, app, runster_headers):
+    """Los análisis de clientes aceptan ?ref para navegar a periodos de calendario pasados."""
+    import datetime
+    from app.models import Cliente, Pedido
+    from app import db
+    with app.app_context():
+        c = Cliente(nombre="Cliente T1", telefono="777")
+        db.session.add(c)
+        db.session.commit()
+        db.session.add(Pedido(cliente_id=c.id, pax=4, fecha_pedido=datetime.datetime(2025, 2, 10, 13, 0), status='entregado'))
+        db.session.commit()
+
+    r = client.get('/api/v1/clients/stats?period=quarter&ref=2025-02-15', headers=runster_headers)
+    assert r.status_code == 200
+    assert r.get_json()["total_clients"]["value"] == 1
+
+    # Otro trimestre: el cliente no aparece
+    r = client.get('/api/v1/clients/stats?period=quarter&ref=2025-05-15', headers=runster_headers)
+    assert r.get_json()["total_clients"]["value"] == 0
+
+    r = client.get('/api/v1/clients/analysis?period=quarter&ref=2025-02-15', headers=runster_headers)
+    assert r.status_code == 200

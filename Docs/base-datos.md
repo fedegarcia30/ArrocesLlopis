@@ -58,6 +58,8 @@ precio_unitario  # snapshot del precio en el momento del pedido
 raciones      # raciones de este arroz dentro del encargo
 ```
 > Un pedido puede tener múltiples líneas (un cliente puede pedir varios tipos de arroz).
+> `precio_unitario = 0` solo representa un precio histórico desconocido; los pedidos
+> nuevos siguen usando un precio vigente positivo.
 
 ### Ingrediente (`ingredientes`)
 ```python

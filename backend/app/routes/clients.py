@@ -155,8 +155,14 @@ def get_client_stats():
     now = datetime.utcnow()
 
     has_comparison = True
+    from app.routes.stats import get_ref_period_range
+    ref_range = get_ref_period_range(period)
 
-    if start_date_str and end_date_str:
+    if ref_range:
+        # Periodo de calendario elegido en el panel (?ref=YYYY-MM-DD)
+        curr_start, curr_end, prev_start, prev_end = ref_range
+        label_period = {"week": "semana", "month": "mes", "quarter": "trimestre", "semester": "semestre", "ytd": "año"}[period]
+    elif start_date_str and end_date_str:
         # Custom date range
         curr_start = datetime.strptime(start_date_str, '%Y-%m-%d')
         curr_end = datetime.strptime(end_date_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)

@@ -21,6 +21,13 @@ export function todayIso(): string {
   return toIsoDate(new Date());
 }
 
+/** Regla de negocio: solo el admin puede crear o modificar pedidos de fechas pasadas. */
+export function puedeEditarFecha(fechaIso: string, rol?: string): boolean {
+  return rol === 'admin' || fechaIso >= todayIso();
+}
+
+export const AVISO_PASADO = 'Pedido de un día pasado: solo el administrador puede modificarlo.';
+
 export function addDaysIso(iso: string, days: number): string {
   const [y, m, d] = iso.split('-').map(Number);
   return toIsoDate(new Date(y, m - 1, d + days));

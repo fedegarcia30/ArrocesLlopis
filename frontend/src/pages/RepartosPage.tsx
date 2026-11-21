@@ -1,572 +1,444 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { getPedidos, updateOrderStatus, updatePedido, savePedidoFeedback } from '../api/pedidos';
 import type { Pedido } from '../types';
+import { addDaysIso, fechaPedido, horaPedido, todayIso } from '../utils/pedidos';
 import './RepartosPage.css';
 
-/* ── Utilities ──────────────────────────────────────────────────── */
+/* ── Utilidades ─────────────────────────────────────────────────── */
 
-function todayString(): string {
-  return new Date().toISOString().slice(0, 10);
+function lunesDe(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  const dow = dt.getDay();
+  return addDaysIso(iso, -(dow === 0 ? 6 : dow - 1));
 }
 
-function getWeekDates(): string[] {
-  const today = new Date();
-  const day = today.getDay();
-  const monday = new Date(today);
-  monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d.toISOString().slice(0, 10);
-  });
+function semana(lunes: string): string[] {
+  return Array.from({ length: 7 }, (_, i) => addDaysIso(lunes, i));
 }
 
-function getTimeString(isoString: string): string {
-  return new Date(isoString).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+function fmt(iso: string, opts: Intl.DateTimeFormatOptions): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('es-ES', opts);
 }
 
-function getWeekStart(dateStr: string): string {
-  const d = new Date(dateStr + 'T12:00:00');
-  const day = d.getDay();
-  const monday = new Date(d);
-  monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
-  return monday.toISOString().slice(0, 10);
+function diasDesde(iso: string): number {
+  const [y, m, d] = iso.split('-').map(Number);
+  const ms = new Date().setHours(0, 0, 0, 0) - new Date(y, m - 1, d).getTime();
+  return Math.round(ms / 86_400_000);
 }
 
-function formatWeekLabel(weekStart: string): string {
-  const monday = new Date(weekStart + 'T12:00:00');
-  const sunday = new Date(monday);
-  sunday.setDate(monday.getDate() + 6);
-  const fmt = (d: Date) => d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-  return `${fmt(monday)} – ${fmt(sunday)}`;
+const mapsUrl = (dir: string) => `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dir)}`;
+
+/** Un cliente puede tener varios pedidos en la misma franja: se entregan juntos. */
+interface Grupo {
+  key: string;
+  pedidos: Pedido[];
 }
 
-// Groups delivery orders by a key (time or date), then by client
-function groupByTimeAndClient(
-  pedidos: Pedido[],
-  keyFn: (p: Pedido) => string,
-): Record<string, Pedido[][]> {
-  const byKey: Record<string, Record<string, Pedido[]>> = {};
-  for (const p of pedidos.filter(p => !p.local_recogida)) {
+function agrupar(pedidos: Pedido[], keyFn: (p: Pedido) => string): Record<string, Grupo[]> {
+  const out: Record<string, Record<string, Pedido[]>> = {};
+  for (const p of pedidos) {
+    if (p.local_recogida || p.status === 'cancelado') continue;
     const k = keyFn(p);
-    const clientKey = String(p.cliente_id);
-    if (!byKey[k]) byKey[k] = {};
-    if (!byKey[k][clientKey]) byKey[k][clientKey] = [];
-    byKey[k][clientKey].push(p);
+    ((out[k] ??= {})[p.cliente_id] ??= []).push(p);
   }
-  const result: Record<string, Pedido[][]> = {};
-  for (const k of Object.keys(byKey)) result[k] = Object.values(byKey[k]);
-  return result;
+  const res: Record<string, Grupo[]> = {};
+  for (const k of Object.keys(out)) {
+    res[k] = Object.entries(out[k]).map(([cid, ps]) => ({ key: `${k}|${cid}`, pedidos: ps }));
+  }
+  return res;
 }
 
-/* ── Main container with tabs + swipe ───────────────────────────── */
+/* ── Contenedor con pestañas + swipe ────────────────────────────── */
+
+type Vista = 'repartos' | 'recogidas';
 
 export function RepartosPage() {
-  const defaultView = (): 'repartos' | 'recogidas' => {
-    const day = new Date().getDay(); // 1=Mon … 4=Thu → recogidas
-    return [1, 2, 3, 4].includes(day) ? 'recogidas' : 'repartos';
-  };
-
-  const [activeView, setActiveView] = useState<'repartos' | 'recogidas'>(defaultView);
-  const touchStartX = useRef<number | null>(null);
-
-  function handleTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-  }
-
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 60) {
-      if (dx > 0 && activeView === 'repartos') setActiveView('recogidas');
-      if (dx < 0 && activeView === 'recogidas') setActiveView('repartos');
-    }
-    touchStartX.current = null;
-  }
+  // Lunes–jueves: recogidas. Viernes–domingo: repartos.
+  const [vista, setVista] = useState<Vista>(() => ([1, 2, 3, 4].includes(new Date().getDay()) ? 'recogidas' : 'repartos'));
+  const [pendRecogidas, setPendRecogidas] = useState<number | null>(null);
+  const [pendRepartosHoy, setPendRepartosHoy] = useState<number | null>(null);
+  const touch = useRef<{ x: number; y: number } | null>(null);
 
   return (
-    <div className="repartos-page" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-      <div className="logistics-tabs">
-        <button
-          className={`logistics-tab${activeView === 'recogidas' ? ' active' : ''}`}
-          onClick={() => setActiveView('recogidas')}
-        >
-          Recogidas
+    <div
+      className="rp-page"
+      onTouchStart={e => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; }}
+      onTouchEnd={e => {
+        if (!touch.current) return;
+        const dx = e.changedTouches[0].clientX - touch.current.x;
+        const dy = e.changedTouches[0].clientY - touch.current.y;
+        touch.current = null;
+        if (Math.abs(dx) < 80 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // solo gestos claramente horizontales
+        setVista(dx < 0 ? 'repartos' : 'recogidas');
+      }}
+    >
+      <div className="rp-tabs" role="tablist">
+        <button role="tab" aria-selected={vista === 'recogidas'} className={vista === 'recogidas' ? 'active' : ''} onClick={() => setVista('recogidas')}>
+          ♻️ Recogidas {pendRecogidas ? <span className="rp-tab-badge">{pendRecogidas}</span> : null}
         </button>
-        <button
-          className={`logistics-tab${activeView === 'repartos' ? ' active' : ''}`}
-          onClick={() => setActiveView('repartos')}
-        >
-          Repartos
+        <button role="tab" aria-selected={vista === 'repartos'} className={vista === 'repartos' ? 'active' : ''} onClick={() => setVista('repartos')}>
+          🛵 Repartos {pendRepartosHoy ? <span className="rp-tab-badge">{pendRepartosHoy}</span> : null}
         </button>
       </div>
 
-      {/* Both views stay mounted to preserve state */}
-      <div className={`logistics-view${activeView === 'repartos' ? '' : ' hidden'}`}>
-        <RepartosView />
+      {/* Las dos vistas siguen montadas para conservar su estado */}
+      <div className="rp-view" hidden={vista !== 'repartos'}>
+        <RepartosView onPendientesHoy={setPendRepartosHoy} />
       </div>
-      <div className={`logistics-view${activeView === 'recogidas' ? '' : ' hidden'}`}>
-        <RecogidасView />
+      <div className="rp-view" hidden={vista !== 'recogidas'}>
+        <RecogidasView onPendientes={setPendRecogidas} />
       </div>
     </div>
   );
 }
 
-/* ── Repartos view ──────────────────────────────────────────────── */
+/* ── Repartos ───────────────────────────────────────────────────── */
 
-function RepartosView() {
-  const weekDates = useMemo(getWeekDates, []);
-  const today = todayString();
-
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [weekData, setWeekData] = useState<Record<string, Pedido[]>>({});
-  const [loadingWeek, setLoadingWeek] = useState(true);
-  const [updatingKey, setUpdatingKey] = useState<string | null>(null);
-  const [confirmAnular, setConfirmAnular] = useState<{
-    ids: number[]; key: string; clientName: string;
-  } | null>(null);
-  const [forceExpanded, setForceExpanded] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    setLoadingWeek(true);
-    Promise.all(
-      weekDates.map(d =>
-        getPedidos({ fecha: d })
-          .then(data => ({ d, data }))
-          .catch(() => ({ d, data: [] as Pedido[] }))
-      )
-    ).then(results => {
-      const map: Record<string, Pedido[]> = {};
-      for (const { d, data } of results) map[d] = data;
-      setWeekData(map);
-    }).finally(() => setLoadingWeek(false));
-  }, [weekDates]);
-
-  useEffect(() => { setForceExpanded(new Set()); }, [selectedDate]);
-
-  function dayDeliveryCount(date: string): number {
-    return new Set(
-      (weekData[date] || [])
-        .filter(p => !p.local_recogida)
-        .map(p => `${getTimeString(p.fecha_pedido)}|${p.cliente_id}`)
-    ).size;
-  }
-
-  function updateLocal(ids: number[], status: 'entregado' | 'listo') {
-    if (!selectedDate) return;
-    setWeekData(prev => ({
-      ...prev,
-      [selectedDate]: prev[selectedDate].map(p =>
-        ids.includes(p.id) ? { ...p, status, entregado: status === 'entregado' } : p
-      ),
-    }));
-  }
-
-  async function handleEntregado(ids: number[], groupKey: string) {
-    setUpdatingKey(groupKey);
-    try {
-      for (const id of ids) await updateOrderStatus(id, 'entregado');
-      updateLocal(ids, 'entregado');
-    } finally { setUpdatingKey(null); }
-  }
-
-  async function handleAnular(ids: number[], groupKey: string) {
-    setUpdatingKey(groupKey);
-    try {
-      for (const id of ids) await updateOrderStatus(id, 'listo');
-      updateLocal(ids, 'listo');
-    } finally { setUpdatingKey(null); setConfirmAnular(null); }
-  }
-
-  const dayPedidos = selectedDate ? weekData[selectedDate] || [] : [];
-  const grouped = groupByTimeAndClient(dayPedidos, p => getTimeString(p.fecha_pedido));
-  const sortedTimes = Object.keys(grouped).sort();
-
-  function isCollapsed(time: string): boolean {
-    const allDone = grouped[time]?.every(g => g.every(p => p.status === 'entregado')) ?? false;
-    return allDone && !forceExpanded.has(time);
-  }
-
-  function toggleRow(time: string) {
-    setForceExpanded(prev => {
-      const next = new Set(prev);
-      if (next.has(time)) next.delete(time); else next.add(time);
-      return next;
-    });
-  }
-
-  return (
-    <>
-      <div className="repartos-section-header">
-        <h2 className="repartos-section-title">Repartos</h2>
-        {selectedDate && (
-          <button className="btn-clear-selection" onClick={() => setSelectedDate(null)}>
-            ← Semana
-          </button>
-        )}
-      </div>
-
-      {!selectedDate ? (
-        <div className="repartos-week">
-          {loadingWeek ? (
-            <p className="repartos-empty">Cargando semana...</p>
-          ) : (
-            <div className="week-grid">
-              {weekDates.map(date => {
-                const count = dayDeliveryCount(date);
-                return (
-                  <button
-                    key={date}
-                    className={`day-card${date === today ? ' today' : ''}${count === 0 ? ' empty' : ''}`}
-                    onClick={() => count > 0 && setSelectedDate(date)}
-                  >
-                    <span className="day-name">
-                      {new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { weekday: 'short' })}
-                    </span>
-                    <span className="day-number">{new Date(date + 'T12:00:00').getDate()}</span>
-                    {count > 0
-                      ? <span className="day-count">{count}</span>
-                      : <span className="day-empty-mark">—</span>
-                    }
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="repartos-day">
-          <p className="repartos-day-label">
-            {new Date(selectedDate + 'T12:00:00').toLocaleDateString('es-ES', {
-              weekday: 'long', day: 'numeric', month: 'long',
-            })}
-          </p>
-
-          {sortedTimes.length === 0 && <p className="repartos-empty">No hay repartos este día</p>}
-
-          <div className="repartos-slots-list">
-            {sortedTimes.map(time => {
-              const groups = grouped[time];
-              const doneCount = groups.filter(g => g.every(p => p.status === 'entregado')).length;
-              const collapsed = isCollapsed(time);
-              return (
-                <div key={time} className={`repartos-slot${collapsed ? ' collapsed' : ''}`}>
-                  <button className="repartos-slot-header" onClick={() => toggleRow(time)}>
-                    <span className="repartos-time">{time}</span>
-                    <span className="repartos-slot-progress">
-                      {doneCount === groups.length ? '✓ Todo entregado' : `${doneCount}/${groups.length} entregados`}
-                    </span>
-                    <span className="repartos-slot-chevron">{collapsed ? '▸' : '▾'}</span>
-                  </button>
-                  {!collapsed && (
-                    <div className="repartos-pills-grid">
-                      {groups.map(group => {
-                        const groupKey = `${time}|${group[0].cliente_id}`;
-                        const entregado = group.every(p => p.status === 'entregado');
-                        const ids = group.map(p => p.id);
-                        return (
-                          <DeliveryPill
-                            key={groupKey}
-                            pedidos={group}
-                            done={entregado}
-                            updating={updatingKey === groupKey}
-                            onToggle={() => {
-                              if (entregado) {
-                                setConfirmAnular({ ids, key: groupKey, clientName: group[0].cliente_nombre || '' });
-                              } else {
-                                handleEntregado(ids, groupKey);
-                              }
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {confirmAnular && (
-        <ConfirmModal
-          clientName={confirmAnular.clientName}
-          updating={updatingKey === confirmAnular.key}
-          onConfirm={() => handleAnular(confirmAnular.ids, confirmAnular.key)}
-          onCancel={() => setConfirmAnular(null)}
-        />
-      )}
-    </>
-  );
-}
-
-/* ── Recogidas view ─────────────────────────────────────────────── */
-
-function RecogidасView() {
-  const today = todayString();
-  const fourWeeksAgo = useMemo(() => {
-    const d = new Date();
-    d.setDate(d.getDate() - 28);
-    return d.toISOString().slice(0, 10);
-  }, []);
-
-  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+function RepartosView({ onPendientesHoy }: { onPendientesHoy: (n: number) => void }) {
+  const hoy = todayIso();
+  const [lunes, setLunes] = useState(() => lunesDe(hoy));
+  const [dia, setDia] = useState(hoy);
+  const [datos, setDatos] = useState<Record<string, Pedido[]>>({});
   const [loading, setLoading] = useState(true);
-  const [updatingKey, setUpdatingKey] = useState<string | null>(null);
-  const [confirmAnular, setConfirmAnular] = useState<{
-    ids: number[]; key: string; clientName: string;
-  } | null>(null);
-  const [feedbackPending, setFeedbackPending] = useState<{
-    ids: number[]; key: string; clientName: string;
-  } | null>(null);
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [updating, setUpdating] = useState<string | null>(null);
+  const [anular, setAnular] = useState<Grupo | null>(null);
+  const dias = useMemo(() => semana(lunes), [lunes]);
 
   useEffect(() => {
+    let vivo = true;
     setLoading(true);
-    getPedidos({ status: 'entregado' })
-      .then(data => {
-        setPedidos(data.filter(p =>
-          !p.local_recogida &&
-          p.fecha_pedido.slice(0, 10) >= fourWeeksAgo &&
-          p.fecha_pedido.slice(0, 10) < today
-        ));
-      })
-      .catch(() => setPedidos([]))
-      .finally(() => setLoading(false));
-  }, [today, fourWeeksAgo]);
+    Promise.all(dias.map(d => getPedidos({ fecha: d }).then(r => [d, r] as const).catch(() => [d, [] as Pedido[]] as const)))
+      .then(res => { if (vivo) setDatos(Object.fromEntries(res)); })
+      .finally(() => { if (vivo) setLoading(false); });
+    return () => { vivo = false; };
+  }, [dias]);
 
-  function updateLocal(ids: number[], recogido: boolean) {
-    setPedidos(prev => prev.map(p => ids.includes(p.id) ? { ...p, recogido } : p));
+  const gruposDia = useMemo(() => agrupar(datos[dia] ?? [], p => horaPedido(p.fecha_pedido)), [datos, dia]);
+  const horas = Object.keys(gruposDia).sort();
+  const todos = horas.flatMap(h => gruposDia[h]);
+  const hechos = todos.filter(g => g.pedidos.every(p => p.status === 'entregado')).length;
+
+  const contar = useCallback((d: string) => {
+    const gs = Object.values(agrupar(datos[d] ?? [], p => horaPedido(p.fecha_pedido))).flat();
+    return { total: gs.length, pend: gs.filter(g => g.pedidos.some(p => p.status !== 'entregado')).length };
+  }, [datos]);
+
+  useEffect(() => {
+    if (datos[hoy]) onPendientesHoy(contar(hoy).pend);
+  }, [datos, hoy, contar, onPendientesHoy]);
+
+  function cambiarSemana(delta: number) {
+    const nuevo = addDaysIso(lunes, delta * 7);
+    setLunes(nuevo);
+    setDia(semana(nuevo).includes(hoy) ? hoy : nuevo);
   }
 
-  async function handleFeedbackSubmit(
-    ids: number[],
-    groupKey: string,
-    rating: number | null,
-    comentario: string,
-  ) {
-    setUpdatingKey(groupKey);
-    setFeedbackPending(null);
+  function marcarLocal(ids: number[], status: 'entregado' | 'listo') {
+    setDatos(prev => ({ ...prev, [dia]: prev[dia].map(p => (ids.includes(p.id) ? { ...p, status, entregado: status === 'entregado' } : p)) }));
+  }
+
+  async function setEstado(g: Grupo, status: 'entregado' | 'listo') {
+    setUpdating(g.key);
     try {
-      // Save feedback only if something was entered
-      if (rating !== null || comentario.trim()) {
-        for (const id of ids) await savePedidoFeedback(id, { rating: rating ?? undefined, comentario });
-      }
-      for (const id of ids) await updatePedido(id, { recogido: true });
-      updateLocal(ids, true);
-    } finally { setUpdatingKey(null); }
-  }
-
-  async function handleAnular(ids: number[], groupKey: string) {
-    setUpdatingKey(groupKey);
-    try {
-      for (const id of ids) await updatePedido(id, { recogido: false });
-      updateLocal(ids, false);
-    } finally { setUpdatingKey(null); setConfirmAnular(null); }
-  }
-
-  // Group by week-start, then by client
-  const grouped = groupByTimeAndClient(pedidos, p => getWeekStart(p.fecha_pedido.slice(0, 10)));
-
-  // Only show weeks that still have at least one pending recogida
-  const sortedWeeks = Object.keys(grouped)
-    .sort()
-    .reverse()
-    .filter(week => grouped[week].some(g => g.some(p => !p.recogido)));
-
-  function toggleRow(week: string) {
-    setCollapsed(prev => {
-      const next = new Set(prev);
-      if (next.has(week)) next.delete(week); else next.add(week);
-      return next;
-    });
+      for (const p of g.pedidos) await updateOrderStatus(p.id, status);
+      marcarLocal(g.pedidos.map(p => p.id), status);
+    } catch {
+      alert('No se pudo actualizar el reparto. Revisa la conexión.');
+    } finally {
+      setUpdating(null);
+      setAnular(null);
+    }
   }
 
   return (
     <>
-      <div className="repartos-section-header">
-        <h2 className="repartos-section-title">Recogidas pendientes</h2>
+      <div className="rp-weeknav">
+        <button className="rp-navbtn" onClick={() => cambiarSemana(-1)} aria-label="Semana anterior">‹</button>
+        <span className="rp-week-label">{fmt(dias[0], { day: 'numeric', month: 'short' })} – {fmt(dias[6], { day: 'numeric', month: 'short' })}</span>
+        <button className="rp-navbtn" onClick={() => cambiarSemana(1)} aria-label="Semana siguiente">›</button>
+        {!dias.includes(hoy) && <button className="rp-today" onClick={() => { setLunes(lunesDe(hoy)); setDia(hoy); }}>Hoy</button>}
       </div>
 
-      {loading && <p className="repartos-empty">Cargando...</p>}
-      {!loading && sortedWeeks.length === 0 && (
-        <p className="repartos-empty">No hay recogidas pendientes</p>
-      )}
-
-      <div className="repartos-slots-list">
-        {sortedWeeks.map(week => {
-          const groups = grouped[week];
-          const pendingCount = groups.filter(g => g.some(p => !p.recogido)).length;
-          const isCollpsd = collapsed.has(week);
-
+      <div className="rp-days">
+        {dias.map(d => {
+          const c = contar(d);
           return (
-            <div key={week} className={`repartos-slot${isCollpsd ? ' collapsed' : ''}`}>
-              <button className="repartos-slot-header" onClick={() => toggleRow(week)}>
-                <span className="repartos-time">{formatWeekLabel(week)}</span>
-                <span className="repartos-slot-progress">{pendingCount} pendientes</span>
-                <span className="repartos-slot-chevron">{isCollpsd ? '▸' : '▾'}</span>
-              </button>
-              {!isCollpsd && (
-                <div className="repartos-pills-grid">
-                  {groups.map(group => {
-                    const groupKey = `${week}|${group[0].cliente_id}`;
-                    const done = group.every(p => p.recogido);
-                    const ids = group.map(p => p.id);
-                    return (
-                      <DeliveryPill
-                        key={groupKey}
-                        pedidos={group}
-                        done={done}
-                        updating={updatingKey === groupKey}
-                        onToggle={() => {
-                          if (done) {
-                            setConfirmAnular({ ids, key: groupKey, clientName: group[0].cliente_nombre || '' });
-                          } else {
-                            setFeedbackPending({ ids, key: groupKey, clientName: group[0].cliente_nombre || '' });
-                          }
-                        }}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <button key={d} className={`rp-day ${d === dia ? 'selected' : ''} ${d === hoy ? 'today' : ''} ${c.total === 0 ? 'empty' : ''}`} onClick={() => setDia(d)}>
+              <span className="rp-day-name">{fmt(d, { weekday: 'short' })}</span>
+              <span className="rp-day-num">{Number(d.slice(8))}</span>
+              <span className={`rp-day-count ${c.total > 0 && c.pend === 0 ? 'done' : ''}`}>
+                {loading ? '·' : c.total === 0 ? '—' : c.pend === 0 ? '✓' : c.pend}
+              </span>
+            </button>
           );
         })}
       </div>
 
-      {feedbackPending && (
-        <FeedbackModal
-          clientName={feedbackPending.clientName}
-          submitting={updatingKey === feedbackPending.key}
-          onSubmit={(rating, comentario) =>
-            handleFeedbackSubmit(feedbackPending.ids, feedbackPending.key, rating, comentario)
-          }
-          onCancel={() => setFeedbackPending(null)}
-        />
-      )}
+      <div className="rp-summary">
+        <h2>{fmt(dia, { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
+        {todos.length > 0 && (
+          <div className="rp-progress" aria-label={`${hechos} de ${todos.length} entregados`}>
+            <span className="rp-progress-bar"><span style={{ width: `${(hechos / todos.length) * 100}%` }} /></span>
+            <span className="rp-progress-text">{hechos}/{todos.length} entregados</span>
+          </div>
+        )}
+      </div>
 
-      {confirmAnular && (
+      {loading && <p className="rp-empty">Cargando…</p>}
+      {!loading && horas.length === 0 && <p className="rp-empty">No hay repartos a domicilio este día</p>}
+
+      {/* Una sola rejilla en orden de hora: aprovecha el ancho en tablet/PC */}
+      <div className="rp-cards">
+        {horas.flatMap(h => gruposDia[h].map(g => (
+          <TarjetaCliente
+            key={g.key}
+            grupo={g}
+            hora={h}
+            done={g.pedidos.every(p => p.status === 'entregado')}
+            updating={updating === g.key}
+            accion="✓ Entregado"
+            hecho="Entregado"
+            onAccion={() => setEstado(g, 'entregado')}
+            onDeshacer={() => setAnular(g)}
+          />
+        )))}
+      </div>
+
+      {anular && (
         <ConfirmModal
-          clientName={confirmAnular.clientName}
-          updating={updatingKey === confirmAnular.key}
-          onConfirm={() => handleAnular(confirmAnular.ids, confirmAnular.key)}
-          onCancel={() => setConfirmAnular(null)}
+          texto={<>¿Marcar el reparto de <strong>{anular.pedidos[0].cliente_nombre}</strong> como <strong>no entregado</strong>?</>}
+          updating={updating === anular.key}
+          onConfirm={() => setEstado(anular, 'listo')}
+          onCancel={() => setAnular(null)}
         />
       )}
     </>
   );
 }
 
-/* ── Shared components ──────────────────────────────────────────── */
+/* ── Recogidas ──────────────────────────────────────────────────── */
 
-interface DeliveryPillProps {
-  pedidos: Pedido[];
-  done: boolean;
-  updating: boolean;
-  onToggle: () => void;
-}
+function RecogidasView({ onPendientes }: { onPendientes: (n: number) => void }) {
+  const hoy = todayIso();
+  const desde = addDaysIso(hoy, -28);
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<Grupo | null>(null);
+  const [anular, setAnular] = useState<Grupo | null>(null);
 
-function DeliveryPill({ pedidos, done, updating, onToggle }: DeliveryPillProps) {
-  const first = pedidos[0];
-  const address = first.direccion?.trim() || '';
-  const phone = first.telefono?.trim() || '';
+  useEffect(() => {
+    getPedidos({ status: 'entregado' })
+      .then(data => setPedidos(data.filter(p => {
+        const f = fechaPedido(p.fecha_pedido);
+        return !p.local_recogida && f >= desde && f < hoy;
+      })))
+      .catch(() => setPedidos([]))
+      .finally(() => setLoading(false));
+  }, [desde, hoy]);
+
+  // Agrupadas por semana; dentro, la más antigua primero (es la más urgente)
+  const porSemana = useMemo(() => agrupar(pedidos, p => lunesDe(fechaPedido(p.fecha_pedido))), [pedidos]);
+  const semanas = Object.keys(porSemana).sort().filter(s => porSemana[s].some(g => g.pedidos.some(p => !p.recogido)));
+  const pendientes = semanas.flatMap(s => porSemana[s]).filter(g => g.pedidos.some(p => !p.recogido)).length;
+
+  useEffect(() => { if (!loading) onPendientes(pendientes); }, [loading, pendientes, onPendientes]);
+
+  function marcarLocal(ids: number[], recogido: boolean) {
+    setPedidos(prev => prev.map(p => (ids.includes(p.id) ? { ...p, recogido } : p)));
+  }
+
+  async function recoger(g: Grupo, rating: number | null, comentario: string) {
+    setUpdating(g.key);
+    setFeedback(null);
+    try {
+      if (rating !== null || comentario.trim()) {
+        for (const p of g.pedidos) await savePedidoFeedback(p.id, { rating: rating ?? undefined, comentario });
+      }
+      for (const p of g.pedidos) await updatePedido(p.id, { recogido: true });
+      marcarLocal(g.pedidos.map(p => p.id), true);
+    } catch {
+      alert('No se pudo marcar la recogida. Revisa la conexión.');
+    } finally {
+      setUpdating(null);
+    }
+  }
+
+  async function deshacer(g: Grupo) {
+    setUpdating(g.key);
+    try {
+      for (const p of g.pedidos) await updatePedido(p.id, { recogido: false });
+      marcarLocal(g.pedidos.map(p => p.id), false);
+    } finally {
+      setUpdating(null);
+      setAnular(null);
+    }
+  }
 
   return (
-    <button
-      className={`reparto-pill${done ? ' delivered' : ' pending'}${updating ? ' updating' : ''}`}
-      onClick={onToggle}
-      disabled={updating}
-    >
-      <div className={`pill-inner${done ? ' blurred' : ''}`}>
-        <span className="pill-client">
-          {first.cliente_nombre || `Cliente #${first.cliente_id}`}
-        </span>
-        <div className="pill-rices">
-          {pedidos.map(p => {
-            const rice = p.lineas?.map(l => l.arroz_nombre).filter(Boolean).join(' + ') || 'Arroz';
-            return (
-              <span key={p.id} className="pill-rice-line">
-                {rice} <strong>×{p.pax}</strong>
-              </span>
-            );
-          })}
-        </div>
-        {address && <span className="pill-address">📍 {address}</span>}
-        {phone && <span className="pill-phone">📞 {phone}</span>}
+    <>
+      <div className="rp-summary">
+        <h2>Recipientes por recoger</h2>
+        {!loading && <span className="rp-progress-text">{pendientes} pendientes · últimas 4 semanas</span>}
       </div>
-    </button>
+
+      {loading && <p className="rp-empty">Cargando…</p>}
+      {!loading && semanas.length === 0 && <p className="rp-empty">✓ No hay recogidas pendientes</p>}
+
+      <div className="rp-list">
+        {semanas.map(s => (
+          <section key={s} className="rp-slot">
+            <h3 className="rp-slot-title">
+              Semana del {fmt(s, { day: 'numeric', month: 'short' })}
+              <span>{porSemana[s].filter(g => g.pedidos.some(p => !p.recogido)).length}</span>
+            </h3>
+            <div className="rp-cards">
+              {porSemana[s]
+                .slice()
+                // pendientes primero y, dentro, la entrega más antigua
+                .sort((a, b) =>
+                  Number(a.pedidos.every(p => p.recogido)) - Number(b.pedidos.every(p => p.recogido)) ||
+                  a.pedidos[0].fecha_pedido.localeCompare(b.pedidos[0].fecha_pedido))
+                .map(g => {
+                  const done = g.pedidos.every(p => p.recogido);
+                  const n = diasDesde(fechaPedido(g.pedidos[0].fecha_pedido));
+                  return (
+                    <TarjetaCliente
+                      key={g.key}
+                      grupo={g}
+                      done={done}
+                      updating={updating === g.key}
+                      meta={`Entregado ${fmt(fechaPedido(g.pedidos[0].fecha_pedido), { weekday: 'short', day: 'numeric' })} · hace ${n} día${n === 1 ? '' : 's'}`}
+                      urgente={n >= 7}
+                      accion="✓ Recogido"
+                      hecho="Recogido"
+                      onAccion={() => setFeedback(g)}
+                      onDeshacer={() => setAnular(g)}
+                    />
+                  );
+                })}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      {feedback && (
+        <FeedbackModal
+          clientName={feedback.pedidos[0].cliente_nombre || ''}
+          onSubmit={(r, c) => recoger(feedback, r, c)}
+          onCancel={() => setFeedback(null)}
+        />
+      )}
+
+      {anular && (
+        <ConfirmModal
+          texto={<>¿Marcar la recogida de <strong>{anular.pedidos[0].cliente_nombre}</strong> como <strong>pendiente</strong>?</>}
+          updating={updating === anular.key}
+          onConfirm={() => deshacer(anular)}
+          onCancel={() => setAnular(null)}
+        />
+      )}
+    </>
   );
 }
 
-interface FeedbackModalProps {
-  clientName: string;
-  submitting: boolean;
-  onSubmit: (rating: number | null, comentario: string) => void;
-  onCancel: () => void;
+/* ── Compartidos ────────────────────────────────────────────────── */
+
+interface TarjetaProps {
+  grupo: Grupo;
+  hora?: string;
+  done: boolean;
+  updating: boolean;
+  accion: string;
+  hecho: string;
+  meta?: string;
+  urgente?: boolean;
+  onAccion: () => void;
+  onDeshacer: () => void;
 }
 
-function FeedbackModal({ clientName, submitting, onSubmit, onCancel }: FeedbackModalProps) {
-  const [rating, setRating] = useState<number | null>(null);
-  const [hover, setHover] = useState<number | null>(null);
-  const [comentario, setComentario] = useState('');
+function TarjetaCliente({ grupo, hora, done, updating, accion, hecho, meta, urgente, onAccion, onDeshacer }: TarjetaProps) {
+  const p0 = grupo.pedidos[0];
+  const lineas = grupo.pedidos.flatMap(p => p.lineas?.length ? p.lineas.map(l => ({ id: l.id, nombre: l.arroz_nombre || 'Arroz', rac: l.raciones })) : [{ id: p.id, nombre: 'Arroz', rac: p.pax }]);
+  const notas = grupo.pedidos.map(p => p.observaciones).filter(Boolean).join(' · ');
+  const dir = p0.direccion?.trim();
+  const tel = p0.telefono?.trim();
 
-  const lit = hover ?? rating ?? 0;
+  if (done) {
+    return (
+      <div className="rp-card done">
+        <span className="rp-card-check">✓</span>
+        {hora && <span className="rp-card-time">{hora}</span>}
+        <span className="rp-card-name">{p0.cliente_nombre}</span>
+        <span className="rp-card-done-label">{hecho}</span>
+        <button className="rp-undo" onClick={onDeshacer} disabled={updating}>Deshacer</button>
+      </div>
+    );
+  }
 
   return (
-    <div className="anular-overlay">
-      <div className="feedback-modal glass-card" onClick={e => e.stopPropagation()}>
-        <p className="feedback-title">Recogida · <strong>{clientName}</strong></p>
+    <div className={`rp-card ${urgente ? 'urgent' : ''}`}>
+      <div className="rp-card-head">
+        <span className="rp-card-name">
+          {hora && <span className="rp-card-time">{hora}</span>}
+          {p0.cliente_nombre || `Cliente #${p0.cliente_id}`}
+        </span>
+        {meta && <span className="rp-card-meta">{meta}</span>}
+      </div>
+      <ul className="rp-card-lines">
+        {lineas.map(l => <li key={l.id}><span>{l.nombre}</span><strong>×{l.rac}</strong></li>)}
+      </ul>
+      {notas && <div className="rp-card-notes">📝 {notas}</div>}
+      {dir && <div className="rp-card-addr">📍 {dir}</div>}
+      <div className="rp-card-actions">
+        {tel && <a className="rp-btn" href={`tel:${tel}`} aria-label={`Llamar a ${p0.cliente_nombre}`}>📞 Llamar</a>}
+        {dir && <a className="rp-btn" href={mapsUrl(dir)} target="_blank" rel="noreferrer">🧭 Cómo llegar</a>}
+        <button className="rp-btn rp-btn-primary" onClick={onAccion} disabled={updating}>
+          {updating ? '…' : accion}
+        </button>
+      </div>
+    </div>
+  );
+}
 
-        <div className="star-row">
+function FeedbackModal({ clientName, onSubmit, onCancel }: {
+  clientName: string;
+  onSubmit: (rating: number | null, comentario: string) => void;
+  onCancel: () => void;
+}) {
+  const [rating, setRating] = useState<number | null>(null);
+  const [comentario, setComentario] = useState('');
+
+  return (
+    <div className="rp-overlay" onClick={onCancel}>
+      <div className="rp-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+        <h3 className="rp-modal-title">Recogida · {clientName}</h3>
+        <p className="rp-modal-sub">¿Qué tal valoró el cliente el arroz? (opcional)</p>
+        <div className="rp-rating">
           {Array.from({ length: 10 }, (_, i) => i + 1).map(n => (
             <button
               key={n}
               type="button"
-              className={`star-btn${n <= lit ? ' lit' : ''}`}
-              onClick={() => setRating(prev => prev === n ? null : n)}
-              onMouseEnter={() => setHover(n)}
-              onMouseLeave={() => setHover(null)}
+              className={`${rating !== null && n <= rating ? 'lit' : ''} ${rating === n ? 'current' : ''}`}
+              onClick={() => setRating(prev => (prev === n ? null : n))}
             >
-              ★
+              {n}
             </button>
           ))}
         </div>
-
-        {rating !== null && (
-          <p className="star-value">{rating} / 10</p>
-        )}
-
         <textarea
-          className="feedback-textarea"
+          className="rp-textarea"
           placeholder="Comentario del cliente (opcional)"
           value={comentario}
           onChange={e => setComentario(e.target.value)}
           rows={3}
         />
-
-        <div className="feedback-actions">
-          <button
-            className="anular-btn-cancel"
-            onClick={onCancel}
-            disabled={submitting}
-          >
-            Cancelar
-          </button>
-          <button
-            className="anular-btn-cancel"
-            onClick={() => onSubmit(null, '')}
-            disabled={submitting}
-          >
-            Saltar
-          </button>
-          <button
-            className="btn-primary"
-            onClick={() => onSubmit(rating, comentario)}
-            disabled={submitting}
-          >
-            {submitting ? '...' : 'Guardar y marcar recogido'}
+        <div className="rp-modal-actions">
+          <button className="rp-btn" onClick={onCancel}>Cancelar</button>
+          <button className="rp-btn rp-btn-primary" onClick={() => onSubmit(rating, comentario)}>
+            {rating !== null || comentario.trim() ? 'Guardar y marcar recogido' : 'Marcar recogido'}
           </button>
         </div>
       </div>
@@ -574,25 +446,19 @@ function FeedbackModal({ clientName, submitting, onSubmit, onCancel }: FeedbackM
   );
 }
 
-interface ConfirmModalProps {
-  clientName: string;
+function ConfirmModal({ texto, updating, onConfirm, onCancel }: {
+  texto: React.ReactNode;
   updating: boolean;
   onConfirm: () => void;
   onCancel: () => void;
-}
-
-function ConfirmModal({ clientName, updating, onConfirm, onCancel }: ConfirmModalProps) {
+}) {
   return (
-    <div className="anular-overlay">
-      <div className="anular-modal glass-card" onClick={e => e.stopPropagation()}>
-        <p className="anular-text">
-          ¿Anular el estado de <strong>{clientName}</strong>?
-        </p>
-        <div className="anular-actions">
-          <button className="anular-btn-cancel" onClick={onCancel}>Cancelar</button>
-          <button className="anular-btn-confirm" disabled={updating} onClick={onConfirm}>
-            {updating ? '...' : 'Sí, anular'}
-          </button>
+    <div className="rp-overlay" onClick={onCancel}>
+      <div className="rp-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+        <p className="rp-modal-text">{texto}</p>
+        <div className="rp-modal-actions">
+          <button className="rp-btn" onClick={onCancel}>Cancelar</button>
+          <button className="rp-btn rp-btn-danger" disabled={updating} onClick={onConfirm}>{updating ? '…' : 'Sí, deshacer'}</button>
         </div>
       </div>
     </div>

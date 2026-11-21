@@ -93,6 +93,7 @@ CREATE TABLE pedido_lineas (
     arroz_id INT NOT NULL,
     precio_unitario DECIMAL(10,2) NOT NULL,
     raciones INT NOT NULL DEFAULT 0,
+    CHECK (precio_unitario >= 0),
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
     FOREIGN KEY (arroz_id) REFERENCES arroces(id) ON DELETE RESTRICT,
     UNIQUE KEY unique_linea (pedido_id, arroz_id),

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getClientWeeklyStats, getClientFullHistory } from '../../api/clientes';
 import type { Cliente } from '../../types';
+import './ClientAnalysisModal.css';
 
 interface ClientAnalysisModalProps {
     client: Cliente;

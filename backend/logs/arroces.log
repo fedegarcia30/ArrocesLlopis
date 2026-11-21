@@ -13328,3 +13328,687 @@ AttributeError: type object 'PedidoLinea' has no attribute 'pax_linea'
 2026-11-21 18:52:08,640 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.034s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
 2026-11-21 18:52:12,150 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
 2026-11-21 18:52:14,568 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:56:06,539 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:56:09,325 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:56:12,783 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:56:13,148 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:56:58,022 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.028s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:28,730 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:29,324 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:30,207 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:30,755 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.006s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:38,694 | INFO     | app | No recipe found for rice ID 6, no stock adjustment needed.
+2026-11-21 18:57:38,709 | INFO     | app | Order #6095 created successfully for client #1226 (8 PAX, 1 lines)
+2026-11-21 18:57:38,710 | INFO     | app | [POST] /api/v1/orders/create - Status: 201 - Duration: 0.035s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:38,749 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:57:38,758 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:21,906 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:21,908 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:22,701 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.077s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:22,703 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.076s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:22,792 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.178s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:22,800 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.174s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:27,002 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.036s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:27,043 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.079s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:32,077 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:32,165 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.12s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:33,255 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.037s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:33,300 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.084s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:34,243 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.038s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:34,282 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.079s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:36,071 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.041s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:36,115 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.088s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:52,549 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 18:58:52,550 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:28,265 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:28,268 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:29,975 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.023s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:29,980 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:29,982 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:29,984 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:58,736 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:00:58,739 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:32,534 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:01:32,867 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:01:32,872 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:01:32,958 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:01:33,028 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:01:33,036 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:01:33,112 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:01:33,122 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:01:33,282 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:01:33,288 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:01:33,343 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:01:33,351 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:01:33,445 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:01:33,451 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:01:33,583 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:01:50,691 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:50,694 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:50,851 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:50,858 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,043 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,045 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,167 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,168 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,339 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,361 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,451 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,459 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,595 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,604 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,745 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,748 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,928 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.023s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:51,940 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,043 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,045 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,191 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,193 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,339 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,356 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.027s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,446 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,453 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,593 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,608 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.039s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,743 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,752 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,872 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:52,886 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.028s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,050 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,067 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,159 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,169 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,299 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,306 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,433 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,436 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,600 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,611 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,787 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,809 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.036s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,917 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:53,937 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,090 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,110 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.027s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,201 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,209 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,355 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,367 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,479 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,483 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,643 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,653 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,819 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,826 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,964 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:54,974 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:55,131 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:55,133 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:55,301 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:55,308 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:55,440 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:55,452 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:58,531 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:01:58,534 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:01,315 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:01,492 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:01,632 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:01,794 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:01,938 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,086 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,238 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,388 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,557 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,693 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,828 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:02,958 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:03,114 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:03,262 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:04,084 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:04,109 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:04,204 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.132s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:04,212 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.13s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:18,779 | INFO     | app | Pedido #5769 status updated to 'nuevo'
+2026-11-21 19:02:18,793 | INFO     | app | [PATCH] /api/v1/pedidos/5769/status - Status: 200 - Duration: 0.039s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:18,825 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:18,887 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.077s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:19,882 | INFO     | app | Pedido #5769 status updated to 'entregado'
+2026-11-21 19:02:19,893 | INFO     | app | [PATCH] /api/v1/pedidos/5769/status - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:19,923 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:19,981 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.072s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:20,904 | INFO     | app | Pedido #5769 status updated to 'nuevo'
+2026-11-21 19:02:20,913 | INFO     | app | [PATCH] /api/v1/pedidos/5769/status - Status: 200 - Duration: 0.033s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:20,948 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:20,999 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.068s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:22,008 | INFO     | app | Pedido #5769 status updated to 'entregado'
+2026-11-21 19:02:22,018 | INFO     | app | [PATCH] /api/v1/pedidos/5769/status - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:22,049 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:22,102 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.064s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:23,631 | INFO     | app | Pedido #5769 status updated to 'nuevo'
+2026-11-21 19:02:23,643 | INFO     | app | [PATCH] /api/v1/pedidos/5769/status - Status: 200 - Duration: 0.035s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:23,679 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:23,758 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.098s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:25,274 | INFO     | app | Pedido #5769 status updated to 'entregado'
+2026-11-21 19:02:25,290 | INFO     | app | [PATCH] /api/v1/pedidos/5769/status - Status: 200 - Duration: 0.043s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:25,327 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:25,390 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.083s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:41,729 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:41,730 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:43,864 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.005s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,103 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,252 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.006s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,401 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.006s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,549 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.005s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,668 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.004s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,835 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:44,986 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:45,146 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:45,278 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:45,417 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:45,571 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:45,725 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:49,656 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:49,661 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:49,781 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.14s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:02:49,784 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.135s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:03:49,653 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:03:49,737 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.096s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:04:49,662 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:04:49,749 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.098s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:05:04,018 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:05:35,208 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:05:49,688 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:05:49,824 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.168s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:28,738 | INFO     | app | [GET] /api/v1/auth/me - Status: 200 - Duration: 0.005s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:28,793 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:28,806 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:28,908 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.131s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:28,912 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.128s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:57,118 | INFO     | app | [GET] /api/v1/auth/me - Status: 200 - Duration: 0.004s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:57,161 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:57,171 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:57,270 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.119s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:06:57,271 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.112s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:07:47,901 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:07:47,984 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.092s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:08:05,117 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:08:05,236 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.128s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:09:05,217 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:09:05,485 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.329s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:10:01,788 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:10:01,873 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.092s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:11:01,794 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:11:01,871 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.088s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:12:01,796 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:12:01,859 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.077s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:01,835 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:02,038 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.229s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:35,787 | INFO     | app | [GET] /api/v1/auth/me - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:35,920 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:35,926 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:39,380 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:39,399 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.027s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:40,168 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:40,238 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.063s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:40,238 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.047s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:40,247 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.063s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:41,380 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:41,412 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.056s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,077 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,238 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,388 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,523 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,659 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,789 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:48,947 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:49,105 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:49,256 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:49,384 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:49,523 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:49,843 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:49,990 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:52,543 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.023s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:52,560 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.036s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:52,736 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.207s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:13:52,738 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.202s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:01,796 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:01,880 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.096s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:31,212 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.066s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:35,510 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:35,514 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:55,222 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:55,224 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:56,888 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:58,374 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:58,378 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:59,234 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:59,235 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.028s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:59,236 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:14:59,239 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:00,987 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:00,989 | INFO     | app | [GET] /api/v1/ingredients - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:13,000 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.076s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:13,002 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.081s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:13,071 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.153s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:13,074 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.147s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:15,472 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:15,571 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.108s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,527 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,537 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,542 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,556 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,564 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.035s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,577 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,598 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.043s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,615 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.041s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,625 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,640 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.038s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,665 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,666 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.049s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,676 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:29,685 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:54,473 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 24.908s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:15:54,582 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 24.918s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:16:15,475 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:16:15,538 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.071s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:17:15,480 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:17:15,582 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.113s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:18:15,474 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:18:15,548 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.08s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:18:36,342 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:18:36,347 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:18:37,447 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:19:15,496 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:19:15,746 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.258s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:15,466 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:15,541 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.084s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:45,971 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:45,972 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:46,951 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.125s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:46,982 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.151s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:47,134 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.31s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:47,143 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.316s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:49,607 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.045s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:49,625 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.045s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:49,641 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.071s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:49,688 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.123s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:49,948 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.044s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:20:49,954 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.048s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:21:15,502 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:21:15,653 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.165s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:22:15,470 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:22:15,546 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.083s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:23:15,472 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:23:15,546 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.082s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:25:51,435 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:25:51,438 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:25:52,447 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.028s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:25:52,451 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:25:52,452 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:25:52,454 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:26:52,422 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:26:52,424 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:27:52,426 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:27:52,428 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:28:52,422 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:28:52,427 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:29:52,421 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.006s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:29:52,423 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:34,634 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:36,404 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.034s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:36,410 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.035s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:38,553 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:38,555 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:40,374 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.038s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:40,385 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.039s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:41,405 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:41,410 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:44,652 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:44,655 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:52,522 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:52,624 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.042s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:52,629 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.046s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:59,447 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.062s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:59,587 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.048s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:30:59,588 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.042s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:31:04,071 | INFO     | app | [GET] /api/v1/clients - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:31:09,062 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.034s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:31:09,063 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.037s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:32:15,457 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:32:15,530 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.079s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:42,209 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.027s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:42,218 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:42,853 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:42,853 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:43,784 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:43,786 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.019s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:48,963 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.074s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:48,967 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.081s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:49,072 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.186s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:49,072 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.185s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:54,690 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.024s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:54,701 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.028s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:54,703 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.032s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:54,724 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.055s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:54,836 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.024s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:36:54,837 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:38:10,493 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.044s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:38:10,609 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.162s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:38:11,705 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.037s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:38:11,918 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.251s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:38:32,354 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:38:44,095 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:38:44,348 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:38:44,687 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:38:44,690 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:38:44,732 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:38:44,772 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:38:44,778 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:38:44,824 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:38:44,829 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:38:44,917 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:38:44,922 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:38:44,963 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:38:44,968 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:38:45,042 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:38:45,049 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:38:45,204 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:39:26,356 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.365s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:39:26,489 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.504s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:39:32,522 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.04s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:39:32,750 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.27s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:39:34,362 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.036s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:39:34,682 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.359s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:22,242 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:40:22,418 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:40:22,420 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:40:22,452 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:40:22,483 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:40:22,487 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:40:22,522 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:40:22,525 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:40:22,596 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:40:22,601 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:40:22,634 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:40:22,638 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:40:22,697 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:40:22,701 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:40:22,823 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:40:32,629 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:32,650 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.044s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:32,666 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.063s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:32,686 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.086s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:32,777 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:32,778 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:44,329 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:44,341 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:44,360 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.05s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:40:44,394 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.087s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:42:05,497 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:42:05,688 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:42:05,936 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:42:05,939 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:42:05,985 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:42:06,022 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:42:06,027 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:42:06,073 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:42:06,078 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:42:06,155 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:42:06,159 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:42:06,192 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:42:06,196 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:42:06,256 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:42:06,260 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:42:06,384 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:42:36,698 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.293s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:42:36,748 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.326s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:42:36,831 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.396s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:42:36,899 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.48s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:42:37,149 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.731s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:37,637 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.049s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:37,735 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.149s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:37,763 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.168s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:37,819 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.219s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:40,471 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.056s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:40,491 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.07s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:40,537 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.118s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:40,694 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.282s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:44,959 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.073s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:45,008 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.113s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:45,075 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.181s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:43:45,261 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.377s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:38,678 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:38,814 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.024s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,008 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.032s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,181 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.044s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,293 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,437 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,599 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.023s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,794 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:39,991 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.032s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:40,134 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.026s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:40,294 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.033s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:40,451 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.024s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:40,631 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.024s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:40,857 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:44:42,432 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:09,344 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:09,345 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:35,759 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.149s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:35,764 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.145s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:35,894 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.288s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:35,900 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.288s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:38,443 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.073s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:38,631 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.268s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:40,816 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:41,027 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.246s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:43,041 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.027s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:43,240 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.227s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:50,200 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.03s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:50,395 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.227s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:54,305 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.029s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:45:54,520 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.246s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:46:02,449 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.035s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:46:02,698 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.286s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:46:05,660 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.036s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:46:05,866 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.244s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:46:14,980 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:46:15,169 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.223s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:29,503 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.045s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:29,842 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.387s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:29,864 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.067s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:29,979 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.188s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:37,689 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.056s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:37,778 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.151s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:38,128 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.073s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:38,151 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.101s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:38,156 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.104s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:38,259 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.221s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:38,426 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.028s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:38,431 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.031s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:47,185 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.06s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:48:47,292 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.17s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:50:14,881 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:50:15,042 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:50:15,044 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:50:15,078 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:50:15,114 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:50:15,119 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:50:15,163 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:50:15,167 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:50:15,252 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:50:15,257 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:50:15,297 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:50:15,302 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:50:15,374 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:50:15,378 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:50:15,531 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:52:38,084 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.034s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:38,248 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.2s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:40,722 | INFO     | app | [GET] /api/v1/stats/expenses - Status: 200 - Duration: 0.033s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:40,946 | INFO     | app | [GET] /api/v1/stats/dashboard - Status: 200 - Duration: 0.26s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:57,271 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.023s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:57,283 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.024s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:57,318 | INFO     | app | [GET] /api/v1/clients/analysis - Status: 200 - Duration: 0.065s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:57,352 | INFO     | app | [GET] /api/v1/clients/stats - Status: 200 - Duration: 0.103s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:57,452 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.021s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:52:57,459 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.027s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:08,197 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:08,358 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:08,499 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:08,662 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:08,809 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:08,953 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:09,104 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:09,268 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:09,416 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:09,574 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:09,742 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:09,899 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.016s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:10,064 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:10,227 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:19,487 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:20,592 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.015s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:53:21,820 | INFO     | app | [GET] /api/v1/stats/mapa - Status: 200 - Duration: 0.013s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:10,844 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:10,845 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:13,605 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:13,770 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:13,922 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,071 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,219 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,377 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,535 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,684 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,843 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:14,993 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:15,145 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:15,295 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:15,441 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.007s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:15,580 | INFO     | app | [GET] /api/v1/pedidos/calendar - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:17,513 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:17,525 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.025s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:17,651 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.152s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:17,653 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.147s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:21,359 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:21,367 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:21,368 | INFO     | app | [GET] /api/v1/rices - Status: 200 - Duration: 0.02s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:55:21,371 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.022s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:56:23,262 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:56:23,333 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.082s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:56:48,759 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:57:11,718 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:57:11,916 | WARNING  | app | Auth failed. Invalid token: 'encargado' is not among the defined enum values. Enum name: None. Possible values: admin, cocinero, repartidor, gerente - IP: 127.0.0.1
+2026-11-21 19:57:12,205 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:12,207 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:12,245 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:12,247 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:12,279 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:12,280 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:12,307 | WARNING  | app | Auth failed. Invalid token: 'encargado' is not among the defined enum values. Enum name: None. Possible values: admin, cocinero, repartidor, gerente - IP: 127.0.0.1
+2026-11-21 19:57:12,336 | WARNING  | app | Auth failed. Invalid token: 'encargado' is not among the defined enum values. Enum name: None. Possible values: admin, cocinero, repartidor, gerente - IP: 127.0.0.1
+2026-11-21 19:57:12,371 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,375 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:12,376 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:57:12,409 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:12,411 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:12,441 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:57:12,508 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,512 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,550 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:57:12,556 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:57:12,653 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:57:12,659 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:57:12,702 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,708 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,783 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,788 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:12,878 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:57:23,514 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:57:23,787 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:23,790 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:23,838 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:23,840 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:57:23,840 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:23,891 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:23,893 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:23,950 | INFO     | app | Pedido #1 status updated to 'entregado'
+2026-11-21 19:57:23,958 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,014 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,072 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,081 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:24,082 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:57:24,139 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:57:24,142 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:57:24,201 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:57:24,264 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,272 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,393 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:57:24,399 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:57:24,429 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.159s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:57:24,565 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.299s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:57:24,573 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:57:24,585 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:57:24,669 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,678 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,831 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:24,841 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:57:25,037 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 19:58:07,493 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.018s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:58:07,642 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.167s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:58:08,439 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:58:08,574 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.144s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:59:06,757 | INFO     | app | Logger initialized successfully at level INFO
+2026-11-21 19:59:06,962 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:59:06,964 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:59:07,037 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:59:07,041 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:59:07,095 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:59:07,099 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:59:07,176 | INFO     | app | Pedido #1 status updated to 'entregado'
+2026-11-21 19:59:07,183 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,265 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,322 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,330 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:59:07,331 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:59:07,384 | INFO     | app | No recipe found for rice ID 1, no stock adjustment needed.
+2026-11-21 19:59:07,387 | INFO     | app | Order #1 created successfully for client #1 (4 PAX, 1 lines)
+2026-11-21 19:59:07,434 | WARNING  | app | Order rejected: Slot full logic triggered. Date: 2026-06-15, Time: 15:00
+2026-11-21 19:59:07,472 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:59:07,484 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,492 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,561 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.102s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 19:59:07,611 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:59:07,617 | INFO     | app | Feedback saved for pedido #1
+2026-11-21 19:59:07,732 | INFO     | app | Pedido #1 status updated to 'cancelado'
+2026-11-21 19:59:07,742 | INFO     | app | Pedido #1 status updated to 'nuevo'
+2026-11-21 19:59:07,810 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,821 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,915 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:07,921 | INFO     | app | Pedido #1 properties updated successfully
+2026-11-21 19:59:08,046 | WARNING  | app | Auth failed. Invalid token: Wrong number of segments in token: b'BAD_TOKEN' - IP: 127.0.0.1
+2026-11-21 20:00:07,475 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:00:07,537 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.073s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:01:07,469 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:01:07,532 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.074s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:02:07,484 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.008s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:02:07,562 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.089s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:03:07,473 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.014s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:03:07,570 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.112s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:04:07,471 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:04:07,540 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.082s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:05:07,471 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.011s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:05:07,538 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.08s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:06:07,484 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.01s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:06:07,551 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.078s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:07:07,488 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:07:07,614 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.14s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:08:07,481 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.012s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:08:07,563 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.097s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:09:07,476 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:09:07,544 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.079s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:10:07,498 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.017s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:10:07,652 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.176s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:11:07,480 | INFO     | app | [POST] /api/v1/availability/check - Status: 200 - Duration: 0.009s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com
+2026-11-21 20:11:07,554 | INFO     | app | [GET] /api/v1/pedidos - Status: 200 - Duration: 0.084s - IP: 127.0.0.1 - User: fedegarcia30@gmail.com

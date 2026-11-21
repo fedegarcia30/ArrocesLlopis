@@ -4,6 +4,7 @@ import argparse
 import logging
 import sqlite3
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
@@ -30,6 +31,9 @@ PRODUCT_NAMES = {
     "CARRILLERAS": "Carrilleras",
     "POLLO EN PEPITORIA": "Pollo en Pepitoria",
 }
+PRODUCT_CURRENT_PRICE_OVERRIDES = {"POLLO EN PEPITORIA": 13.50}
+UNIDENTIFIED_PRODUCT_NAME = "Sin identificar"
+UNIDENTIFIED_PRODUCT_PRICE = 0.01
 
 
 def load_env_database_url() -> str:
@@ -152,19 +156,40 @@ def main() -> None:
                 if price["id_producto"] == legacy_id
                 and price["vigente_hasta"] is None
             ]
+            has_price = bool(current_price_rows)
             current_price = (
                 current_price_rows[0]["precio_por_racion_centimos"] / 100.0
-                if current_price_rows
-                else 0.01
+                if has_price
+                else PRODUCT_CURRENT_PRICE_OVERRIDES.get(product["nombre"], 0.01)
             )
             cursor.execute(
                 "INSERT INTO arroces (nombre, precio, caldo, disponible) "
-                "VALUES (%s, %s, NULL, TRUE)",
-                (PRODUCT_NAMES[product["nombre"]], current_price),
+                "VALUES (%s, %s, NULL, %s)",
+                (
+                    PRODUCT_NAMES[product["nombre"]],
+                    current_price,
+                    has_price or product["nombre"] in PRODUCT_CURRENT_PRICE_OVERRIDES,
+                ),
             )
             mysql_id = cursor.lastrowid
             map_arroz[legacy_id] = mysql_id
             arroz_rows.append((legacy_id, mysql_id))
+
+        unknown_source_products = {
+            row["id_producto"]
+            for row in sqlite.execute(
+                "SELECT DISTINCT id_producto FROM detalle_pedidos"
+            )
+            if row["id_producto"] not in map_arroz
+        }
+        unidentified_arroz_id = None
+        if unknown_source_products:
+            cursor.execute(
+                "INSERT INTO arroces (nombre, precio, caldo, disponible) "
+                "VALUES (%s, %s, NULL, FALSE)",
+                (UNIDENTIFIED_PRODUCT_NAME, UNIDENTIFIED_PRODUCT_PRICE),
+            )
+            unidentified_arroz_id = cursor.lastrowid
 
         history_rows = []
         for price in precios:
@@ -177,6 +202,17 @@ def main() -> None:
                 price["vigente_desde"],
                 price["vigente_hasta"],
             ))
+        products_with_prices = {price["id_producto"] for price in precios}
+        for legacy_id, product in productos.items():
+            override_price = PRODUCT_CURRENT_PRICE_OVERRIDES.get(product["nombre"])
+            if override_price is not None and legacy_id not in products_with_prices:
+                history_rows.append((
+                    map_arroz[legacy_id],
+                    "venta",
+                    override_price,
+                    datetime.utcnow(),
+                    None,
+                ))
         cursor.executemany(
             "INSERT INTO historico_precios "
             "(item_id, tipo_item, precio, fecha_inicio, fecha_fin) "
@@ -253,13 +289,35 @@ def main() -> None:
         prices_by_id = {row["id_precio"]: row for row in precios}
         skipped_orders = []
         skipped_lines = []
+        zero_ration_lines = []
         migrated_orders = 0
         migrated_lines = 0
 
         for legacy in sqlite.execute("SELECT * FROM pedidos"):
             order = dict(legacy)
             details = detalles.get(order["id_pedido"], [])
-            total_pax = sum((detail.get("raciones") or 0) for detail in details)
+            grouped_details = {}
+            for detail in details:
+                if int(detail.get("raciones") or 0) <= 0:
+                    zero_ration_lines.append(detail["id_detalle"])
+                legacy_arroz_id = detail.get("id_producto")
+                mysql_arroz_id = map_arroz.get(legacy_arroz_id)
+                if mysql_arroz_id is None and unidentified_arroz_id is not None:
+                    mysql_arroz_id = unidentified_arroz_id
+                if mysql_arroz_id is None:
+                    skipped_lines.append(detail["id_detalle"])
+                    continue
+                grouped_details.setdefault(mysql_arroz_id, []).append(
+                    (legacy_arroz_id, detail)
+                )
+
+            grouped_items = []
+            for mysql_arroz_id, product_details in grouped_details.items():
+                raciones = sum(int(detail.get("raciones") or 0) for _, detail in product_details)
+                if raciones:
+                    grouped_items.append((mysql_arroz_id, product_details, raciones))
+
+            total_pax = sum(raciones for _, _, raciones in grouped_items)
             if total_pax < 1:
                 skipped_orders.append(order["id_pedido"])
                 continue
@@ -305,56 +363,54 @@ def main() -> None:
             mysql_order_id = cursor.lastrowid
             migrated_orders += 1
 
-            grouped_details = {}
-            for detail in details:
-                legacy_arroz_id = detail.get("id_producto")
-                if legacy_arroz_id is None:
-                    skipped_lines.append(detail["id_detalle"])
-                    continue
-                if legacy_arroz_id not in grouped_details:
-                    grouped_details[legacy_arroz_id] = []
-                grouped_details[legacy_arroz_id].append(detail)
+            for mysql_arroz_id, product_details, raciones in grouped_items:
+                detail_prices = []
+                for legacy_arroz_id, detail in product_details:
+                    legacy_price = prices_by_id.get(detail.get("id_precio"))
+                    if legacy_price and (
+                        legacy_arroz_id is None
+                        or legacy_price["id_producto"] == legacy_arroz_id
+                    ):
+                        detail_prices.append(
+                            legacy_price["precio_por_racion_centimos"] / 100.0
+                        )
+                        continue
 
-            for legacy_arroz_id, product_details in grouped_details.items():
-                mysql_arroz_id = map_arroz.get(legacy_arroz_id)
-                if not mysql_arroz_id:
-                    skipped_lines.extend(detail["id_detalle"] for detail in product_details)
-                    continue
-
-                raciones = int(
-                    sum(detail.get("raciones") or 0 for detail in product_details)
-                )
-                detail = next(
-                    (
-                        candidate
-                        for candidate in product_details
-                        if candidate.get("id_precio") is not None
-                    ),
-                    product_details[0],
-                )
-                price = None
-                legacy_price = prices_by_id.get(detail.get("id_precio"))
-                if legacy_price and legacy_price["id_producto"] == legacy_arroz_id:
-                    price = legacy_price["precio_por_racion_centimos"] / 100.0
-                if price is None:
-                    for legacy_price in precios:
-                        if (
-                            legacy_price["id_producto"] == legacy_arroz_id
-                            and legacy_price["vigente_desde"] <= jornada["fecha"]
+                    historical_price = next(
+                        (
+                            price["precio_por_racion_centimos"] / 100.0
+                            for price in precios
+                            if legacy_arroz_id is not None
+                            and price["id_producto"] == legacy_arroz_id
+                            and price["vigente_desde"] <= jornada["fecha"]
                             and (
-                                legacy_price["vigente_hasta"] is None
-                                or jornada["fecha"] < legacy_price["vigente_hasta"]
+                                price["vigente_hasta"] is None
+                                or jornada["fecha"] < price["vigente_hasta"]
                             )
-                        ):
-                            price = legacy_price["precio_por_racion_centimos"] / 100.0
-                            break
-                if price is None:
-                    cursor.execute(
-                        "SELECT precio FROM arroces WHERE id = %s",
-                        (mysql_arroz_id,),
+                        ),
+                        None,
                     )
-                    price_row = cursor.fetchone()
-                    price = float(price_row["precio"]) if price_row else 0.01
+                    if historical_price is not None:
+                        detail_prices.append(historical_price)
+                    elif mysql_arroz_id == unidentified_arroz_id or not any(
+                        price["id_producto"] == legacy_arroz_id for price in precios
+                    ):
+                        detail_prices.append(0.0)
+                    else:
+                        cursor.execute(
+                            "SELECT precio FROM arroces WHERE id = %s",
+                            (mysql_arroz_id,),
+                        )
+                        price_row = cursor.fetchone()
+                        detail_prices.append(
+                            float(price_row["precio"]) if price_row else 0.0
+                        )
+
+                weighted_total = sum(
+                    int(detail.get("raciones") or 0) * price
+                    for (_, detail), price in zip(product_details, detail_prices)
+                )
+                price = round(weighted_total / raciones, 2)
 
                 cursor.execute(
                     "INSERT INTO pedido_lineas "
@@ -387,11 +443,12 @@ def main() -> None:
             migrated_orders,
             migrated_lines,
             len(cliente_rows),
-            len(arroz_rows),
+            len(arroz_rows) + int(unidentified_arroz_id is not None),
             len(history_rows),
         )
         log.info("Pedidos omitidos por pax<1: %s", len(skipped_orders))
         log.info("Líneas omitidas por producto/ruta inválida: %s", len(skipped_lines))
+        log.info("Líneas con raciones nulas/cero: %s", zero_ration_lines)
         log.info("IDs pedidos omitidos: %s", skipped_orders)
         log.info("IDs detalles omitidos: %s", skipped_lines)
     except Exception:

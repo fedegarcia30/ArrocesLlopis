@@ -29,10 +29,12 @@ export async function updateCliente(id: number, data: Partial<Cliente>): Promise
   return put<Cliente>(`/clients/${id}`, data);
 }
 
-export async function getClientStats(period: string = 'quarter', startDate?: string, endDate?: string): Promise<any> {
+/** ref: fecha (YYYY-MM-DD) dentro del periodo de calendario a analizar. */
+export async function getClientStats(period: string = 'quarter', startDate?: string, endDate?: string, ref?: string): Promise<any> {
   let query = `/clients/stats?period=${period}`;
   if (startDate) query += `&start_date=${startDate}`;
   if (endDate) query += `&end_date=${endDate}`;
+  if (ref) query += `&ref=${ref}`;
   return get<any>(query);
 }
 
@@ -40,10 +42,12 @@ export async function getClientWeeklyStats(id: number): Promise<any[]> {
   return get<any[]>(`/clients/${id}/per-week`);
 }
 
-export async function getAnalysisDashboard(period: string = 'quarter', startDate?: string, endDate?: string): Promise<any> {
+/** ref: fecha (YYYY-MM-DD) dentro del periodo de calendario a analizar. */
+export async function getAnalysisDashboard(period: string = 'quarter', startDate?: string, endDate?: string, ref?: string): Promise<any> {
   let query = `/clients/analysis?period=${period}`;
   if (startDate) query += `&start_date=${startDate}`;
   if (endDate) query += `&end_date=${endDate}`;
+  if (ref) query += `&ref=${ref}`;
   return get<any>(query);
 }
 

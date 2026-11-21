@@ -1,170 +1,139 @@
-.rices-page {
-    padding: 32px;
-    max-width: 1400px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    animation: fadeIn 0.4s ease-out;
-}
+/* ═══════════════════════════════════════════════
+   Catálogo de arroces — tarjetas compactas con interruptor de disponibilidad.
+   ═══════════════════════════════════════════════ */
 
-.rices-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-}
+.rz-page { display: flex; flex-direction: column; gap: 14px; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.3s ease-out; }
 
-.rices-header h1 {
-    font-family: 'Montserrat', sans-serif;
-    color: var(--gold-primary);
-    font-weight: 800;
-}
+.rz-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.rz-header h1 { font-size: var(--text-2xl); margin: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-.header-actions {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-.search-bar input {
-    background: var(--glass-bg);
-    border: var(--glass-border);
+.rz-count {
+    font-family: 'Inter', sans-serif;
+    font-size: var(--text-sm);
+    font-weight: 700;
+    color: var(--text-dim);
+    background: var(--bg-surface-hover);
+    padding: 2px 10px;
     border-radius: 100px;
-    padding: 12px 24px;
+}
+
+.rz-actions { display: flex; gap: 8px; flex: 1; justify-content: flex-end; max-width: 560px; }
+
+.rz-search {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-main);
-    width: 280px;
-    transition: var(--transition-smooth);
+    font-size: var(--text-base);
+    outline: none;
 }
 
-.search-bar input:focus {
-    width: 320px;
-    border-color: var(--gold-primary);
-    box-shadow: 0 0 20px var(--gold-glow);
-}
+.rz-search:focus { border-color: var(--gold-primary); }
 
-.btn-add-rice {
+.rz-btn-add {
+    min-height: 48px;
+    padding: 0 18px;
+    border-radius: var(--radius-sm);
     background: var(--gold-primary);
     color: #000;
-    font-weight: 800;
-    padding: 12px 24px;
-    border-radius: 100px;
-    box-shadow: 0 4px 15px var(--gold-glow);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    white-space: nowrap;
 }
 
-.rices-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 24px;
-}
+.rz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.rz-empty { grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px 0; }
 
-.rice-card {
-    padding: 24px;
+.rz-card {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    min-height: 240px;
+    border-radius: var(--radius-md);
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    border-left: 4px solid var(--gold-primary);
+    overflow: hidden;
+    transition: opacity var(--transition-fast);
 }
 
-.rice-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    padding: 4px 12px;
-    border-radius: 100px;
-    font-size: 10px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border: 1px solid rgba(231, 76, 60, 0.3);
-}
+.rz-card.off { border-left-color: #555; }
+.rz-card.off .rz-card-main { opacity: 0.45; }
 
-.rice-name {
-    font-family: 'Montserrat', sans-serif;
-    font-size: var(--text-lg);
-    font-weight: 700;
+.rz-card-main {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 14px 16px 10px;
+    text-align: left;
     color: var(--text-main);
 }
 
-.rice-caldo {
-    font-size: var(--text-sm);
-    color: var(--text-dim);
-    line-height: 1.4;
-}
+.rz-card-main:hover .rz-name { color: var(--gold-primary); }
+.rz-name { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: var(--text-lg); }
+.rz-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; width: 100%; }
 
-.rice-price {
-    margin-top: auto;
-    font-family: 'Montserrat', sans-serif;
-    font-size: var(--text-xl);
-    font-weight: 800;
-    color: var(--gold-primary);
-}
-
-.rice-price span {
+.rz-caldo {
     font-size: var(--text-xs);
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--text-dim);
+    background: var(--bg-surface-hover);
+    padding: 2px 10px;
+    border-radius: 100px;
 }
 
-.rice-actions {
+.rz-price { margin-left: auto; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: var(--text-lg); color: var(--gold-primary); }
+.rz-price small { font-family: 'Inter', sans-serif; font-weight: 500; font-size: var(--text-xs); color: var(--text-muted); }
+
+/* Interruptor */
+.rz-switch {
     display: flex;
-    gap: 12px;
-    margin-top: 8px;
-    border-top: var(--glass-border);
-    padding-top: 16px;
-}
-
-.btn-edit {
-    flex: 2;
-    background: var(--bg-surface);
-    color: var(--text-main);
-    border-radius: var(--radius-sm);
-    font-weight: 700;
-    font-size: var(--text-xs);
-}
-
-.btn-delete {
-    flex: 1;
-    background: rgba(231, 76, 60, 0.1);
-    color: #e74c3c;
-    border-radius: var(--radius-sm);
-    font-size: 1.2rem;
-}
-
-.btn-delete:hover {
-    background: #e74c3c;
-    color: #000;
-}
-
-/* Mobile Fixes */
-.btn-delete-mobile {
-    display: none;
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
-    border-radius: 50%;
     align-items: center;
-    justify-content: center;
-    border: 1px solid rgba(231, 76, 60, 0.3);
-    z-index: 5;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    cursor: pointer;
+    user-select: none;
 }
+
+.rz-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.rz-switch.busy { opacity: 0.6; }
+
+.rz-switch-track {
+    position: relative;
+    width: 46px;
+    height: 26px;
+    border-radius: 13px;
+    background: #444;
+    transition: background var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.rz-switch-track span {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform var(--transition-fast);
+}
+
+.rz-switch input:checked + .rz-switch-track { background: var(--status-green); }
+.rz-switch input:checked + .rz-switch-track span { transform: translateX(20px); }
+.rz-switch input:focus-visible + .rz-switch-track { outline: 2px solid var(--gold-primary); outline-offset: 2px; }
+.rz-switch-label { font-size: var(--text-sm); font-weight: 600; color: var(--text-dim); }
+.rz-switch input:checked ~ .rz-switch-label { color: var(--status-green); }
 
 @media (max-width: 767px) {
-    .rices-page { padding: 20px; }
-    .search-bar input { width: 100%; }
-    .search-bar { width: 100%; order: 2; }
-    .btn-add-rice { width: 100%; order: 1; }
-    
-    .rice-card { padding: 20px; }
-    .btn-delete-mobile { display: flex; }
-    .rice-actions .btn-delete { display: none; }
-    .rice-badge { right: 64px; } /* Desplazar para que no choque con el trash icon */
+    .rz-header h1 { font-size: var(--text-xl); }
+    .rz-actions { max-width: none; flex: 1 1 100%; width: 100%; min-width: 0; }
+    .rz-search { width: 0; }
+    .rz-btn-add { padding: 0 14px; }
+    .rz-grid { grid-template-columns: minmax(0, 1fr); gap: 8px; }
 }

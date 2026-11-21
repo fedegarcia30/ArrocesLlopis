@@ -6,6 +6,7 @@ from app.auth import requires_auth
 from sqlalchemy import func
 from app.utils.logger import logger
 from app.utils.stock import adjust_stock_from_order
+from app.utils.fechas import es_pasado, puede_editar_pasado, ERROR_PASADO
 from datetime import datetime, timedelta
 
 
@@ -92,6 +93,12 @@ def update_pedido_status(pedido_id):
         return jsonify({"error": "Pedido not found"}), 404
 
     old_status = pedido.status
+    # Cancelar o reactivar un pedido pasado cambia stock y estadísticas: solo admin.
+    # El resto de estados (preparando, listo, entregado) se permite para la logística.
+    toca_cancelacion = (new_status == 'cancelado') != (old_status == 'cancelado')
+    if toca_cancelacion and es_pasado(pedido.fecha_pedido) and not puede_editar_pasado():
+        return jsonify(ERROR_PASADO), 403
+
     pedido.status = new_status
     if new_status == 'entregado':
         pedido.entregado = True
@@ -185,6 +192,20 @@ def update_pedido(pedido_id):
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
+
+    # Regla: el contenido de pedidos pasados solo lo modifica el admin.
+    # 'recogido' (recogida de recipientes) se permite siempre.
+    CAMPOS_CONTENIDO = {'lines', 'pax', 'arroz_id', 'fecha_pedido', 'observaciones', 'direccion', 'local_recogida'}
+    if CAMPOS_CONTENIDO & set(data.keys()) and not puede_editar_pasado():
+        if es_pasado(pedido.fecha_pedido):
+            return jsonify(ERROR_PASADO), 403
+        if 'fecha_pedido' in data:
+            try:
+                nueva = str(data['fecha_pedido'])[:10]
+                if es_pasado(datetime.strptime(nueva, '%Y-%m-%d').date()):
+                    return jsonify(ERROR_PASADO), 403
+            except ValueError:
+                pass  # el formato se valida más abajo
 
     old_lines = PedidoLinea.query.filter_by(pedido_id=pedido_id).all()
     old_pax = pedido.pax

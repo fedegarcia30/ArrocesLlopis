@@ -76,12 +76,13 @@ export interface ExpenseStats {
     }[];
 }
 
-export async function getDashboardStats(period: string = 'quarter', mode: string = 'full'): Promise<DashboardStats> {
-    return get<DashboardStats>(`/stats/dashboard?period=${period}&mode=${mode}`);
+/** ref: fecha (YYYY-MM-DD) dentro del periodo a analizar. Sin ref = periodo actual. */
+export async function getDashboardStats(period: string = 'quarter', mode: string = 'full', ref?: string | null): Promise<DashboardStats> {
+    return get<DashboardStats>(`/stats/dashboard?period=${period}&mode=${mode}${ref ? `&ref=${ref}` : ''}`);
 }
 
-export async function getExpenseStats(period: string = 'quarter', mode: string = 'full'): Promise<ExpenseStats> {
-    return get<ExpenseStats>(`/stats/expenses?period=${period}&mode=${mode}`);
+export async function getExpenseStats(period: string = 'quarter', mode: string = 'full', ref?: string | null): Promise<ExpenseStats> {
+    return get<ExpenseStats>(`/stats/expenses?period=${period}&mode=${mode}${ref ? `&ref=${ref}` : ''}`);
 }
 
 export interface MapaCliente {

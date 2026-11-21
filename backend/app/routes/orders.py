@@ -7,6 +7,7 @@ from .availability import MAX_ORDERS_PER_SLOT, MAX_PAX_PER_SLOT
 from app.auth import requires_auth
 from app.utils.logger import logger
 from app.utils.stock import adjust_stock_from_order
+from app.utils.fechas import es_pasado, puede_editar_pasado, ERROR_PASADO
 
 
 def precio_vigente(arroz_id, fecha):
@@ -35,6 +36,10 @@ def create_order():
         order_date = datetime.strptime(data['date'], '%Y-%m-%d').date()
     except ValueError:
         return jsonify({"success": False, "message": "Invalid date format"}), 400
+
+    # Regla: solo el admin puede crear pedidos en fechas pasadas
+    if es_pasado(order_date) and not puede_editar_pasado():
+        return jsonify(ERROR_PASADO), 403
 
     order_time = data['time']
     client_data = data['client']

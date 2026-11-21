@@ -77,8 +77,11 @@ El panel tiene tres pestañas: **Ingresos**, **Gastos y Stock** y **Clientes**.
 #### Pestaña Ingresos
 
 **Controles superiores:**
-- **Período**: Semana / Mes / Trimestre / Semestre / Año Actual
-- **Modo**: "Periodo completo" (incluye días futuros del período) vs "Hasta hoy" (solo datos confirmados hasta la fecha actual)
+- **Período**: Semana / Mes / Trimestre / Semestre / Año.
+- **Navegación de periodos**: por defecto se muestra siempre el **periodo actual**. Con **‹ ›** pasas al periodo anterior o siguiente (p. ej. del 4º Trimestre 2026 al 3º Trimestre 2026) y con el **desplegable de año** saltas al mismo periodo de otro año (p. ej. 4º Trimestre 2023). **"Actual"** vuelve al periodo en curso. No se puede avanzar más allá del periodo actual.
+- **Modo**: "Periodo completo" (incluye días futuros del período) vs "Hasta hoy" (solo datos confirmados hasta la fecha actual). En periodos pasados se usa siempre el periodo completo.
+- La comparativa es siempre con el **mismo periodo del año anterior** al elegido.
+- La navegación de periodos funciona igual en las pestañas **Ingresos**, **Gastos y Stock** y **Clientes**. En Clientes los periodos son de calendario (p. ej. el trimestre natural); además están **Histórico** y **Fechas** (rango libre).
 
 **Tarjetas de resumen** (con comparativa respecto al mismo período del año anterior):
 - Ingresos totales (€)
@@ -117,26 +120,40 @@ Mapa interactivo con la distribución geográfica de los clientes que han pedido
 **Controles del mapa:**
 - Tabs de período: Mes / Trimestre / Semestre / Año
 - Navegación ‹ › para cambiar al período anterior o siguiente
-- Filtro: Ambos / Solo local / Solo reparto
-- Botón "vs [período anterior]" para activar la comparativa
+- Filtro: Ambos / 🏠 Local / 🛵 Reparto
+- Botón **"⇄ vs [período anterior]"** para activar o desactivar la comparativa con el mismo periodo del año anterior
+- La leyenda queda en la esquina inferior derecha, compacta para no tapar el mapa
 
 ---
 
 ### Pantalla: Calendario (`/calendar`)
 
-Vista mensual con un cuadro por cada día. Cada día muestra el número de pedidos y las raciones totales. Los días con pedidos están resaltados.
+El mes entero en una pantalla (iPad, PC y móvil), con semanas de lunes a domingo.
 
-**Cómo usar**: Haz clic en un día para ir directamente a la pantalla de pedidos de ese día.
+- **‹ Mes ›** cambia de mes; **"Hoy"** vuelve al mes actual. Arriba se muestran los **pedidos y raciones totales del mes**.
+- Cada día muestra las **raciones** y el número de pedidos (en móvil, solo las raciones).
+- El **color dorado** es más intenso cuanto más carga tiene el día respecto al resto del mes, para ver de un vistazo los días fuertes.
+- El día de **hoy** aparece recuadrado; los días pasados, atenuados.
+- Toca un día para abrir sus pedidos en `/diario`.
 
 ---
 
 ### Pantalla: Pedidos del día (`/diario`)
 
-Esta es la pantalla operativa principal. Está dividida en dos paneles.
+Esta es la pantalla operativa principal. Es un **tablero fijo** que muestra **la jornada completa en una sola pantalla**, sin scroll, en tablet, PC y móvil.
 
-#### Panel izquierdo — Cuadrícula de disponibilidad
+**Cabecera:**
+- **‹ Día ›**: pasa al día anterior o siguiente. Toca la fecha para abrir el calendario. **"Hoy"** vuelve al día actual.
+- Resumen del día: pedidos, raciones, repartos 🛵 y pedidos **por preparar**.
+- **"+ Nuevo pedido"** (en móvil, el botón redondo **+** junto a la fecha).
 
-Muestra los 11 huecos horarios (13:00 a 15:30, cada 15 min). Cada hueco tiene un color según su estado:
+**Producción**: raciones totales de cada arroz del día y cuántas **faltan** por hacer.
+
+**Resaltar**: Todos · Por preparar · 🛵 · 🏠. Estos botones **no ocultan** pedidos: atenúan los que no coinciden, así el tablero nunca cambia de forma. **"Cancelados N"** abre la lista de pedidos cancelados (solo aparece si hay alguno).
+
+**El tablero**: una fila por franja (13:00 a 15:30) y **6 casillas por fila**, una por cada pedido que admite la franja.
+
+- **Columna de la hora**: la hora, una barra de raciones ocupadas sobre 72 y un borde de color:
 
 | Color | Condición |
 |-------|-----------|
@@ -144,37 +161,19 @@ Muestra los 11 huecos horarios (13:00 a 15:30, cada 15 min). Cada hueco tiene un
 | 🟡 Amarillo | 4–5 pedidos O entre 37–60 raciones |
 | 🔴 Rojo | 6 pedidos O más de 60 raciones (lleno) |
 
-Haz clic en un hueco para filtrar el panel derecho y ver solo los pedidos de esa franja.
+- **Casilla con pedido**: cliente, raciones totales (número dorado), arroces, 🛵 si es a domicilio y 📝 si tiene observaciones. El color indica el estado: dorado → confirmado, azul → preparando, verde → listo, gris atenuado → entregado. En móvil la casilla muestra solo las raciones y la abreviatura de los arroces (p. ej. "NEG+SEÑ").
+- **Casilla vacía con +**: hueco libre. Tócala para crear un pedido en esa franja.
+- **Casilla rayada**: la franja no admite más pedidos porque ya no le quedan raciones.
 
-#### Panel derecho — Lista de pedidos
+En el día de hoy, la franja en curso aparece resaltada (**"ahora"**). La pantalla **se refresca sola cada minuto**.
 
-- **Sin hueco seleccionado**: resumen por franja — una fila por horario con píldoras que muestran el tipo de arroz y las raciones.
-- **Con hueco seleccionado**: detalle completo de cada pedido en esa franja.
+**Ver un pedido y cambiar su estado**: toca la casilla. Se abre el detalle con el teléfono (se puede llamar tocándolo), la dirección, los arroces, el importe y las observaciones, junto a cuatro botones grandes: **Confirmado · Preparando · Listo · Entregado**. Toca el estado nuevo y el panel se cierra.
 
-Cada tarjeta de pedido muestra: cliente, tipo de arroz, raciones, horario, estado y tipo (local/reparto).
+**Editar o cancelar un pedido**: en el detalle, pulsa **"✏️ Editar pedido"**. Se abre la hoja de pedido, donde puedes cambiar arroces, raciones, día y hora, tipo de entrega, dirección y observaciones, o **cancelar** el pedido. Los pedidos cancelados se pueden reactivar desde "Cancelados".
 
-**Cambiar estado de un pedido**: Haz clic en el estado actual de la tarjeta para despleguar las opciones: `preparando`, `listo`, `entregado`, `cancelado`.
+Si cambias la dirección, la hoja pregunta si es la **dirección habitual del cliente** (actualiza su ficha) o **solo para este pedido** (se anota en observaciones).
 
-**Flujo de estados obligatorio:**
-```
-nuevo → preparando → listo → entregado
-                                 ↓
-              (cualquier estado) → cancelado
-```
-
-> ⚠️ Al cancelar un pedido, el stock de ingredientes se restaura automáticamente.
-
-**Editar un pedido**: toca la tarjeta (o deslízala a la izquierda). Se abre la misma **hoja de pedido** que al crearlo, con todo relleno. Puedes cambiar:
-- Arroces y raciones (añadir o quitar arroces del encargo)
-- Día y hora (solo se ofrecen franjas donde cabe el pedido)
-- Tipo de entrega (local ↔ domicilio) y dirección
-- Observaciones
-
-Si cambias la dirección, la hoja pregunta si es la **dirección habitual del cliente** (se actualiza su ficha y afecta a sus próximos repartos) o **solo para este pedido** (se anota en observaciones).
-
-**Cancelar un pedido**: en la hoja de edición, pulsa "Cancelar pedido" y confirma. El pedido pasa a `cancelado` y el stock se restaura. Un pedido cancelado se puede **reactivar** desde la misma hoja.
-
-**Mover un pedido a otra franja** (arrastrar y soltar): Arrastra una tarjeta de pedido a otro hueco horario. Aparece un modal de confirmación con el resumen del cambio. Si el cliente tiene varios pedidos en el mismo hueco, todos se mueven juntos.
+**Mover un pedido a otra franja** (arrastrar y soltar): arrastra la casilla a otra fila. En tablet o móvil, mantenla pulsada medio segundo y arrastra. Aparece un modal de confirmación con el resumen del cambio. Si el cliente tiene varios pedidos en el mismo hueco, todos se mueven juntos.
 
 #### Crear un nuevo pedido
 
@@ -196,43 +195,43 @@ La barra inferior resume el pedido (cliente, día, hora, entrega, raciones y tot
 
 > ⚠️ Si al confirmar la franja ya está llena (por otro pedido simultáneo), la hoja muestra el aviso, refresca la disponibilidad y puedes elegir otra hora sin perder lo escrito.
 
+> 🔒 **Días pasados**: solo el administrador puede crear pedidos con fecha pasada o modificar, mover, cancelar o reactivar pedidos de días anteriores. El resto de usuarios ve esos pedidos y puede seguir cambiando su estado (preparando, listo, entregado) y marcar las recogidas de recipientes, pero no ve el botón "Editar pedido" (aparece un aviso 🔒), no puede arrastrarlos y la hoja de pedido no deja elegir fechas pasadas. Si pulsas "+ Nuevo pedido" mientras ves un día pasado, el pedido se propone para hoy.
+
 **¿Puede un mismo cliente tener varios pedidos?** Sí. No hay restricción de un pedido por cliente. Puedes crear tantos pedidos como quieras para el mismo cliente, en el mismo hueco o en distintos huecos.
 
 ---
 
 ### Pantalla: Clientes (`/clientes`)
 
-Lista paginada de todos los clientes con buscador (por nombre o teléfono).
+Formato **lista + ficha**. En iPad y PC la lista queda a la izquierda y la ficha del cliente seleccionado a la derecha. En móvil, la ficha se abre a pantalla completa (botón **‹** para volver).
 
-**Columnas**: Nombre, Teléfono, Dirección, Número de pedidos históricos.
+**Lista**: buscador por nombre o teléfono y orden **A–Z** o **Más pedidos**. Cada fila muestra nombre, teléfono, dirección y número de pedidos; ⚠ indica que el cliente tiene observaciones (alergias, avisos). Al final, **"Cargar más"** muestra los siguientes clientes.
 
-**Estadísticas del período** (Quarter/Month/Semester/YTD):
-- Total de clientes activos
-- Clientes nuevos vs. churned (sin actividad reciente)
-- Power users (los de mayor gasto)
+**Ficha del cliente**:
+- **📞 Llamar** y **📈 Análisis** (tendencia semanal e historial completo).
+- **Datos** editables: nombre, teléfono, código postal, dirección y observaciones. Pulsa **"Guardar cambios"**.
+- **Últimos pedidos**: fecha, hora, arroces, 🏠/🛵, importe y estado.
 
-**Editar cliente**: Haz clic en el botón de editar (✏️) de cualquier fila. Puedes modificar nombre, teléfono, dirección, código postal y observaciones internas.
-
-**Eliminar cliente**: El borrado es lógico (no físico). El cliente queda marcado como inactivo pero su historial de pedidos se conserva íntegro.
+**Borrar cliente**: dentro de la ficha, **"Borrar cliente"** y confirma. El borrado es lógico: el cliente queda inactivo y su historial de pedidos se conserva.
 
 ---
 
 ### Pantalla: Arroces (`/arroces`)
 
-Catálogo de arroces en formato de tarjetas. Los arroces no disponibles aparecen atenuados con la etiqueta "No disponible".
+Catálogo en tarjetas, con los arroces disponibles primero. Arriba se indica cuántos hay disponibles ("7/8 disponibles"). Cada tarjeta muestra nombre, caldo y precio por ración.
 
-Cada tarjeta muestra: nombre, tipo de caldo y precio por ración.
+**Disponible / No disponible**: cada tarjeta tiene un **interruptor**. Es la acción del día a día: si hoy no hay un ingrediente (p. ej. bogavante), desactívalo y ese arroz deja de aparecer en la hoja de pedido. Vuelve a activarlo cuando haya. Los pedidos existentes no se ven afectados.
 
-**Añadir un arroz nuevo**: Pulsa "Nuevo Arroz" y rellena nombre, caldo, precio y si está disponible.
+**Añadir un arroz nuevo**: pulsa **"+ Nuevo arroz"** y rellena nombre, caldo y precio.
 
-**Editar un arroz**: Haz clic en la tarjeta. Puedes modificar nombre, caldo, precio y disponibilidad.
+**Editar un arroz**: toca la tarjeta (nombre o precio). Puedes modificar nombre, caldo y precio, y gestionar su receta.
 
 **¿Qué pasa al cambiar el precio?**
 - El nuevo precio se aplica únicamente a los pedidos creados a partir de ese momento.
 - Los pedidos existentes conservan el precio que tenían en el momento de su creación (instantánea de precio).
 - El sistema registra el historial de precios automáticamente en `historico_precios`.
 
-**Eliminar un arroz**: El arroz se marca como "no disponible" (borrado lógico). No desaparece del historial de pedidos pasados.
+**Retirar un arroz de la carta**: usa el interruptor "No disponible". El arroz no se borra y su historial de pedidos se conserva.
 
 **Recetas de arroces:**
 Cada arroz puede tener una receta asociada (lista de ingredientes con la cantidad necesaria por ración). La receta se gestiona desde el panel de Stock. Cuando se crea un pedido, el sistema descuenta automáticamente los ingredientes de la receta según las raciones pedidas. Cuando se cancela un pedido, el stock se restaura.
@@ -243,17 +242,19 @@ Cada arroz puede tener una receta asociada (lista de ingredientes con la cantida
 
 ### Pantalla: Stock (`/stock`)
 
-Cuadrícula de ingredientes con indicador visual de nivel:
+Los ingredientes aparecen en tarjetas compactas, **ordenados por urgencia**: primero los que están bajo mínimo, después los próximos al mínimo y al final el resto.
 
 | Color | Significado |
 |-------|-------------|
 | 🟢 Verde | Stock suficiente |
-| 🟡 Amarillo | Aviso: stock ≤ 120% del mínimo |
-| 🔴 Rojo | Crítico: stock ≤ stock mínimo |
+| 🟡 Amarillo | Próximo a mínimo: stock ≤ 120% del mínimo |
+| 🔴 Rojo | Bajo mínimo: stock ≤ stock mínimo |
 
-Cada tarjeta muestra: nombre del ingrediente, stock actual (con unidad), stock mínimo y precio de referencia.
+Cada tarjeta muestra el nombre, el stock actual, una **barra de nivel** (la marca central es el stock mínimo), el mínimo y el precio de coste.
 
-**Añadir un ingrediente nuevo**: Pulsa **"➕ Nuevo Ingrediente"**. Rellena el formulario:
+**Controles**: pestañas **Alimentación / Otros**, filtros **Bajo mínimo** y **Próximo** (con su recuento) y buscador.
+
+**Añadir un ingrediente nuevo**: Pulsa **"+ Ingrediente"**. Rellena el formulario:
 
 | Campo | Descripción | Ejemplo |
 |-------|-------------|---------|
@@ -267,9 +268,9 @@ Pulsa **"Crear Ingrediente"** para añadirlo al sistema. Aparecerá inmediatamen
 
 > ℹ️ Una vez creado, el ingrediente puede asignarse a las recetas de los arroces para que el sistema descuente stock automáticamente al crear pedidos.
 
-**Ajustar stock manualmente**: Haz clic en la tarjeta del ingrediente y modifica cualquier campo (nombre, unidad, stock actual, stock mínimo o precio de referencia). Útil para correcciones o mermas.
+**Ajustar stock manualmente**: Toca la tarjeta del ingrediente y modifica cualquier campo (nombre, unidad, stock actual, stock mínimo o precio de referencia). Útil para correcciones o mermas.
 
-**Registrar una compra**: Pulsa **"🛒 Registrar Compra"**. Aparece un formulario con todos los ingredientes. Para los que has comprado, introduce la cantidad y el precio unitario. Puedes dejar en blanco los que no hayas comprado. Al confirmar:
+**Registrar una compra**: Pulsa **"🛒 Registrar compra"**. Aparece la lista de ingredientes de la pestaña activa, con los que están bajo mínimo primero. Para cada uno que hayas comprado, introduce la cantidad y el precio por unidad; deja en blanco el resto. Abajo se va calculando el **total de la compra**. Al confirmar:
 - El stock de cada ingrediente se incrementa con la cantidad comprada.
 - Se registra la compra en el histórico con proveedor, fecha e importe.
 - El precio de coste del ingrediente se actualiza en el sistema.
@@ -348,50 +349,19 @@ Lo que sí puede:
 
 #### Lo que ve el cocinero en `/diario`
 
-**Panel izquierdo** — cuadrícula de huecos horarios:
+El mismo tablero que el gerente (ver Capítulo 1), con la jornada entera en pantalla. Lo más útil para cocina:
 
-```
-13:00  [🟢 2 pedidos · 14 rac · quedan 4/58]
-13:15  [🟡 5 pedidos · 44 rac · quedan 1/28]
-13:30  [🔴 6 pedidos · 72 rac · LLENO       ]
-...
-```
-
-Haz clic en un hueco para ver el detalle en el panel derecho.
-
-**Panel derecho** — sin hueco seleccionado (resumen del día):
-
-Cada franja horaria muestra una fila con píldoras de colores. Cada píldora representa un pedido: muestra el nombre del arroz y las raciones. El color indica el estado:
-- Sin color / neutro → `nuevo`
-- Azul → `preparando`
-- Verde → `listo`
-- Gris → `entregado` o `cancelado`
-
-**Panel derecho** — con hueco seleccionado (detalle):
-
-Cada tarjeta de pedido muestra:
-- Nombre del cliente
-- Tipo de arroz y raciones
-- 🏠 si es recogida en local / 🛵 si es reparto a domicilio
-- Observaciones del cliente (si las hay)
-- Estado actual (badge de color)
-
-Para cambiar el estado: pulsa el badge de estado de la tarjeta y selecciona el siguiente.
+- **Producción**: raciones de cada arroz del día y cuántas faltan.
+- **"Por preparar"**: atenúa todo lo que ya está listo o entregado.
+- Color de cada casilla: dorado → confirmado, azul → preparando, verde → listo, gris → entregado.
 
 #### Flujo de trabajo recomendado para el cocinero
 
-1. Al empezar el turno, abre `/diario` con la fecha de hoy.
-2. En la vista de resumen (sin seleccionar hueco), tienes una visión global de la carga del día.
-3. Haz clic en el primer hueco con pedidos.
-4. Para cada tarjeta de pedido en ese hueco:
-   - Cuando empieces a prepararlo: cambia a `preparando`.
-   - Cuando esté listo: cambia a `listo`.
-   - Cuando el cliente lo recoja o el repartidor salga: cambia a `entregado`.
-5. Pasa al siguiente hueco.
-
-> ✅ Un hueco cuyos pedidos están todos en `listo` o `entregado` está gestionado.
-
-> ℹ️ Si la vista está en resumen (sin hueco seleccionado), las píldoras de colores te dan una visión rápida de qué está por preparar. Haz clic en un hueco para ver el detalle.
+1. Al empezar el turno, abre `/diario`: se abre en el día de hoy con la franja actual resaltada.
+2. Mira la **producción** para planificar las paellas del día.
+3. Pulsa **"Por preparar"**.
+4. Para cada pedido, toca la casilla y pulsa **Preparando**, después **Listo** y, cuando salga, **Entregado**.
+5. Cuando no queda ninguna casilla dorada ni azul, la producción del día está hecha.
 
 #### Pantalla: Calendario (`/calendar`)
 
@@ -407,98 +377,65 @@ El cocinero puede acceder a la pantalla de repartos, principalmente para coordin
 
 ### Acceso y pantalla de inicio
 
-El repartidor inicia sesión y aterriza directamente en **Repartos** (`/repartos`). Es la única pantalla a la que tiene acceso.
+El repartidor inicia sesión y aterriza directamente en **Repartos** (`/repartos`). Es la única pantalla a la que tiene acceso. Está pensada para usarse con el móvil en la mano.
 
-La pantalla tiene **dos pestañas**: **Repartos** y **Recogidas**. Puedes navegar entre ellas deslizando o pulsando las pestañas. Por defecto:
-- Lunes a jueves → abre en **Recogidas** (días de recogida de recipientes).
-- Viernes a domingo → abre en **Repartos** (días de entrega).
+La pantalla tiene **dos pestañas**: **♻️ Recogidas** y **🛵 Repartos**. Cada pestaña muestra en rojo cuántas tareas quedan pendientes. Puedes cambiar de pestaña tocándolas o deslizando el dedo en horizontal. Por defecto:
+- Lunes a jueves → abre en **Recogidas**.
+- Viernes a domingo → abre en **Repartos**.
 
 ---
 
 ### Pestaña: Repartos
 
-Aquí gestionas las **entregas de arroz a domicilio** de la semana actual.
-
-> ℹ️ Solo aparecen los pedidos con **reparto a domicilio** (`local_recogida = false`). Los pedidos de recogida en local no aparecen aquí porque el cliente ya los recoge por su cuenta.
+Las **entregas de arroz a domicilio**. Los pedidos de recogida en local no aparecen.
 
 #### Lo que ves
 
-Una cuadrícula semanal (lunes a domingo). Cada día muestra el número de entregas pendientes. Los días sin entregas aparecen con "—".
+- **‹ semana ›**: navega entre semanas (el botón **"Hoy"** vuelve a la actual).
+- **Días de la semana**: cada día muestra cuántas entregas quedan pendientes, ✓ si ya están todas hechas o — si no hay repartos. Se abre directamente en **hoy**.
+- **Barra de progreso** del día: "5/8 entregados".
+- **Tarjetas** en orden de hora. Cada tarjeta muestra la hora, el cliente, los arroces con sus raciones, las observaciones (en amarillo) y la dirección. Si el cliente tiene varios pedidos en la misma franja, van en una sola tarjeta y se entregan juntos.
 
-**Haz clic en un día** para ver el detalle de entregas de ese día.
+#### Botones de cada tarjeta
 
-#### Detalle de un día
+- **📞 Llamar**: llama al cliente.
+- **🧭 Cómo llegar**: abre Google Maps con la ruta hasta la dirección.
+- **✓ Entregado**: marca la entrega como hecha. La tarjeta se reduce a una línea en verde.
 
-Los pedidos del día se agrupan por **franja horaria** y dentro de cada franja, por **cliente**.
+Tocar la tarjeta en sí no hace nada; solo cuentan los botones, para evitar marcar entregas sin querer al desplazarte.
 
-Cada grupo (franja + cliente) aparece como una tarjeta (píldora) con:
-- Nombre del cliente
-- Arroces pedidos y raciones (ej: "Arroz Negro ×4")
-- Dirección de entrega
-- Teléfono de contacto
-- Estado actual (pendiente o entregado)
-
-Las franjas horarias donde todos los pedidos ya están entregados se **colapsan automáticamente** (muestra "✓ Todo entregado"). Puedes expandirlas pulsando en la cabecera.
-
-#### Marcar como entregado
-
-Pulsa la tarjeta del cliente. La tarjeta cambia a "entregado" (aspecto diferente).
-
-Si el cliente tiene varios arroces pedidos (varios pedidos en el mismo hueco), todos se marcan como entregados a la vez.
-
-#### Deshacer una entrega
-
-Si marcaste como entregado por error, pulsa la tarjeta de nuevo. Aparece un modal de confirmación: "¿Anular el estado de [cliente]?". Confirma y el estado vuelve a `listo`.
+**Deshacer**: en una tarjeta ya entregada, pulsa **"Deshacer"** y confirma. El pedido vuelve a `listo`.
 
 #### Flujo de trabajo de entrega
 
-1. Abre la pestaña **Repartos**.
-2. Pulsa en el día de hoy (o el día que corresponda).
-3. Ve franja por franja y para cada cliente:
-   a. Comprueba la dirección y el teléfono.
-   b. Entrega el pedido.
-   c. Pulsa la tarjeta para marcarlo como entregado.
-4. Cuando todas las franjas muestran "✓ Todo entregado", el día está completo.
+1. Abre **Repartos**: aparece el día de hoy.
+2. Sigue las tarjetas en orden de hora. Para cada una: **🧭 Cómo llegar** → entrega → **✓ Entregado**.
+3. Cuando el día muestra ✓ y la barra está completa, has terminado.
 
 ---
 
 ### Pestaña: Recogidas
 
-Aquí gestionas la **recogida de recipientes** de clientes a los que entregamos arroces días atrás.
-
-El negocio sirve los arroces en sus propios recipientes. Cuando el repartidor hace una entrega, deja los recipientes con el cliente. Después —normalmente unos días más tarde— hay que volver a recoger esos recipientes.
-
-> ℹ️ Solo aparecen pedidos de reparto (no de recogida en local) que estén en estado `entregado` y con la recogida de recipiente pendiente, de las últimas 4 semanas.
+La **recogida de recipientes** de clientes a los que se entregó arroz en las últimas 4 semanas.
 
 #### Lo que ves
 
-Una lista agrupada por semana (de más reciente a más antigua). Cada semana solo se muestra si tiene recogidas pendientes.
+Las recogidas pendientes agrupadas por semana, **de la más antigua a la más reciente**. Cada tarjeta indica cuándo se entregó ("Entregado dom 25 · hace 9 días"). Las que llevan **7 días o más** se marcan en rojo, porque son las más urgentes. Dentro de cada semana, las pendientes van primero.
 
-Dentro de cada semana, los pedidos se agrupan por cliente. Cada tarjeta muestra el mismo contenido que en Repartos (nombre, arroces, dirección, teléfono).
+#### Marcar una recogida
 
-#### Marcar una recogida como completada
+Pulsa **"✓ Recogido"** en la tarjeta. Se abre una ventana opcional de valoración:
+- Puntuación del cliente del **1 al 10** (toca un número; tócalo otra vez para quitarlo).
+- Comentario del cliente.
+- **"Marcar recogido"** (o **"Guardar y marcar recogido"** si has puesto valoración o comentario).
 
-Pulsa la tarjeta del cliente. Se abre el **modal de feedback** donde puedes:
-- Puntuar la satisfacción del cliente de 1 a 10 estrellas (opcional).
-- Añadir un comentario del cliente (opcional).
-- Pulsar **"Guardar y marcar recogido"** para confirmar la recogida con el feedback introducido.
-- Pulsar **"Saltar"** si no hay feedback que registrar, para marcar solo como recogido.
-
-#### Deshacer una recogida
-
-Si marcaste como recogido por error, pulsa la tarjeta (que aparece con aspecto diferente). Aparece el modal de confirmación para anular. El pedido vuelve a aparecer como pendiente de recogida.
+**Deshacer**: en una tarjeta ya recogida, pulsa **"Deshacer"** y confirma.
 
 #### Flujo de trabajo de recogida
 
-1. Abre la pestaña **Recogidas**.
-2. Ve semana por semana. Empieza por la más antigua (parte inferior).
-3. Para cada cliente pendiente:
-   a. Dirígete a su dirección.
-   b. Recoge los recipientes.
-   c. Pulsa la tarjeta.
-   d. Si el cliente tiene algún comentario o quiere puntuar el servicio, regístralo en el modal.
-   e. Pulsa "Guardar y marcar recogido" o "Saltar".
-4. Cuando todas las tarjetas de una semana estén completadas, esa semana desaparece de la lista.
+1. Abre **Recogidas** y empieza por las tarjetas en rojo (las más antiguas).
+2. Para cada cliente: **🧭 Cómo llegar** → recoge los recipientes → **✓ Recogido** → anota la valoración si el cliente la da.
+3. Cuando una semana no tiene pendientes, desaparece de la lista.
 
 ---
 
@@ -547,10 +484,10 @@ Si marcaste como recogido por error, pulsa la tarjeta (que aparece con aspecto d
 ## Apéndice B: Preguntas frecuentes
 
 **¿Qué hago si el cliente llama para cambiar de arroz o de raciones?**
-Ve a `/diario`, busca el pedido y toca su tarjeta: se abre la hoja de pedido para modificar lo que necesites.
+Ve a `/diario`, toca la casilla del pedido y pulsa "✏️ Editar pedido".
 
 **¿Qué hago si el cliente cancela?**
-Desde la hoja de edición, pulsa "Cancelar pedido". El stock se restaura automáticamente.
+Desde la hoja de edición, pulsa "Cancelar pedido". Si el pedido es de un día pasado, solo puede hacerlo el administrador. El stock se restaura automáticamente.
 
 **¿Puedo crear un pedido para un cliente nuevo que no está en el sistema?**
 Sí. En el bloque Cliente de la hoja de pedido, pulsa "+ Crear cliente nuevo" y rellena teléfono y nombre. El cliente se crea automáticamente al confirmar el pedido.
@@ -559,7 +496,7 @@ Sí. En el bloque Cliente de la hoja de pedido, pulsa "+ Crear cliente nuevo" y 
 El backend valida la disponibilidad en el momento de confirmar. El primero en confirmar ocupa el hueco; el segundo recibe un aviso de "hueco lleno" y puede elegir otra franja.
 
 **¿Cómo sé qué pedidos son de recogida en local y cuáles son de reparto?**
-En la tarjeta de pedido: un icono 🏠 indica recogida en local; 🛵 indica reparto a domicilio.
+En la casilla del pedido, 🛵 indica reparto a domicilio; si no aparece, es recogida en local. Con el botón 🛵 o 🏠 se resaltan solo esos pedidos.
 
 **¿El repartidor ve los pedidos de recogida en local?**
 No. La pantalla de Repartos solo muestra pedidos de reparto a domicilio. Los pedidos de recogida en local los gestiona el personal del restaurante.

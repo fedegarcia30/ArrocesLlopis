@@ -40,6 +40,21 @@ Transiciones permitidas:
 - `entregado` → (estado final)
 - `cancelado` → (estado final)
 
+## Pedidos de fechas pasadas
+
+Solo el **admin** puede crear o modificar pedidos de días anteriores a hoy (hora de Madrid). Para el resto de roles:
+
+| Acción sobre un pedido de un día pasado | ¿Permitido? |
+|---|---|
+| Crear un pedido con fecha pasada | ✗ |
+| Modificar arroces, raciones, observaciones, dirección o tipo de entrega | ✗ |
+| Mover un pedido (a otra franja/día) o moverlo a una fecha pasada | ✗ |
+| Cancelar o reactivar | ✗ |
+| Cambiar estado operativo (preparando, listo, entregado) | ✓ |
+| Marcar recogida de recipientes (`recogido`) y feedback | ✓ |
+
+El backend responde `403` con `error_code: "PAST_DATE"`. El frontend oculta o desactiva esas acciones.
+
 ## Tipos de Entrega
 
 - `local_recogida: true` → Cliente recoge en el local

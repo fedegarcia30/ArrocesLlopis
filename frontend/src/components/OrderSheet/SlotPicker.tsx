@@ -11,11 +11,13 @@ interface Props {
   loading: boolean;
   neededPax: number;
   own?: OwnUsage | null;
+  /** Fecha mínima seleccionable (hoy, salvo para el admin) */
+  minDate?: string;
 }
 
 const DAYS_AHEAD = 7;
 
-export function SlotPicker({ date, onDateChange, time, onTimeChange, slots, loading, neededPax, own }: Props) {
+export function SlotPicker({ date, onDateChange, time, onTimeChange, slots, loading, neededPax, own, minDate }: Props) {
   const today = todayIso();
   const days = Array.from({ length: DAYS_AHEAD }, (_, i) => addDaysIso(today, i));
   const dateInChips = days.includes(date);
@@ -37,7 +39,7 @@ export function SlotPicker({ date, onDateChange, time, onTimeChange, slots, load
         <label className={`os-day os-day-other ${!dateInChips ? 'selected' : ''}`}>
           <span className="os-day-top">Otra</span>
           <span className="os-day-num">{dateInChips ? '📅' : fechaCorta(date)}</span>
-          <input type="date" value={date} onChange={e => e.target.value && onDateChange(e.target.value)} />
+          <input type="date" value={date} min={minDate} onChange={e => e.target.value && (!minDate || e.target.value >= minDate) && onDateChange(e.target.value)} />
         </label>
       </div>
 

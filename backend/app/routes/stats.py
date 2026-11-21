@@ -13,6 +13,24 @@ def get_prev_year_date(dt):
     except ValueError: # Feb 29
         return dt.replace(year=dt.year - 1, day=28)
 
+def get_reference_and_mode(mode):
+    """
+    Fecha de referencia para calcular el periodo. Por defecto hoy; con ?ref=YYYY-MM-DD
+    se analiza el periodo (semana, mes, trimestre, semestre o año) que contiene esa fecha.
+    Para periodos pasados 'hasta hoy' no tiene sentido y se fuerza el periodo completo.
+    """
+    now = datetime.utcnow()
+    ref = request.args.get('ref')
+    if not ref:
+        return now, mode
+    try:
+        ref_dt = datetime.strptime(ref, '%Y-%m-%d')
+    except ValueError:
+        return now, mode
+    if ref_dt.date() == now.date():
+        return now, mode
+    return ref_dt, 'full'
+
 def get_period_dates(period, mode, now):
     if period == 'week':
         curr_start = now - timedelta(days=now.weekday())
@@ -46,6 +64,23 @@ def get_period_dates(period, mode, now):
     
     return curr_start, curr_end, prev_start, prev_end
 
+def get_ref_period_range(period):
+    """
+    Rango de calendario a partir de ?ref=YYYY-MM-DD (usado por los análisis de clientes).
+    Devuelve (curr_start, curr_end, prev_start, prev_end) o None si no hay ref válido o el
+    periodo no es navegable. El periodo actual llega hasta hoy; los pasados son completos.
+    """
+    ref = request.args.get('ref')
+    if not ref or period not in ('week', 'month', 'quarter', 'semester', 'ytd'):
+        return None
+    try:
+        ref_dt = datetime.strptime(ref, '%Y-%m-%d')
+    except ValueError:
+        return None
+    now = datetime.utcnow()
+    is_current = ref_dt.date() == now.date()
+    return get_period_dates(period, 'mtd' if is_current else 'full', now if is_current else ref_dt)
+
 @api_v1_bp.route('/stats/dashboard', methods=['GET'])
 @requires_auth
 @requires_role(['admin', 'gerente', 'encargado'])
@@ -55,7 +90,7 @@ def get_dashboard_stats():
     """
     period = request.args.get('period', 'quarter')
     mode = request.args.get('mode', 'full') # 'full' (calendar) or 'mtd' (month-to-date)
-    now = datetime.utcnow()
+    now, mode = get_reference_and_mode(mode)
     
     curr_start, curr_end, prev_start, prev_end = get_period_dates(period, mode, now)
 
@@ -297,7 +332,7 @@ def get_expense_stats():
     """
     period = request.args.get('period', 'quarter')
     mode = request.args.get('mode', 'full')
-    now = datetime.utcnow()
+    now, mode = get_reference_and_mode(mode)
     
     curr_start, curr_end, prev_start, prev_end = get_period_dates(period, mode, now)
 
@@ -528,8 +563,11 @@ def get_clients_analysis():
     now = datetime.utcnow()
 
     has_comparison = True
+    ref_range = get_ref_period_range(period)
 
-    if start_date_str and end_date_str:
+    if ref_range:
+        curr_start, curr_end, prev_start, prev_end = ref_range
+    elif start_date_str and end_date_str:
         # Custom date range
         curr_start = datetime.strptime(start_date_str, '%Y-%m-%d')
         curr_end = datetime.strptime(end_date_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)

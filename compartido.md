@@ -82,6 +82,15 @@ Los endpoints securizados requieren el envío del header: `Authorization: Bearer
 
 ---
 
+## Regla transversal: pedidos de fechas pasadas
+
+Solo el rol `admin` puede crear pedidos con fecha anterior a hoy (Europe/Madrid) o modificar el contenido de pedidos pasados.
+- `POST /orders/create` con `date` pasada → `403 {"error_code": "PAST_DATE"}` (no admin).
+- `PATCH /pedidos/:id` con `lines`, `pax`, `arroz_id`, `fecha_pedido`, `observaciones`, `direccion` o `local_recogida` sobre un pedido pasado, o con `fecha_pedido` pasada → `403 PAST_DATE`. `recogido` siempre permitido.
+- `PATCH /pedidos/:id/status` hacia o desde `cancelado` en un pedido pasado → `403 PAST_DATE`. El resto de estados, permitido.
+
+---
+
 ## 3. Creación de Pedido (Order Creation)
 **Endpoint**: `POST /api/v1/orders/create`
 **Auth**: Requerido
@@ -316,9 +325,13 @@ Cada elemento en `data`:
 ---
 
 ## 10. Estadísticas de Negocio (Admin Dashboard)
-**Endpoint**: `GET /api/v1/stats/dashboard?period=month|quarter|semester|ytd`
+**Endpoint**: `GET /api/v1/stats/dashboard?period=week|month|quarter|semester|ytd&mode=full|mtd[&ref=YYYY-MM-DD]`
+(también `GET /api/v1/stats/expenses` con los mismos parámetros)
 **Auth**: Requerido (Admin)
 **Descripción**: Devuelve métricas agregadas y tendencias para el panel de administración.
+
+- `ref` (opcional): fecha dentro del periodo a analizar. Sin `ref` → periodo actual. Ej.: `period=quarter&ref=2025-02-10` → 1º Trimestre 2025 vs 1º Trimestre 2024. Con `ref` distinto de hoy se fuerza `mode=full`. Las tendencias históricas (`history`) usan el año de `ref`.
+- `GET /api/v1/clients/stats` y `GET /api/v1/clients/analysis` aceptan también `ref` (con `period=week|month|quarter|semester|ytd`). Con `ref` el periodo es de **calendario** (el actual llega hasta hoy; los pasados son completos) y se compara con el mismo periodo del año anterior. Sin `ref` mantienen las ventanas móviles anteriores (últimos 30/90/180 días). El panel envía siempre `ref` en esos periodos.
 
 **Response**:
 ```json
